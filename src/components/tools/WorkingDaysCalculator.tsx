@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { ToolCard } from "@/components/ToolCard";
 import { Button } from "@/components/ui/button";
 import { CardFooter } from "@/components/ui/card";
-import { DatePicker } from "@/components/ui/date-picker";
 import { Label } from "@/components/ui/label";
 import { getVnHolidays } from "@/lib/vn-holidays";
 import { isSaturday, isSunday, eachDayOfInterval, format } from "date-fns";

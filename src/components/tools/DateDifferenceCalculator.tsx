@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { ToolCard } from "@/components/ToolCard";
 import { CardFooter } from "@/components/ui/card";
-import { DatePicker } from "@/components/ui/date-picker";
 import { useHistory } from "@/contexts/HistoryContext";
 import { format } from "date-fns";
 import { DatePickerWithToday } from "@/components/ui/date-picker-with-today";
@@ -33,7 +32,7 @@ export function DateDifferenceCalculator({ id }: DateDifferenceCalculatorProps) 
     const diffTime = Math.abs(endDate.getTime() - startDate.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-    let tempEndDate = new Date(endDate);
+    const tempEndDate = new Date(endDate);
     let years = tempEndDate.getFullYear() - startDate.getFullYear();
     let months = tempEndDate.getMonth() - startDate.getMonth();
     let days = tempEndDate.getDate() - startDate.getDate();

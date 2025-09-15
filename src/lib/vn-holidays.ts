@@ -30,7 +30,7 @@ function _getTetHolidays(lunarNewYear: number): Holiday[] {
 }
 
 export function getVnHolidays(solarYear: number): Holiday[] {
-    let holidays: Holiday[] = [];
+    const holidays: Holiday[] = [];
     
     // ================== CÁC NGÀY LỄ ÂM LỊCH ==================
     // Các ngày lễ chính thức
