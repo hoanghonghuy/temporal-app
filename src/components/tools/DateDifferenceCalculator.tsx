@@ -6,6 +6,7 @@ import { CardFooter } from "@/components/ui/card";
 import { DatePicker } from "@/components/ui/date-picker";
 import { useHistory } from "@/contexts/HistoryContext";
 import { format } from "date-fns";
+import { DatePickerWithToday } from "@/components/ui/date-picker-with-today";
 
 interface DateDifferenceCalculatorProps { id: string; }
 
@@ -72,11 +73,11 @@ export function DateDifferenceCalculator({ id }: DateDifferenceCalculatorProps) 
       <div className="flex flex-col space-y-4">
         <div className="grid w-full items-center gap-1.5">
           <Label htmlFor="start-date">Ngày bắt đầu</Label>
-          <DatePicker date={startDate} setDate={setStartDate} />
+          <DatePickerWithToday date={startDate} setDate={setStartDate} />
         </div>
         <div className="grid w-full items-center gap-1.5">
           <Label htmlFor="end-date">Ngày kết thúc</Label>
-          <DatePicker date={endDate} setDate={setEndDate} />
+          <DatePickerWithToday date={endDate} setDate={setEndDate} />
         </div>
         {error && <p className="text-sm text-destructive">{error}</p>}
         {result && (

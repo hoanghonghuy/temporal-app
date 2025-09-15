@@ -6,6 +6,8 @@ import { DatePicker } from "@/components/ui/date-picker";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
 import { useHistory } from "@/contexts/HistoryContext";
+import { DatePickerWithToday } from "@/components/ui/date-picker-with-today";
+
 
 interface DayOfWeekFinderProps { id: string; }
 
@@ -39,7 +41,7 @@ export function DayOfWeekFinder({ id }: DayOfWeekFinderProps) {
       description="Chọn một ngày bất kỳ để biết chính xác đó là thứ mấy."
     >
       <div className="flex flex-col space-y-4">
-        <DatePicker date={selectedDate} setDate={setSelectedDate} />
+        <DatePickerWithToday date={selectedDate} setDate={setSelectedDate} />
         {result && (
           <div className="mt-2 rounded-lg border bg-secondary/50 p-3 text-sm">
             <p className="font-medium text-secondary-foreground text-center">{result}</p>

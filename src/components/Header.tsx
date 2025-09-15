@@ -56,22 +56,17 @@ export function Header({ onHistoryToggle }: HeaderProps) {
               <div className="mt-8 flex flex-col">
                 <MobileNavLink to="/" className="text-base font-semibold">Lịch Tháng</MobileNavLink>
                 <Accordion type="single" collapsible className="w-full">
-                  <AccordionItem value="item-1">
-                    {/* Tùy chỉnh AccordionTrigger */}
-                    <AccordionTrigger className="py-2 text-base font-semibold text-muted-foreground hover:text-foreground no-underline hover:no-underline">
+                  <AccordionItem value="tools-accordion" className="border-b-0">
+                    <div className="flex items-center text-base font-semibold text-muted-foreground">
                       <NavLink 
                         to="/tools" 
-                        className="flex-1 text-left" 
-                        onClick={(e) => {
-                          // Không ngăn accordion mở ra, chỉ xử lý việc đóng menu
-                          if (e.target === e.currentTarget) {
-                             setIsMobileMenuOpen(false);
-                          }
-                        }}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="py-2 flex-1 text-left hover:text-foreground"
                       >
                         Công Cụ
                       </NavLink>
-                    </AccordionTrigger>
+                      <AccordionTrigger className="p-2 -mr-2 hover:text-foreground [&[data-state=open]>svg]:rotate-180" />
+                    </div>
                     <AccordionContent className="pl-4">
                       {tools.map(tool => (
                         <MobileNavLink key={tool.href} to={tool.href}>{tool.label}</MobileNavLink>
@@ -90,9 +85,13 @@ export function Header({ onHistoryToggle }: HeaderProps) {
           <NavLink to="/tools" className={navLinkClass}>Công Cụ</NavLink>
         </nav>
 
-        <div className="flex-grow text-center">
+        {/* Bọc toàn bộ khối div này trong NavLink trỏ về "/" */}
+        <NavLink to="/" className="flex-grow text-center">
           <h1 className="text-xl sm:text-2xl font-bold">Temporal</h1>
-        </div>
+          <p className="hidden sm:block text-xs font-light text-muted-foreground">
+            Lịch Vạn Niên & Tiện Ích Ngày Tháng
+          </p>
+        </NavLink>
 
         <div className="flex items-center space-x-2">
           <Button variant="outline" size="icon" onClick={onHistoryToggle}><History className="h-5 w-5" /></Button>

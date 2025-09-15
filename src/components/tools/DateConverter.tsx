@@ -7,6 +7,8 @@ import { convertSolar2Lunar } from "@/lib/lunar-converter";
 import { format, parse } from "date-fns";
 import { useHistory } from "@/contexts/HistoryContext";
 import { vi } from "date-fns/locale";
+import { DatePickerWithToday } from "@/components/ui/date-picker-with-today";
+
 
 interface DateConverterProps {
   id: string;
@@ -65,7 +67,7 @@ export function DateConverter({ id, initialDate }: DateConverterProps) {
       description="Xem một ngày dưới nhiều định dạng khác nhau, bao gồm cả Âm lịch và Can Chi."
     >
         <div className="flex flex-col space-y-4">
-            <DatePicker date={selectedDate} setDate={setSelectedDate} />
+            <DatePickerWithToday date={selectedDate} setDate={setSelectedDate} />
              {Object.keys(results).length > 0 && (
                 <ul className="mt-2 space-y-2 rounded-lg border bg-secondary/50 p-3 text-sm">
                     {Object.entries(results).map(([key, value]) => (

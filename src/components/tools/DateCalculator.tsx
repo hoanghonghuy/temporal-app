@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select";
 import { add, sub, format } from 'date-fns';
 import { useHistory } from "@/contexts/HistoryContext";
+import { DatePickerWithToday } from "@/components/ui/date-picker-with-today";
 
 interface DateCalculatorProps { id: string; }
 
@@ -65,7 +66,7 @@ export function DateCalculator({ id }: DateCalculatorProps) {
       <div className="flex flex-col space-y-4">
         <div className="grid w-full items-center gap-1.5">
           <Label>Chọn một ngày</Label>
-          <DatePicker date={baseDate} setDate={setBaseDate} />
+          <DatePickerWithToday date={baseDate} setDate={setBaseDate} />
         </div>
         <div className="flex items-end space-x-2">
           <div className="grid flex-grow items-center gap-1.5">

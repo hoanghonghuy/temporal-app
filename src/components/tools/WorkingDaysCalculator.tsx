@@ -8,6 +8,8 @@ import { getVnHolidays } from "@/lib/vn-holidays";
 import { isSaturday, isSunday, eachDayOfInterval, format } from "date-fns";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useHistory } from "@/contexts/HistoryContext";
+import { DatePickerWithToday } from "@/components/ui/date-picker-with-today";
+
 
 interface WorkingDaysCalculatorProps { id: string; }
 
@@ -95,11 +97,11 @@ export function WorkingDaysCalculator({ id }: WorkingDaysCalculatorProps) {
       <div className="flex flex-col space-y-4">
         <div className="grid w-full items-center gap-1.5">
           <Label>Ngày bắt đầu</Label>
-          <DatePicker date={startDate} setDate={setStartDate} />
+          <DatePickerWithToday date={startDate} setDate={setStartDate} />
         </div>
         <div className="grid w-full items-center gap-1.5">
           <Label>Ngày kết thúc</Label>
-          <DatePicker date={endDate} setDate={setEndDate} />
+          <DatePickerWithToday date={endDate} setDate={setEndDate} />
         </div>
         {holidaysInRange.length > 0 && (
           <div className="space-y-2 pt-2">
