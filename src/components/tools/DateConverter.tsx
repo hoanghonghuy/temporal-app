@@ -3,7 +3,7 @@ import { ToolCard } from "@/components/ToolCard";
 import { Button } from "@/components/ui/button";
 import { CardFooter } from "@/components/ui/card";
 import { convertSolar2Lunar } from "@/lib/lunar-converter";
-import { format, parse } from "date-fns";
+import { format, isValid, parse } from "date-fns";
 import { useHistory } from "@/contexts/HistoryContext";
 import { vi } from "date-fns/locale";
 import { DatePickerWithToday } from "@/components/ui/date-picker-with-today";
@@ -21,16 +21,16 @@ export function DateConverter({ id, initialDate }: DateConverterProps) {
 
   const handleConvert = useCallback((dateToConvert?: Date) => {
     const date = dateToConvert || selectedDate;
-    if (!date) {
+    if (!date || !isValid(date)) {
         setResults({});
         return;
     }
 
-    const [lunarDay, lunarMonth, , isLeap, dayCan, dayChi, monthCan, yearCan, yearChi] = 
+    const [lunarDay, lunarMonth, lunarYear, isLeap, dayCan, dayChi, monthCan, yearCan, yearChi] =
       convertSolar2Lunar(date.getDate(), date.getMonth() + 1, date.getFullYear());
     
     const newResults = {
-      "Âm Lịch": `Ngày ${lunarDay}/${lunarMonth}/${date.getFullYear()} ${isLeap ? '(Nhuận)' : ''}`,
+      "Âm Lịch": `Ngày ${lunarDay}/${lunarMonth}/${lunarYear} ${isLeap ? '(Nhuận)' : ''}`,
       "Can Chi": `Năm ${yearCan} ${yearChi}, Tháng ${monthCan}, Ngày ${dayCan} ${dayChi}`,
       "ISO 8601": format(date, "yyyy-MM-dd"),
       "Văn bản (Việt)": format(date, "eeee, 'ngày' dd 'tháng' MM 'năm' yyyy", { locale: vi }),
@@ -44,12 +44,13 @@ export function DateConverter({ id, initialDate }: DateConverterProps) {
 
   useEffect(() => {
     if (initialDate) {
-      try {
-        const parsedDate = parse(initialDate, "dd/MM/yyyy", new Date());
+      const parsedDate = parse(initialDate, "dd/MM/yyyy", new Date());
+      if (isValid(parsedDate)) {
         setSelectedDate(parsedDate);
         handleConvert(parsedDate);
-      } catch (error) {
-        console.error("Invalid date from URL", error);
+      } else {
+        setSelectedDate(undefined);
+        setResults({});
       }
     }
   }, [initialDate, handleConvert]);
@@ -85,3 +86,4 @@ export function DateConverter({ id, initialDate }: DateConverterProps) {
     </ToolCard>
   );
 }
+

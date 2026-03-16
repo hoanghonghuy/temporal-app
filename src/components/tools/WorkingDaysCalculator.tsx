@@ -28,13 +28,24 @@ export function WorkingDaysCalculator({ id }: WorkingDaysCalculatorProps) {
 
   useEffect(() => {
     if (startDate && endDate && startDate <= endDate) {
-      const allHolidays = [
-        ...getVnHolidays(startDate.getFullYear()),
-        ...(endDate.getFullYear() > startDate.getFullYear() ? getVnHolidays(endDate.getFullYear()) : [])
-      ];
-      const foundHolidays = allHolidays
+      const startYear = startDate.getFullYear();
+      const endYear = endDate.getFullYear();
+      const allHolidays = [];
+      for (let year = startYear; year <= endYear; year++) {
+        allHolidays.push(...getVnHolidays(year));
+      }
+
+      const holidaysByDate = new Map<string, HolidayInRange>();
+      allHolidays
         .filter(h => h.date >= startDate && h.date <= endDate)
-        .map(h => ({ date: format(h.date, 'yyyy-MM-dd'), name: h.name, checked: true }));
+        .forEach(h => {
+          const dateKey = format(h.date, "yyyy-MM-dd");
+          if (!holidaysByDate.has(dateKey)) {
+            holidaysByDate.set(dateKey, { date: dateKey, name: h.name, checked: true });
+          }
+        });
+
+      const foundHolidays = Array.from(holidaysByDate.values());
       setHolidaysInRange(foundHolidays);
     } else {
       setHolidaysInRange([]);
