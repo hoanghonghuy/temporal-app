@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { ToolCard } from "@/components/ToolCard";
 import { Button } from "@/components/ui/button";
 import { CardFooter } from "@/components/ui/card";
@@ -19,24 +19,12 @@ export function DateConverter({ id, initialDate }: DateConverterProps) {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [results, setResults] = useState<Record<string, string>>({});
 
-  useEffect(() => {
-    if (initialDate) {
-      try {
-        const parsedDate = parse(initialDate, "dd/MM/yyyy", new Date());
-        setSelectedDate(parsedDate);
-        handleConvert(parsedDate);
-      } catch (error) {
-        console.error("Invalid date from URL", error);
-      }
-    }
-  }, [initialDate]);
-
-  const handleConvert = (dateToConvert?: Date) => {
+  const handleConvert = useCallback((dateToConvert?: Date) => {
     const date = dateToConvert || selectedDate;
     if (!date) {
         setResults({});
         return;
-    };
+    }
 
     const [lunarDay, lunarMonth, , isLeap, dayCan, dayChi, monthCan, yearCan, yearChi] = 
       convertSolar2Lunar(date.getDate(), date.getMonth() + 1, date.getFullYear());
@@ -52,7 +40,19 @@ export function DateConverter({ id, initialDate }: DateConverterProps) {
     const historyResult = `Ngày gốc: ${format(date, "dd/MM/yyyy")}\n` + 
                          Object.entries(newResults).map(([key, value]) => `${key}: ${value}`).join('\n');
     addToHistory("Bộ Chuyển Đổi Ngày", historyResult);
-  };
+  }, [selectedDate, addToHistory]);
+
+  useEffect(() => {
+    if (initialDate) {
+      try {
+        const parsedDate = parse(initialDate, "dd/MM/yyyy", new Date());
+        setSelectedDate(parsedDate);
+        handleConvert(parsedDate);
+      } catch (error) {
+        console.error("Invalid date from URL", error);
+      }
+    }
+  }, [initialDate, handleConvert]);
 
   const handleClear = () => {
     setSelectedDate(undefined);

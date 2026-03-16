@@ -94,16 +94,27 @@
 .day-cell.holiday::after {
   content: "";
   position: absolute;
-  bottom: 8px;
+  bottom: 12px;
   left: 50%;
   transform: translateX(-50%);
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   background-color: hsl(var(--destructive));
   border-radius: 50%;
+  box-shadow: 0 0 4px hsl(var(--destructive) / 0.5);
 }
 
 .lunar-day.special {
-  font-weight: bold;
+  font-weight: 700;
   color: hsl(var(--primary));
+  opacity: 1;
+}
+
+.day-cell {
+  position: relative;
+  overflow: hidden;
+}
+
+.day-cell:hover .lunar-day {
+  color: hsl(var(--foreground));
 }

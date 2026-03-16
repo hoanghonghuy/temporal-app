@@ -23,7 +23,8 @@ export function CalendarPage() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDay, setSelectedDay] = useState<Date | null>(null);
 
-  const holidaysInYear = useMemo(() => getVnHolidays(currentDate.getFullYear()), [currentDate.getFullYear()]);
+  const year = currentDate.getFullYear();
+  const holidaysInYear = useMemo(() => getVnHolidays(year), [year]);
   const holidaysInMonth = useMemo(() => {
     const holidayMap = new Map<string, string>();
     holidaysInYear.forEach(h => {
@@ -83,9 +84,12 @@ export function CalendarPage() {
                  title={holidayInfo}
               >
                 <span className={cn(
-                  "flex items-center justify-center h-7 w-7 sm:h-8 sm:w-8 rounded-full text-sm sm:text-base",
-                  isToday(day) && "bg-primary text-primary-foreground font-bold",
-                  (isSaturday(day) || isSunday(day)) && !isToday(day) && "text-red-500"
+                  "flex items-center justify-center h-8 w-8 sm:h-9 sm:w-9 rounded-full text-sm sm:text-base transition-all duration-200",
+                  isToday(day) 
+                    ? "bg-primary text-primary-foreground font-bold shadow-lg shadow-primary/30 ring-2 ring-primary ring-offset-2 ring-offset-background" 
+                    : (isSaturday(day) || isSunday(day)) && !isToday(day) 
+                      ? "text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20" 
+                      : "hover:bg-accent hover:text-accent-foreground"
                 )}>
                   {day.getDate()}
                 </span>
