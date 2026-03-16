@@ -11,14 +11,14 @@ interface ToolCardProps {
   title: string;
   description: string;
   children: React.ReactNode;
-  id?: string; // Thêm prop id (tùy chọn)
+  id?: string;
 }
 
 export function ToolCard({ title, description, children, id }: ToolCardProps) {
   return (
-    <Card id={id}> {/* Gán id cho component Card */}
+    <Card id={id} className="ink-accent border-primary/10 hover:border-primary/25 transition-all duration-300 hover:gold-glow">
       <CardHeader>
-        <CardTitle>{title}</CardTitle>
+        <CardTitle className="font-serif text-lg">{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent>

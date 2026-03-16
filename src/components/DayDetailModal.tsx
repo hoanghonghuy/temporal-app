@@ -12,6 +12,7 @@ import { convertSolar2Lunar } from "@/lib/lunar-converter";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
 import { useNavigate } from "react-router-dom";
+import { Clock, Star } from "lucide-react";
 
 interface DayDetailModalProps {
   selectedDay: Date | null;
@@ -19,7 +20,6 @@ interface DayDetailModalProps {
   holidaysInYear: Holiday[];
 }
 
-// Helper function để tính giờ hoàng đạo
 const getZodiacHours = (chiNgay: string): string => {
   const zodiacHoursMap: { [key: string]: string[] } = {
     Tý: ["Tý (23-1)", "Sửu (1-3)", "Mão (5-7)", "Ngọ (11-13)", "Thân (15-17)", "Dậu (17-19)"],
@@ -55,37 +55,41 @@ export function DayDetailModal({ selectedDay, onClose, holidaysInYear }: DayDeta
 
   return (
     <Dialog open={!!selectedDay} onOpenChange={(isOpen) => !isOpen && onClose()}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] border-primary/20">
         <DialogHeader>
-          <DialogTitle className="text-2xl">
+          <DialogTitle className="text-2xl font-serif">
             {format(selectedDay, "dd/MM/yyyy")}
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="font-serif italic">
             {format(selectedDay, "eeee", { locale: vi })}
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          <div className="text-center">
-            <p className="font-bold text-xl text-primary">
+          <div className="text-center p-4 rounded-lg bg-primary/5 border border-primary/10">
+            <p className="font-bold text-xl text-primary font-serif">
               Ngày {lunarDay} tháng {lunarMonth} {isLeap ? "(nhuận)" : ""}
             </p>
-            <p>Năm {yearCan} {yearChi}</p>
-            <p className="text-sm text-muted-foreground">
-              (Ngày {dayCan} {dayChi}, Tháng {monthCan})
+            <p className="font-serif text-foreground/80">Năm {yearCan} {yearChi}</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              Ngày {dayCan} {dayChi} · Tháng {monthCan}
             </p>
           </div>
           {holidayInfo && (
-            <div className="text-center p-2 bg-destructive/10 text-destructive rounded-md">
-              {holidayInfo.name}
+            <div className="text-center p-2.5 bg-destructive/10 text-destructive rounded-md border border-destructive/20 flex items-center justify-center gap-2">
+              <Star className="h-4 w-4" />
+              <span className="font-medium">{holidayInfo.name}</span>
             </div>
           )}
-          <div>
-            <p><strong>Giờ hoàng đạo:</strong></p>
-            <p className="text-sm text-muted-foreground">{getZodiacHours(dayChi)}</p>
+          <div className="p-3 rounded-lg bg-accent/50 border border-primary/5">
+            <div className="flex items-center gap-2 mb-2">
+              <Clock className="h-4 w-4 text-primary" />
+              <span className="font-semibold font-serif text-sm">Giờ Hoàng Đạo</span>
+            </div>
+            <p className="text-sm text-muted-foreground leading-relaxed">{getZodiacHours(dayChi)}</p>
           </div>
         </div>
         <DialogFooter>
-          <Button onClick={handleUseDate}>Sử dụng ngày này</Button>
+          <Button onClick={handleUseDate} className="bg-primary hover:bg-primary/90">Sử dụng ngày này</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

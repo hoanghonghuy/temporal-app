@@ -68,11 +68,11 @@ export function DateConverter({ id, initialDate }: DateConverterProps) {
         <div className="flex flex-col space-y-4">
             <DatePickerWithToday date={selectedDate} setDate={setSelectedDate} />
              {Object.keys(results).length > 0 && (
-                <ul className="mt-2 space-y-2 rounded-lg border bg-secondary/50 p-3 text-sm">
+                <ul className="mt-2 space-y-2 rounded-lg border border-primary/15 bg-primary/5 p-4 text-sm gold-glow">
                     {Object.entries(results).map(([key, value]) => (
-                        <li key={key} className="flex justify-between border-b border-border/50 pb-1 last:border-b-0">
-                            <span className="text-muted-foreground">{key}:</span>
-                            <span className="font-mono text-right">{value}</span>
+                        <li key={key} className="flex justify-between border-b border-primary/10 pb-2 last:border-b-0">
+                            <span className="text-muted-foreground font-serif italic">{key}:</span>
+                            <span className="font-serif font-semibold text-primary text-right">{value}</span>
                         </li>
                     ))}
                 </ul>

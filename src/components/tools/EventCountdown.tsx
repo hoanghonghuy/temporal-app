@@ -69,12 +69,12 @@ export function EventCountdown({ id }: EventCountdownProps) {
             <Input id="event-name" placeholder="Ví dụ: Tết Nguyên Đán" value={eventName} onChange={(e) => setEventName(e.target.value)}/>
         </div>
         <div className="grid w-full items-center gap-1.5">
-          <Label>Ngày diễn ra sự kiện</Label>
+          <Label className="font-serif">Thời khắc diễn ra</Label>
           <DatePicker date={targetDate} setDate={setTargetDate} />
         </div>
         {countdown && (
-          <div className="mt-2 rounded-lg border bg-secondary/50 p-3 text-sm">
-            <p className="font-medium text-secondary-foreground">{countdown}</p>
+          <div className="mt-2 rounded-lg border border-primary/20 bg-primary/5 p-4 text-sm gold-glow text-center">
+            <p className="font-semibold text-primary font-serif text-lg tracking-wider">{countdown}</p>
           </div>
         )}
       </div>

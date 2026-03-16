@@ -80,8 +80,8 @@ export function DateDifferenceCalculator({ id }: DateDifferenceCalculatorProps) 
         </div>
         {error && <p className="text-sm text-destructive">{error}</p>}
         {result && (
-          <div className="mt-2 rounded-lg border bg-secondary/50 p-3 text-sm">
-            <p className="font-medium text-secondary-foreground">{result}</p>
+          <div className="mt-2 rounded-lg border border-primary/20 bg-primary/5 p-3 text-sm gold-glow">
+            <p className="font-medium text-foreground font-serif text-center italic leading-relaxed">{result}</p>
           </div>
         )}
       </div>

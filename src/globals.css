@@ -3,81 +3,80 @@
 @tailwind utilities;
 
 @layer base {
+  /* ===== LIGHT MODE: Cuộn Thư Cổ ===== */
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 37 33% 95%;       /* Ivory warm #F5F0E8 */
+    --foreground: 25 30% 15%;       /* Mực nâu đậm */
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 38 30% 97%;             /* Giấy cổ nhạt */
+    --card-foreground: 25 30% 15%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 38 30% 97%;
+    --popover-foreground: 25 30% 15%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 38 75% 40%;          /* Vàng kim #B8860B */
+    --primary-foreground: 38 20% 98%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 35 25% 90%;        /* Beige nhạt */
+    --secondary-foreground: 25 30% 20%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 35 20% 91%;
+    --muted-foreground: 25 15% 50%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 35 30% 88%;
+    --accent-foreground: 25 30% 15%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 60% 35%;       /* Đỏ son cổ */
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 35 20% 85%;
+    --input: 35 20% 85%;
+    --ring: 38 75% 40%;
 
     --radius: 0.5rem;
 
-    --chart-1: 12 76% 61%;
-
-    --chart-2: 173 58% 39%;
-
-    --chart-3: 197 37% 24%;
-
-    --chart-4: 43 74% 66%;
-
-    --chart-5: 27 87% 67%;
+    --chart-1: 38 75% 40%;
+    --chart-2: 160 40% 35%;
+    --chart-3: 25 50% 30%;
+    --chart-4: 45 60% 50%;
+    --chart-5: 15 70% 45%;
   }
 
+  /* ===== DARK MODE: Đêm Trăng Huyền Bí ===== */
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 220 30% 7%;       /* Đen xanh thẫm #0D1117 */
+    --foreground: 38 20% 88%;       /* Ngà nhạt */
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 220 25% 10%;            /* Tối hơn background một chút */
+    --card-foreground: 38 20% 88%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 220 25% 10%;
+    --popover-foreground: 38 20% 88%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 40 65% 52%;          /* Vàng trăng #D4A54A */
+    --primary-foreground: 220 30% 7%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 220 20% 15%;
+    --secondary-foreground: 38 20% 85%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 220 20% 15%;
+    --muted-foreground: 38 10% 55%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 220 20% 18%;
+    --accent-foreground: 38 20% 88%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 50% 40%;
+    --destructive-foreground: 0 0% 95%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    --border: 220 15% 18%;
+    --input: 220 15% 18%;
+    --ring: 40 65% 52%;
+
+    --chart-1: 40 65% 52%;
+    --chart-2: 160 50% 45%;
+    --chart-3: 30 60% 50%;
+    --chart-4: 280 50% 55%;
+    --chart-5: 340 60% 50%;
   }
 }
 
@@ -87,14 +86,57 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: 'Inter', sans-serif;
   }
 }
 
-/* Thêm vào cuối file src/globals.css */
+/* ===== TU TIÊN CUSTOM STYLES ===== */
+
+/* Decorative gold border for special sections */
+.gold-border-top {
+  border-top: 1px solid hsl(var(--primary) / 0.3);
+}
+
+.gold-border-bottom {
+  border-bottom: 1px solid hsl(var(--primary) / 0.3);
+}
+
+/* Subtle gold glow for highlighted elements */
+.gold-glow {
+  box-shadow: 0 0 12px hsl(var(--primary) / 0.15),
+              0 0 4px hsl(var(--primary) / 0.1);
+}
+
+/* Ink-style left border for cards */
+.ink-accent {
+  border-left: 2px solid hsl(var(--primary) / 0.5);
+}
+
+/* Serif heading utility */
+.font-heading {
+  font-family: 'Noto Serif', Georgia, serif;
+}
+
+/* ===== CALENDAR STYLES ===== */
+.day-cell {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.day-cell:hover {
+  background-color: hsl(var(--accent));
+}
+
+.day-cell:hover .lunar-day {
+  color: hsl(var(--foreground));
+}
+
+/* Holiday indicator dot */
 .day-cell.holiday::after {
   content: "";
   position: absolute;
-  bottom: 12px;
+  bottom: 10px;
   left: 50%;
   transform: translateX(-50%);
   width: 5px;
@@ -104,17 +146,21 @@
   box-shadow: 0 0 4px hsl(var(--destructive) / 0.5);
 }
 
+/* Special lunar day (1st and 15th) */
 .lunar-day.special {
   font-weight: 700;
   color: hsl(var(--primary));
-  opacity: 1;
 }
 
-.day-cell {
-  position: relative;
-  overflow: hidden;
+/* Today highlight - golden glow */
+.today-ring {
+  box-shadow: 0 0 0 2px hsl(var(--primary) / 0.4),
+              0 0 8px hsl(var(--primary) / 0.2);
 }
 
-.day-cell:hover .lunar-day {
-  color: hsl(var(--foreground));
+/* Parchment-like subtle background pattern */
+.parchment-bg {
+  background-image: 
+    radial-gradient(ellipse at 20% 50%, hsl(var(--primary) / 0.03) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 50%, hsl(var(--primary) / 0.02) 0%, transparent 50%);
 }
