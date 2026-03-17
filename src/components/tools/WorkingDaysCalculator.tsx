@@ -8,6 +8,7 @@ import { isSaturday, isSunday, eachDayOfInterval, format } from "date-fns";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useHistory } from "@/contexts/HistoryContext";
 import { DatePickerWithToday } from "@/components/ui/date-picker-with-today";
+import { MAX_SUPPORTED_SOLAR_DATE, MIN_SUPPORTED_SOLAR_DATE } from "@/lib/lunar-converter";
 
 
 interface WorkingDaysCalculatorProps { id: string; }
@@ -107,11 +108,21 @@ export function WorkingDaysCalculator({ id }: WorkingDaysCalculatorProps) {
       <div className="flex flex-col space-y-4">
         <div className="grid w-full items-center gap-1.5">
           <Label>Ngày bắt đầu</Label>
-          <DatePickerWithToday date={startDate} setDate={setStartDate} />
+          <DatePickerWithToday
+            date={startDate}
+            setDate={setStartDate}
+            minDate={MIN_SUPPORTED_SOLAR_DATE}
+            maxDate={MAX_SUPPORTED_SOLAR_DATE}
+          />
         </div>
         <div className="grid w-full items-center gap-1.5">
           <Label>Ngày kết thúc</Label>
-          <DatePickerWithToday date={endDate} setDate={setEndDate} />
+          <DatePickerWithToday
+            date={endDate}
+            setDate={setEndDate}
+            minDate={MIN_SUPPORTED_SOLAR_DATE}
+            maxDate={MAX_SUPPORTED_SOLAR_DATE}
+          />
         </div>
         {holidaysInRange.length > 0 && (
           <div className="space-y-2 pt-2">

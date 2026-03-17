@@ -1,7 +1,9 @@
 "use client"
 
+import type { ComponentProps } from "react"
 import { format } from "date-fns"
 import { Calendar as CalendarIcon } from "lucide-react"
+import type { Matcher } from "react-day-picker"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -16,9 +18,27 @@ interface DatePickerProps {
   date: Date | undefined;
   setDate: (date: Date | undefined) => void;
   placeholder?: string;
+  minDate?: Date;
+  maxDate?: Date;
+  disabled?: ComponentProps<typeof Calendar>["disabled"];
 }
 
-export function DatePicker({ date, setDate, placeholder = "Chọn một ngày" }: DatePickerProps) {
+export function DatePicker({
+  date,
+  setDate,
+  placeholder = "Chọn một ngày",
+  minDate,
+  maxDate,
+  disabled,
+}: DatePickerProps) {
+  const disabledMatchers: Matcher[] = [disabled]
+    .flatMap((matcher) => {
+      if (!matcher) return [];
+      return Array.isArray(matcher) ? matcher : [matcher];
+    })
+    .concat(minDate ? [{ before: minDate }] : [])
+    .concat(maxDate ? [{ after: maxDate }] : []);
+
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -38,6 +58,9 @@ export function DatePicker({ date, setDate, placeholder = "Chọn một ngày" }
           mode="single"
           selected={date}
           onSelect={setDate}
+          disabled={disabledMatchers.length > 0 ? disabledMatchers : undefined}
+          startMonth={minDate}
+          endMonth={maxDate}
           initialFocus
         />
       </PopoverContent>

@@ -16,13 +16,19 @@ import {
 import { vi } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { CalendarHeader } from "@/components/CalendarHeader";
-import { convertSolar2Lunar } from "@/lib/lunar-converter";
+import {
+  convertSolar2Lunar,
+  MAX_SUPPORTED_LUNAR_YEAR,
+  MIN_SUPPORTED_LUNAR_YEAR,
+} from "@/lib/lunar-converter";
 import { getVnHolidays } from "@/lib/vn-holidays";
 import { DayDetailModal } from "@/components/DayDetailModal";
 
 export function CalendarPage() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDay, setSelectedDay] = useState<Date | null>(null);
+  const minCalendarMonth = new Date(MIN_SUPPORTED_LUNAR_YEAR, 0, 1);
+  const maxCalendarMonth = new Date(MAX_SUPPORTED_LUNAR_YEAR, 11, 1);
 
   const year = currentDate.getFullYear();
   const holidaysInYear = useMemo(() => getVnHolidays(year), [year]);
@@ -43,9 +49,26 @@ export function CalendarPage() {
     end: lastDayOfGrid,
   });
 
-  const handlePrevMonth = () => setCurrentDate(subMonths(currentDate, 1));
-  const handleNextMonth = () => setCurrentDate(addMonths(currentDate, 1));
-  const handleGoToToday = () => setCurrentDate(new Date());
+  const canGoPrev = currentDate > minCalendarMonth;
+  const canGoNext = currentDate < maxCalendarMonth;
+
+  const handlePrevMonth = () => {
+    if (canGoPrev) {
+      setCurrentDate(subMonths(currentDate, 1));
+    }
+  };
+
+  const handleNextMonth = () => {
+    if (canGoNext) {
+      setCurrentDate(addMonths(currentDate, 1));
+    }
+  };
+
+  const handleGoToToday = () => {
+    const today = new Date();
+    const nextDate = today < minCalendarMonth ? minCalendarMonth : today > maxCalendarMonth ? maxCalendarMonth : today;
+    setCurrentDate(nextDate);
+  };
 
   const weekdays = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"];
 
@@ -57,26 +80,31 @@ export function CalendarPage() {
           onPrevMonth={handlePrevMonth}
           onNextMonth={handleNextMonth}
           onGoToToday={handleGoToToday}
+          canGoPrev={canGoPrev}
+          canGoNext={canGoNext}
         />
-        <div className="grid grid-cols-7 text-center text-xs font-serif font-semibold text-muted-foreground border-b border-primary/10 pb-2 mb-1">
+        <div className="grid grid-cols-7 text-center text-xs sm:text-sm font-serif font-semibold text-muted-foreground border-b border-primary/10 pb-2 mb-1">
           {weekdays.map((day) => (<div key={day} className="py-1">{day}</div>))}
         </div>
         <div className="grid grid-cols-7">
           {days.map((day, index) => {
-            const [lunarDay, lunarMonth] = convertSolar2Lunar(day.getDate(), day.getMonth() + 1, day.getFullYear());
+            const lunarInfo = convertSolar2Lunar(day.getDate(), day.getMonth() + 1, day.getFullYear());
+            const lunarDay = lunarInfo?.[0];
+            const lunarMonth = lunarInfo?.[1];
             const isSpecialLunar = lunarDay === 1 || lunarDay === 15;
             const holidayInfo = holidaysInMonth.get(format(day, 'yyyy-MM-dd'));
             const isHoliday = !!holidayInfo;
             const isTodayDate = isToday(day);
             const isWeekend = isSaturday(day) || isSunday(day);
+            const isSupportedDay = !!lunarInfo;
 
             return (
               <div
                 key={index}
-                onClick={() => setSelectedDay(day)}
+                onClick={() => isSupportedDay && setSelectedDay(day)}
                 className={cn(
                   "day-cell flex flex-col items-center justify-center h-20 md:h-24 border-t border-l border-primary/5",
-                  "cursor-pointer transition-all duration-200",
+                  isSupportedDay ? "cursor-pointer transition-all duration-200" : "cursor-not-allowed opacity-60",
                   !isSameMonth(day, currentDate) && "text-muted-foreground/40",
                   isHoliday && "holiday",
                   index % 7 === 6 && "border-r border-primary/5",
@@ -87,7 +115,7 @@ export function CalendarPage() {
                 <span className={cn(
                   "flex items-center justify-center h-8 w-8 sm:h-9 sm:w-9 rounded-full text-sm sm:text-base transition-all duration-200",
                   isTodayDate 
-                    ? "bg-primary text-primary-foreground font-bold today-ring" 
+                    ? "bg-primary text-primary-foreground font-bold border-2 border-primary/60 ring-4 ring-primary/20" 
                     : isWeekend && isSameMonth(day, currentDate)
                       ? "text-destructive/80"
                       : ""
@@ -99,7 +127,7 @@ export function CalendarPage() {
                   "text-muted-foreground/70",
                   isSpecialLunar && isSameMonth(day, currentDate) && "special"
                 )}>
-                  {lunarDay === 1 ? `${lunarDay}/${lunarMonth}` : lunarDay}
+                  {isSupportedDay ? (lunarDay === 1 ? `${lunarDay}/${lunarMonth}` : lunarDay) : "--"}
                 </span>
               </div>
             );

@@ -9,6 +9,8 @@ interface CalendarHeaderProps {
   onPrevMonth: () => void;
   onNextMonth: () => void;
   onGoToToday: () => void;
+  canGoPrev: boolean;
+  canGoNext: boolean;
 }
 
 export function CalendarHeader({
@@ -16,24 +18,31 @@ export function CalendarHeader({
   onPrevMonth,
   onNextMonth,
   onGoToToday,
+  canGoPrev,
+  canGoNext,
 }: CalendarHeaderProps) {
 
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
 
-  const [, lunarMonthStart, lunarYearStart, , , , , yearCanStart, yearChiStart] = 
-    convertSolar2Lunar(monthStart.getDate(), monthStart.getMonth() + 1, monthStart.getFullYear());
-  const [, lunarMonthEnd, lunarYearEnd, , , , , yearCanEnd, yearChiEnd] = 
-    convertSolar2Lunar(monthEnd.getDate(), monthEnd.getMonth() + 1, monthEnd.getFullYear());
+  const lunarStart = convertSolar2Lunar(monthStart.getDate(), monthStart.getMonth() + 1, monthStart.getFullYear());
+  const lunarEnd = convertSolar2Lunar(monthEnd.getDate(), monthEnd.getMonth() + 1, monthEnd.getFullYear());
   
   let lunarMonthDisplay = "";
 
-  if (lunarYearStart !== lunarYearEnd) {
-      lunarMonthDisplay = `Năm ${yearCanStart} ${yearChiStart} — ${yearCanEnd} ${yearChiEnd}`;
-  } else if (lunarMonthStart !== lunarMonthEnd) {
-      lunarMonthDisplay = `Tháng ${lunarMonthStart} & ${lunarMonthEnd} · ${yearCanStart} ${yearChiStart}`;
+  if (!lunarStart || !lunarEnd) {
+      lunarMonthDisplay = "Ngoài phạm vi âm lịch hỗ trợ";
   } else {
+      const [, lunarMonthStart, lunarYearStart, , , , , yearCanStart, yearChiStart] = lunarStart;
+      const [, lunarMonthEnd, lunarYearEnd, , , , , yearCanEnd, yearChiEnd] = lunarEnd;
+
+      if (lunarYearStart !== lunarYearEnd) {
+      lunarMonthDisplay = `Năm ${yearCanStart} ${yearChiStart} — ${yearCanEnd} ${yearChiEnd}`;
+      } else if (lunarMonthStart !== lunarMonthEnd) {
+      lunarMonthDisplay = `Tháng ${lunarMonthStart} & ${lunarMonthEnd} · ${yearCanStart} ${yearChiStart}`;
+      } else {
       lunarMonthDisplay = `Tháng ${lunarMonthStart} · ${yearCanStart} ${yearChiStart}`;
+      }
   }
 
   return (
@@ -51,10 +60,10 @@ export function CalendarHeader({
       </div>
 
       <div className="flex items-center gap-1">
-        <Button onClick={onPrevMonth} variant="outline" size="icon" className="border-primary/20 hover:bg-primary/10 hover:text-primary">
+        <Button onClick={onPrevMonth} variant="outline" size="icon" className="border-primary/20 hover:bg-primary/10 hover:text-primary" disabled={!canGoPrev}>
           <ChevronLeft className="h-4 w-4" />
         </Button>
-        <Button onClick={onNextMonth} variant="outline" size="icon" className="border-primary/20 hover:bg-primary/10 hover:text-primary">
+        <Button onClick={onNextMonth} variant="outline" size="icon" className="border-primary/20 hover:bg-primary/10 hover:text-primary" disabled={!canGoNext}>
           <ChevronRight className="h-4 w-4" />
         </Button>
       </div>

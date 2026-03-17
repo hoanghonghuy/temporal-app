@@ -23,6 +23,15 @@ const LUNAR_INFO: number[] = [
 const CAN_NAMES = ["Canh", "Tân", "Nhâm", "Quý", "Giáp", "Ất", "Bính", "Đinh", "Mậu", "Kỷ"];
 const CHI_NAMES = ["Thân", "Dậu", "Tuất", "Hợi", "Tý", "Sửu", "Dần", "Mão", "Thìn", "Tỵ", "Ngọ", "Mùi"];
 
+export const MIN_SUPPORTED_LUNAR_YEAR = 1900;
+export const MAX_SUPPORTED_LUNAR_YEAR = 2100;
+export const MIN_SUPPORTED_SOLAR_DATE = new Date(1900, 0, 31);
+export const MAX_SUPPORTED_SOLAR_DATE = new Date(2100, 11, 31);
+
+export function isSupportedLunarYear(year: number) {
+    return year >= MIN_SUPPORTED_LUNAR_YEAR && year <= MAX_SUPPORTED_LUNAR_YEAR;
+}
+
 export function getLunarMonthDays(y: number, m: number) { return ((LUNAR_INFO[y - 1900] & (0x10000 >> m)) ? 30 : 29); }
 function getLeapMonth(y: number) { return (LUNAR_INFO[y - 1900] & 0xf); }
 function getLeapMonthDays(y: number) { return getLeapMonth(y) ? ((LUNAR_INFO[y - 1900] & 0x10000) ? 30 : 29) : 0; }
@@ -40,7 +49,9 @@ function jdn(dd: number, mm: number, yy: number) {
 
 export type LunarDateInfo = [number, number, number, boolean, string, string, string, string, string];
 
-export function convertSolar2Lunar(dd: number, mm: number, yy: number): LunarDateInfo {
+export function convertSolar2Lunar(dd: number, mm: number, yy: number): LunarDateInfo | null {
+    if (!isSupportedLunarYear(yy)) return null;
+
     const date = new Date(Date.UTC(yy, mm - 1, dd));
     const date1900 = new Date(Date.UTC(1900, 0, 31));
     let offset = (date.getTime() - date1900.getTime()) / 86400000;
@@ -53,6 +64,8 @@ export function convertSolar2Lunar(dd: number, mm: number, yy: number): LunarDat
         offset += daysInYear;
         lunarYear--;
     }
+    if (!isSupportedLunarYear(lunarYear)) return null;
+
     const leapMonth = getLeapMonth(lunarYear);
     let isLeap = false;
     let lunarMonth: number;
@@ -78,7 +91,7 @@ export function convertSolar2Lunar(dd: number, mm: number, yy: number): LunarDat
 }
 
 export function convertLunar2Solar(ld: number, lm: number, ly: number, isLeap: boolean): Date | null {
-    if (ly < 1900 || ly > 2100) return null;
+    if (!isSupportedLunarYear(ly)) return null;
     
     const leapMonth = getLeapMonth(ly);
     if (isLeap && (!leapMonth || lm !== leapMonth)) return null;

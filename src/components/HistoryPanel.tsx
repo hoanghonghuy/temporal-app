@@ -9,6 +9,17 @@ import {
 import { useHistory } from "@/contexts/HistoryContext";
 import { Button } from "./ui/button";
 import { ScrollText } from "lucide-react";
+import { useState } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface HistoryPanelProps {
   isOpen: boolean;
@@ -17,6 +28,12 @@ interface HistoryPanelProps {
 
 export function HistoryPanel({ isOpen, onOpenChange }: HistoryPanelProps) {
   const { history, clearHistory } = useHistory();
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  const handleConfirmDelete = () => {
+    clearHistory();
+    setShowDeleteConfirm(false);
+  };
 
   return (
     <Sheet open={isOpen} onOpenChange={onOpenChange}>
@@ -48,11 +65,35 @@ export function HistoryPanel({ isOpen, onOpenChange }: HistoryPanelProps) {
           )}
         </div>
         <SheetFooter className="mt-4">
-          <Button variant="destructive" onClick={clearHistory} disabled={history.length === 0}>
+          <Button 
+            variant="destructive" 
+            onClick={() => setShowDeleteConfirm(true)} 
+            disabled={history.length === 0}
+          >
             Xóa Sử Ký
           </Button>
         </SheetFooter>
       </SheetContent>
+
+      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-serif">Xóa tất cả lịch sử?</AlertDialogTitle>
+            <AlertDialogDescription className="font-serif">
+              Hành động này không thể hoàn tác. Tất cả {history.length} mục lịch sử sẽ bị xóa vĩnh viễn.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="font-serif">Hủy</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleConfirmDelete}
+              className="bg-destructive hover:bg-destructive/90 font-serif"
+            >
+              Xóa
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Sheet>
   );
 }

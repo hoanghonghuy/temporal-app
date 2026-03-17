@@ -45,7 +45,7 @@ export function Header({ onHistoryToggle }: HeaderProps) {
   );
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-primary/15 bg-card/95 backdrop-blur-sm">
+    <header className="sticky top-0 z-40 w-full border-b border-primary/15 bg-card/95 backdrop-blur-sm">
       <div className="container flex h-16 items-center">
         {/* Mobile Menu */}
         <div className="md:hidden">

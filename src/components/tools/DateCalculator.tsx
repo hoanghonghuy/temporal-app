@@ -67,17 +67,17 @@ export function DateCalculator({ id }: DateCalculatorProps) {
           <Label className="font-serif italic text-primary/80">Chọn một ngày trọng đại</Label>
           <DatePickerWithToday date={baseDate} setDate={setBaseDate} />
         </div>
-        <div className="flex items-end space-x-2">
+        <div className="flex flex-col sm:flex-row sm:items-end gap-2 sm:gap-2">
           <div className="grid flex-grow items-center gap-1.5">
-            <Label htmlFor="amount" className="font-serif">Số lượng</Label>
+            <Label htmlFor="amount" className="font-serif">Số lượng *</Label>
             <Input 
               id="amount" type="number" value={amount} 
               onChange={(e) => setAmount(parseInt(e.target.value, 10) || 1)}
               min="1"
             />
           </div>
-          <div className="grid w-[120px] items-center gap-1.5">
-             <Label className="font-serif">Đơn vị</Label>
+          <div className="grid w-full sm:w-[120px] items-center gap-1.5">
+             <Label className="font-serif">Đơn vị *</Label>
             <Select value={unit} onValueChange={setUnit}>
               <SelectTrigger><SelectValue placeholder="Đơn vị" /></SelectTrigger>
               <SelectContent>
@@ -90,7 +90,7 @@ export function DateCalculator({ id }: DateCalculatorProps) {
           </div>
         </div>
         {result && (
-          <div className="mt-2 rounded-lg border border-primary/20 bg-primary/5 p-3 text-sm gold-glow">
+          <div className="mt-2 rounded-lg border border-primary/20 bg-primary/5 p-3 text-sm gold-glow animate-in fade-in duration-300">
             <p className="font-medium text-foreground font-serif text-center italic leading-relaxed">{result}</p>
           </div>
         )}
