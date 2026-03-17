@@ -1,4 +1,5 @@
-import { convertLunar2Solar, getLunarMonthDays } from './lunar-converter';
+import { format } from 'date-fns';
+import { convertLunar2Solar, getLunarMonthDays, isSupportedLunarYear } from './lunar-converter';
 
 export interface Holiday {
     name: string;
@@ -7,11 +8,14 @@ export interface Holiday {
 
 function _getTetHolidays(lunarNewYear: number): Holiday[] {
     const tetHolidays: Holiday[] = [];
+    if (!isSupportedLunarYear(lunarNewYear)) {
+        return tetHolidays;
+    }
     
     // --- Tính Giao thừa ---
     const lunarOldYear = lunarNewYear - 1;
-    const lastDayOfOldYear = getLunarMonthDays(lunarOldYear, 12);
-    const giaoThua = convertLunar2Solar(lastDayOfOldYear, 12, lunarOldYear, false);
+    const lastDayOfOldYear = isSupportedLunarYear(lunarOldYear) ? getLunarMonthDays(lunarOldYear, 12) : null;
+    const giaoThua = lastDayOfOldYear ? convertLunar2Solar(lastDayOfOldYear, 12, lunarOldYear, false) : null;
     
     if (giaoThua) {
         tetHolidays.push({ name: `Giao Thừa`, date: giaoThua });
@@ -30,7 +34,22 @@ function _getTetHolidays(lunarNewYear: number): Holiday[] {
 }
 
 export function getVnHolidays(solarYear: number): Holiday[] {
-    const holidays: Holiday[] = [];
+    const holidays: Holiday[] = [
+        { name: `Tết Dương Lịch`, date: new Date(solarYear, 0, 1) },
+        { name: `Ngày Giải phóng Miền Nam`, date: new Date(solarYear, 3, 30) },
+        { name: `Ngày Quốc tế Lao động`, date: new Date(solarYear, 4, 1) },
+        { name: `Ngày Quốc Khánh`, date: new Date(solarYear, 8, 2) },
+        { name: `Nghỉ lễ Quốc Khánh`, date: new Date(solarYear, 8, 1) },
+        { name: `Valentine (Lễ tình nhân)`, date: new Date(solarYear, 1, 14) },
+        { name: `Quốc tế Phụ nữ`, date: new Date(solarYear, 2, 8) },
+        { name: `Ngày Phụ nữ Việt Nam`, date: new Date(solarYear, 9, 20) },
+        { name: `Ngày Nhà giáo Việt Nam`, date: new Date(solarYear, 10, 20) },
+        { name: `Lễ Giáng Sinh`, date: new Date(solarYear, 11, 25) },
+    ];
+
+    if (!isSupportedLunarYear(solarYear)) {
+        return dedupeHolidays(holidays);
+    }
     
     // ================== CÁC NGÀY LỄ ÂM LỊCH ==================
     // Các ngày lễ chính thức
@@ -68,25 +87,13 @@ export function getVnHolidays(solarYear: number): Holiday[] {
         }
     });
 
-    // ================== CÁC NGÀY LỄ DƯƠNG LỊCH ==================
-    // Các ngày lễ chính thức
-    holidays.push({ name: `Tết Dương Lịch`, date: new Date(solarYear, 0, 1) });
-    holidays.push({ name: `Ngày Giải phóng Miền Nam`, date: new Date(solarYear, 3, 30) });
-    holidays.push({ name: `Ngày Quốc tế Lao động`, date: new Date(solarYear, 4, 1) });
-    holidays.push({ name: `Ngày Quốc Khánh`, date: new Date(solarYear, 8, 2) });
-    holidays.push({ name: `Nghỉ lễ Quốc Khánh`, date: new Date(solarYear, 8, 1) });
-    
-    // Các ngày lễ, kỷ niệm Dương lịch khác
-    holidays.push({ name: `Valentine (Lễ tình nhân)`, date: new Date(solarYear, 1, 14) });
-    holidays.push({ name: `Quốc tế Phụ nữ`, date: new Date(solarYear, 2, 8) });
-    holidays.push({ name: `Ngày Phụ nữ Việt Nam`, date: new Date(solarYear, 9, 20) });
-    holidays.push({ name: `Ngày Nhà giáo Việt Nam`, date: new Date(solarYear, 10, 20) });
-    holidays.push({ name: `Lễ Giáng Sinh`, date: new Date(solarYear, 11, 25) });
-    
-    // Sắp xếp và loại bỏ các ngày trùng lặp (nếu có)
+    return dedupeHolidays(holidays);
+}
+
+function dedupeHolidays(holidays: Holiday[]) {
     const uniqueHolidays = new Map<string, Holiday>();
     holidays.sort((a, b) => a.date.getTime() - b.date.getTime()).forEach(h => {
-        const key = h.date.toISOString().split('T')[0];
+        const key = format(h.date, 'yyyy-MM-dd');
         if (!uniqueHolidays.has(key)) {
             uniqueHolidays.set(key, h);
         }

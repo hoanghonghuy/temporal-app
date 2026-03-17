@@ -9,6 +9,8 @@ interface CalendarHeaderProps {
   onPrevMonth: () => void;
   onNextMonth: () => void;
   onGoToToday: () => void;
+  canGoPrev: boolean;
+  canGoNext: boolean;
 }
 
 export function CalendarHeader({
@@ -16,51 +18,52 @@ export function CalendarHeader({
   onPrevMonth,
   onNextMonth,
   onGoToToday,
+  canGoPrev,
+  canGoNext,
 }: CalendarHeaderProps) {
 
-  // Logic để tính toán và hiển thị tháng Âm lịch ---
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
 
-  const [, lunarMonthStart, lunarYearStart, , , , , yearCanStart, yearChiStart] = 
-    convertSolar2Lunar(monthStart.getDate(), monthStart.getMonth() + 1, monthStart.getFullYear());
-  const [, lunarMonthEnd, lunarYearEnd, , , , , yearCanEnd, yearChiEnd] = 
-    convertSolar2Lunar(monthEnd.getDate(), monthEnd.getMonth() + 1, monthEnd.getFullYear());
+  const lunarStart = convertSolar2Lunar(monthStart.getDate(), monthStart.getMonth() + 1, monthStart.getFullYear());
+  const lunarEnd = convertSolar2Lunar(monthEnd.getDate(), monthEnd.getMonth() + 1, monthEnd.getFullYear());
   
   let lunarMonthDisplay = "";
 
-  if (lunarYearStart !== lunarYearEnd) {
-      // Trường hợp hiếm gặp: tháng Dương lịch bắc cầu qua 2 năm Âm lịch (thường là tháng 1 hoặc 2 DL)
-       lunarMonthDisplay = `Năm ${yearCanStart} ${yearChiStart} - ${yearCanEnd} ${yearChiEnd}`;
-  } else if (lunarMonthStart !== lunarMonthEnd) {
-      // Trường hợp phổ biến: tháng Dương lịch bắc cầu qua 2 tháng Âm lịch
-       lunarMonthDisplay = `Tháng ${lunarMonthStart} & ${lunarMonthEnd} Âm lịch - Năm ${yearCanStart} ${yearChiStart}`;
+  if (!lunarStart || !lunarEnd) {
+      lunarMonthDisplay = "Ngoài phạm vi âm lịch hỗ trợ";
   } else {
-      // Trường hợp tháng Dương lịch nằm trọn trong 1 tháng Âm lịch
-       lunarMonthDisplay = `Tháng ${lunarMonthStart} Âm lịch - Năm ${yearCanStart} ${yearChiStart}`;
+      const [, lunarMonthStart, lunarYearStart, , , , , yearCanStart, yearChiStart] = lunarStart;
+      const [, lunarMonthEnd, lunarYearEnd, , , , , yearCanEnd, yearChiEnd] = lunarEnd;
+
+      if (lunarYearStart !== lunarYearEnd) {
+      lunarMonthDisplay = `Năm ${yearCanStart} ${yearChiStart} — ${yearCanEnd} ${yearChiEnd}`;
+      } else if (lunarMonthStart !== lunarMonthEnd) {
+      lunarMonthDisplay = `Tháng ${lunarMonthStart} & ${lunarMonthEnd} · ${yearCanStart} ${yearChiStart}`;
+      } else {
+      lunarMonthDisplay = `Tháng ${lunarMonthStart} · ${yearCanStart} ${yearChiStart}`;
+      }
   }
 
   return (
-    <div className="flex items-center justify-between mb-4">
+    <div className="flex items-center justify-between mb-4 pb-3 border-b border-primary/10">
       <div className="flex items-center gap-4">
-        {/* Bọc tiêu đề Dương và Âm lịch vào một div */}
         <div>
-          <h2 className="text-xl md:text-2xl font-bold capitalize">
+          <h2 className="text-xl md:text-2xl font-bold font-serif capitalize text-foreground">
             {format(currentDate, "MMMM yyyy", { locale: vi })}
           </h2>
-          {/* Hiển thị tháng Âm lịch đã tính toán */}
-          <p className="text-sm text-muted-foreground">{lunarMonthDisplay}</p>
+          <p className="text-sm text-primary/80 font-serif italic">{lunarMonthDisplay}</p>
         </div>
-        <Button onClick={onGoToToday} variant="outline" size="sm">
+        <Button onClick={onGoToToday} variant="outline" size="sm" className="border-primary/20 hover:bg-primary/10 hover:text-primary text-xs">
           Hôm nay
         </Button>
       </div>
 
-      <div className="flex items-center gap-2">
-        <Button onClick={onPrevMonth} variant="outline" size="icon">
+      <div className="flex items-center gap-1">
+        <Button onClick={onPrevMonth} variant="outline" size="icon" className="border-primary/20 hover:bg-primary/10 hover:text-primary" disabled={!canGoPrev}>
           <ChevronLeft className="h-4 w-4" />
         </Button>
-        <Button onClick={onNextMonth} variant="outline" size="icon">
+        <Button onClick={onNextMonth} variant="outline" size="icon" className="border-primary/20 hover:bg-primary/10 hover:text-primary" disabled={!canGoNext}>
           <ChevronRight className="h-4 w-4" />
         </Button>
       </div>

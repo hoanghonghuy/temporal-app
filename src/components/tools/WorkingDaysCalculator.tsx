@@ -8,6 +8,7 @@ import { isSaturday, isSunday, eachDayOfInterval, format } from "date-fns";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useHistory } from "@/contexts/HistoryContext";
 import { DatePickerWithToday } from "@/components/ui/date-picker-with-today";
+import { MAX_SUPPORTED_SOLAR_DATE, MIN_SUPPORTED_SOLAR_DATE } from "@/lib/lunar-converter";
 
 
 interface WorkingDaysCalculatorProps { id: string; }
@@ -28,13 +29,24 @@ export function WorkingDaysCalculator({ id }: WorkingDaysCalculatorProps) {
 
   useEffect(() => {
     if (startDate && endDate && startDate <= endDate) {
-      const allHolidays = [
-        ...getVnHolidays(startDate.getFullYear()),
-        ...(endDate.getFullYear() > startDate.getFullYear() ? getVnHolidays(endDate.getFullYear()) : [])
-      ];
-      const foundHolidays = allHolidays
+      const startYear = startDate.getFullYear();
+      const endYear = endDate.getFullYear();
+      const allHolidays = [];
+      for (let year = startYear; year <= endYear; year++) {
+        allHolidays.push(...getVnHolidays(year));
+      }
+
+      const holidaysByDate = new Map<string, HolidayInRange>();
+      allHolidays
         .filter(h => h.date >= startDate && h.date <= endDate)
-        .map(h => ({ date: format(h.date, 'yyyy-MM-dd'), name: h.name, checked: true }));
+        .forEach(h => {
+          const dateKey = format(h.date, "yyyy-MM-dd");
+          if (!holidaysByDate.has(dateKey)) {
+            holidaysByDate.set(dateKey, { date: dateKey, name: h.name, checked: true });
+          }
+        });
+
+      const foundHolidays = Array.from(holidaysByDate.values());
       setHolidaysInRange(foundHolidays);
     } else {
       setHolidaysInRange([]);
@@ -96,11 +108,21 @@ export function WorkingDaysCalculator({ id }: WorkingDaysCalculatorProps) {
       <div className="flex flex-col space-y-4">
         <div className="grid w-full items-center gap-1.5">
           <Label>Ngày bắt đầu</Label>
-          <DatePickerWithToday date={startDate} setDate={setStartDate} />
+          <DatePickerWithToday
+            date={startDate}
+            setDate={setStartDate}
+            minDate={MIN_SUPPORTED_SOLAR_DATE}
+            maxDate={MAX_SUPPORTED_SOLAR_DATE}
+          />
         </div>
         <div className="grid w-full items-center gap-1.5">
           <Label>Ngày kết thúc</Label>
-          <DatePickerWithToday date={endDate} setDate={setEndDate} />
+          <DatePickerWithToday
+            date={endDate}
+            setDate={setEndDate}
+            minDate={MIN_SUPPORTED_SOLAR_DATE}
+            maxDate={MAX_SUPPORTED_SOLAR_DATE}
+          />
         </div>
         {holidaysInRange.length > 0 && (
           <div className="space-y-2 pt-2">
@@ -122,8 +144,8 @@ export function WorkingDaysCalculator({ id }: WorkingDaysCalculatorProps) {
         )}
         {error && <p className="text-sm text-destructive">{error}</p>}
         {result && (
-          <div className="mt-2 rounded-lg border bg-secondary/50 p-3 text-sm">
-            <p className="font-medium text-secondary-foreground">{result}</p>
+          <div className="mt-2 rounded-lg border border-primary/20 bg-primary/5 p-3 text-sm gold-glow">
+            <p className="font-medium text-foreground font-serif text-center italic leading-relaxed">{result}</p>
           </div>
         )}
       </div>

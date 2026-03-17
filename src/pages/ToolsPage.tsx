@@ -1,13 +1,49 @@
-import { useEffect } from "react"; // Import useEffect
+import { Suspense, lazy, useEffect } from "react"; // Import useEffect
 import { useSearchParams, useLocation } from "react-router-dom"; // Import useLocation
-import { AgeCalculator } from "@/components/tools/AgeCalculator";
-import { DateCalculator } from "@/components/tools/DateCalculator";
-import { DateConverter } from "@/components/tools/DateConverter";
-import { DateDifferenceCalculator } from "@/components/tools/DateDifferenceCalculator";
-import { DayOfWeekFinder } from "@/components/tools/DayOfWeekFinder";
-import { EventCountdown } from "@/components/tools/EventCountdown";
-import { LeapYearChecker } from "@/components/tools/LeapYearChecker";
-import { WorkingDaysCalculator } from "@/components/tools/WorkingDaysCalculator";
+
+const DateConverter = lazy(async () => {
+  const module = await import("@/components/tools/DateConverter");
+  return { default: module.DateConverter };
+});
+const DateDifferenceCalculator = lazy(async () => {
+  const module = await import("@/components/tools/DateDifferenceCalculator");
+  return { default: module.DateDifferenceCalculator };
+});
+const DateCalculator = lazy(async () => {
+  const module = await import("@/components/tools/DateCalculator");
+  return { default: module.DateCalculator };
+});
+const AgeCalculator = lazy(async () => {
+  const module = await import("@/components/tools/AgeCalculator");
+  return { default: module.AgeCalculator };
+});
+const EventCountdown = lazy(async () => {
+  const module = await import("@/components/tools/EventCountdown");
+  return { default: module.EventCountdown };
+});
+const WorkingDaysCalculator = lazy(async () => {
+  const module = await import("@/components/tools/WorkingDaysCalculator");
+  return { default: module.WorkingDaysCalculator };
+});
+const LeapYearChecker = lazy(async () => {
+  const module = await import("@/components/tools/LeapYearChecker");
+  return { default: module.LeapYearChecker };
+});
+const DayOfWeekFinder = lazy(async () => {
+  const module = await import("@/components/tools/DayOfWeekFinder");
+  return { default: module.DayOfWeekFinder };
+});
+
+function ToolFallback() {
+  return (
+    <div className="rounded-lg border border-primary/10 bg-card/80 p-6 text-center text-sm text-muted-foreground gold-glow flex flex-col items-center gap-3">
+      <div className="inline-flex">
+        <div className="h-5 w-5 rounded-full border-2 border-primary/30 border-t-primary animate-spin" />
+      </div>
+      <span className="font-serif">Đang tải pháp khí...</span>
+    </div>
+  );
+}
 
 export function ToolsPage() {
   const [searchParams] = useSearchParams();
@@ -28,15 +64,31 @@ export function ToolsPage() {
 
   return (
     // Thêm class 'scroll-mt-20' để khi nhảy link, tiêu đề card không bị header che mất
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 scroll-mt-20">
-      <DateConverter id="date-converter" key={dateFromUrl} initialDate={dateFromUrl} />
-      <DateDifferenceCalculator id="date-difference" />
-      <DateCalculator id="date-calculator" />
-      <AgeCalculator id="age-calculator" />
-      <EventCountdown id="event-countdown" />
-      <WorkingDaysCalculator id="working-days-calculator" />
-      <LeapYearChecker id="leap-year" />
-      <DayOfWeekFinder id="day-of-week-finder" />
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6 scroll-mt-20">
+      <Suspense fallback={<ToolFallback />}>
+        <DateConverter id="date-converter" key={dateFromUrl} initialDate={dateFromUrl} />
+      </Suspense>
+      <Suspense fallback={<ToolFallback />}>
+        <DateDifferenceCalculator id="date-difference" />
+      </Suspense>
+      <Suspense fallback={<ToolFallback />}>
+        <DateCalculator id="date-calculator" />
+      </Suspense>
+      <Suspense fallback={<ToolFallback />}>
+        <AgeCalculator id="age-calculator" />
+      </Suspense>
+      <Suspense fallback={<ToolFallback />}>
+        <EventCountdown id="event-countdown" />
+      </Suspense>
+      <Suspense fallback={<ToolFallback />}>
+        <WorkingDaysCalculator id="working-days-calculator" />
+      </Suspense>
+      <Suspense fallback={<ToolFallback />}>
+        <LeapYearChecker id="leap-year" />
+      </Suspense>
+      <Suspense fallback={<ToolFallback />}>
+        <DayOfWeekFinder id="day-of-week-finder" />
+      </Suspense>
     </div>
   );
 }

@@ -42,8 +42,8 @@ export function DayOfWeekFinder({ id }: DayOfWeekFinderProps) {
       <div className="flex flex-col space-y-4">
         <DatePickerWithToday date={selectedDate} setDate={setSelectedDate} />
         {result && (
-          <div className="mt-2 rounded-lg border bg-secondary/50 p-3 text-sm">
-            <p className="font-medium text-secondary-foreground text-center">{result}</p>
+          <div className="mt-2 rounded-lg border border-primary/20 bg-primary/5 p-4 gold-glow">
+            <p className="font-bold text-primary font-serif text-center text-lg italic">{result}</p>
           </div>
         )}
       </div>

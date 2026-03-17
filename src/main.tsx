@@ -1,20 +1,43 @@
-import React from 'react'
+import React, { Suspense, lazy } from 'react'
 import ReactDOM from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { ThemeProvider } from "@/components/theme-provider"; // NEW: Import ThemeProvider
+import { RouteFallback } from "@/components/RouteFallback";
 import './globals.css'
 
 import { MainLayout } from './components/MainLayout';
-import { CalendarPage } from './pages/CalendarPage';
-import { ToolsPage } from './pages/ToolsPage';
+
+const CalendarPage = lazy(async () => {
+  const module = await import('./pages/CalendarPage');
+  return { default: module.CalendarPage };
+});
+
+const ToolsPage = lazy(async () => {
+  const module = await import('./pages/ToolsPage');
+  return { default: module.ToolsPage };
+});
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <MainLayout />,
     children: [
-      { index: true, element: <CalendarPage /> },
-      { path: "tools", element: <ToolsPage /> },
+      {
+        index: true,
+        element: (
+          <Suspense fallback={<RouteFallback />}>
+            <CalendarPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: "tools",
+        element: (
+          <Suspense fallback={<RouteFallback />}>
+            <ToolsPage />
+          </Suspense>
+        ),
+      },
     ],
   },
 ], {

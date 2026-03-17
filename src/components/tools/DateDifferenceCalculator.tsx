@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { ToolCard } from "@/components/ToolCard";
@@ -6,6 +6,7 @@ import { CardFooter } from "@/components/ui/card";
 import { useHistory } from "@/contexts/HistoryContext";
 import { format } from "date-fns";
 import { DatePickerWithToday } from "@/components/ui/date-picker-with-today";
+import { getDateDifferenceBreakdown } from "@/lib/date-logic";
 
 interface DateDifferenceCalculatorProps { id: string; }
 
@@ -15,39 +16,28 @@ export function DateDifferenceCalculator({ id }: DateDifferenceCalculatorProps) 
   const [endDate, setEndDate] = useState<Date | undefined>();
   const [result, setResult] = useState<string>("");
   const [error, setError] = useState<string>("");
+  const errorRef = useRef<HTMLParagraphElement>(null);
 
   const handleCalculate = () => {
     setError("");
     setResult("");
 
     if (!startDate || !endDate) {
-      setError("Vui lòng chọn cả ngày bắt đầu và ngày kết thúc.");
+      const msg = "Vui lòng chọn cả ngày bắt đầu và ngày kết thúc.";
+      setError(msg);
+      errorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       return;
     }
     if (startDate > endDate) {
-      setError("Ngày kết thúc phải sau ngày bắt đầu.");
+      const msg = "Ngày kết thúc phải sau ngày bắt đầu.";
+      setError(msg);
+      errorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       return;
     }
 
-    const diffTime = Math.abs(endDate.getTime() - startDate.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const { years, months, days, totalDays } = getDateDifferenceBreakdown(startDate, endDate);
 
-    const tempEndDate = new Date(endDate);
-    let years = tempEndDate.getFullYear() - startDate.getFullYear();
-    let months = tempEndDate.getMonth() - startDate.getMonth();
-    let days = tempEndDate.getDate() - startDate.getDate();
-
-    if (days < 0) {
-      months--;
-      const prevMonthLastDay = new Date(tempEndDate.getFullYear(), tempEndDate.getMonth(), 0).getDate();
-      days += prevMonthLastDay;
-    }
-    if (months < 0) {
-      years--;
-      months += 12;
-    }
-
-    const resultText = `Khoảng cách là ${years} năm, ${months} tháng, ${days} ngày. (Tổng cộng ${diffDays} ngày)`;
+    const resultText = `Khoảng cách là ${years} năm, ${months} tháng, ${days} ngày. (Tổng cộng ${totalDays} ngày)`;
     setResult(resultText);
 
     addToHistory(
@@ -78,10 +68,10 @@ export function DateDifferenceCalculator({ id }: DateDifferenceCalculatorProps) 
           <Label htmlFor="end-date">Ngày kết thúc</Label>
           <DatePickerWithToday date={endDate} setDate={setEndDate} />
         </div>
-        {error && <p className="text-sm text-destructive">{error}</p>}
+        {error && <p ref={errorRef} className="text-sm text-destructive font-serif">{error}</p>}
         {result && (
-          <div className="mt-2 rounded-lg border bg-secondary/50 p-3 text-sm">
-            <p className="font-medium text-secondary-foreground">{result}</p>
+          <div className="mt-2 rounded-lg border border-primary/20 bg-primary/5 p-3 text-sm gold-glow animate-in fade-in duration-300">
+            <p className="font-medium text-foreground font-serif text-center italic leading-relaxed">{result}</p>
           </div>
         )}
       </div>
