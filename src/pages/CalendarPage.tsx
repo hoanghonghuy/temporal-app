@@ -71,6 +71,19 @@ export function CalendarPage() {
     setCurrentDate(nextDate);
   };
 
+  const handleMonthYearChange = (year: number, month: number) => {
+    const nextDate = new Date(year, month, 1);
+    if (nextDate < minCalendarMonth) {
+      setCurrentDate(minCalendarMonth);
+      return;
+    }
+    if (nextDate > maxCalendarMonth) {
+      setCurrentDate(maxCalendarMonth);
+      return;
+    }
+    setCurrentDate(nextDate);
+  };
+
   const weekdays = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"];
 
   return (
@@ -81,6 +94,9 @@ export function CalendarPage() {
           onPrevMonth={handlePrevMonth}
           onNextMonth={handleNextMonth}
           onGoToToday={handleGoToToday}
+          onMonthYearChange={handleMonthYearChange}
+          minYear={MIN_SUPPORTED_LUNAR_YEAR}
+          maxYear={MAX_SUPPORTED_LUNAR_YEAR}
           canGoPrev={canGoPrev}
           canGoNext={canGoNext}
         />
