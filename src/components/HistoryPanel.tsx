@@ -47,7 +47,7 @@ export function HistoryPanel({ isOpen, onOpenChange }: HistoryPanelProps) {
             Hiển thị 20 kết quả gần nhất.
           </SheetDescription>
         </SheetHeader>
-        <div className="flex-grow overflow-y-auto pr-4 -mr-4">
+        <div className="themed-scrollbar -mr-4 flex-grow overflow-y-auto pr-4">
           {history.length === 0 ? (
             <div className="flex items-center justify-center h-full text-muted-foreground italic font-serif">
               Chưa lưu ký nào.

@@ -134,7 +134,7 @@ export function WorkingDaysCalculator({ id }: WorkingDaysCalculatorProps) {
         {holidaysInRange.length > 0 && (
           <div className="space-y-2 pt-2">
             <Label>Loại trừ các ngày lễ sau:</Label>
-            <div className="max-h-32 overflow-y-auto rounded-md border p-2 space-y-2">
+            <div className="themed-scrollbar max-h-32 space-y-2 overflow-y-auto rounded-md border p-2">
               {holidaysInRange.map(holiday => (
                 <div key={holiday.date} className="flex items-center space-x-2">
                   <Checkbox 
