@@ -1,10 +1,10 @@
-import {
+﻿import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
   DialogDescription,
   DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "./ui/button";
 import { Holiday } from "@/lib/vn-holidays";
@@ -48,8 +48,9 @@ export function DayDetailModal({ selectedDay, onClose, holidaysInYear }: DayDeta
   if (!selectedDay) return null;
 
   const lunarInfo = convertSolar2Lunar(selectedDay.getDate(), selectedDay.getMonth() + 1, selectedDay.getFullYear());
-
-  const holidayInfo = holidaysInYear.filter(h => format(h.date, 'yyyy-MM-dd') === format(selectedDay, 'yyyy-MM-dd'));
+  const holidayInfo = holidaysInYear.filter(
+    (holiday) => format(holiday.date, "yyyy-MM-dd") === format(selectedDay, "yyyy-MM-dd")
+  );
 
   const handleUseDate = () => {
     const dateString = format(selectedDay, "dd/MM/yyyy");
@@ -57,85 +58,119 @@ export function DayDetailModal({ selectedDay, onClose, holidaysInYear }: DayDeta
   };
 
   return (
-    <Dialog open={!!selectedDay} onOpenChange={(isOpen) => {
-      if (!isOpen) onClose();
-    }}>
-      <DialogContent 
-        className="sm:max-w-[425px] border-primary/20"
-        onEscapeKeyDown={onClose}
-      >
+    <Dialog
+      open={!!selectedDay}
+      onOpenChange={(isOpen) => {
+        if (!isOpen) onClose();
+      }}
+    >
+      <DialogContent className="border-primary/20 sm:max-w-[425px]" onEscapeKeyDown={onClose}>
         <DialogHeader>
-          <DialogTitle className="text-2xl font-serif">
-            {format(selectedDay, "dd/MM/yyyy")}
-          </DialogTitle>
+          <DialogTitle className="text-2xl font-serif">{format(selectedDay, "dd/MM/yyyy")}</DialogTitle>
           <DialogDescription className="font-serif italic">
             {format(selectedDay, "eeee", { locale: vi })}
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           {!lunarInfo ? (
-            <div className="text-center p-4 rounded-lg bg-muted/50 border border-primary/10">
-              <p className="font-bold text-lg font-serif text-foreground">Ngoài phạm vi âm lịch hỗ trợ</p>
-              <p className="text-sm text-muted-foreground mt-1">
+            <div className="rounded-lg border border-primary/10 bg-muted/50 p-4 text-center">
+              <p className="font-serif text-lg font-bold text-foreground">Ngoài phạm vi âm lịch hỗ trợ</p>
+              <p className="mt-1 text-sm text-muted-foreground">
                 Temporal hiện hỗ trợ chuyển đổi Âm lịch trong giai đoạn {MIN_SUPPORTED_LUNAR_YEAR} - {MAX_SUPPORTED_LUNAR_YEAR}.
               </p>
             </div>
           ) : (
-          <div className="text-center p-4 rounded-lg bg-primary/5 border border-primary/10">
-            {(() => {
-              const [lunarDay, lunarMonth, , isLeap, dayCan, dayChi, monthCan, yearCan, yearChi] = lunarInfo;
-              const THANG_CHI = ["", "Dần", "Mão", "Thìn", "Tỵ", "Ngọ", "Mùi", "Thân", "Dậu", "Tuất", "Hợi", "Tý", "Sửu"];
-              return (
-                <>
-                  <p className="font-bold text-xl text-primary font-serif mb-2">
-                    Ngày {lunarDay} tháng {lunarMonth} {isLeap ? "(nhuận)" : ""} Âm Lịch
-                  </p>
-                  <div className="grid grid-cols-3 gap-2 text-sm mt-3 border-t border-primary/10 pt-3">
-                    <div>
-                      <p className="text-muted-foreground text-xs uppercase tracking-wider mb-1">Năm</p>
-                      <p className="font-medium font-serif">{yearCan} {yearChi}</p>
+            <div className="rounded-lg border border-primary/10 bg-primary/5 p-4 text-center">
+              {(() => {
+                const [lunarDay, lunarMonth, , isLeap, dayCan, dayChi, monthCan, yearCan, yearChi] = lunarInfo;
+                const THANG_CHI = ["", "Dần", "Mão", "Thìn", "Tỵ", "Ngọ", "Mùi", "Thân", "Dậu", "Tuất", "Hợi", "Tý", "Sửu"];
+                return (
+                  <>
+                    <p className="mb-2 font-serif text-xl font-bold text-primary">
+                      Ngày {lunarDay} tháng {lunarMonth} {isLeap ? "(nhuận)" : ""} Âm Lịch
+                    </p>
+                    <div className="mt-3 grid grid-cols-3 gap-2 border-t border-primary/10 pt-3 text-sm">
+                      <div>
+                        <p className="mb-1 text-xs uppercase tracking-wider text-muted-foreground">Năm</p>
+                        <p className="font-serif font-medium">{yearCan} {yearChi}</p>
+                      </div>
+                      <div>
+                        <p className="mb-1 text-xs uppercase tracking-wider text-muted-foreground">Tháng</p>
+                        <p className="font-serif font-medium">{monthCan} {THANG_CHI[lunarMonth]}</p>
+                      </div>
+                      <div>
+                        <p className="mb-1 text-xs uppercase tracking-wider text-muted-foreground">Ngày</p>
+                        <p className="font-serif font-medium">{dayCan} {dayChi}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-muted-foreground text-xs uppercase tracking-wider mb-1">Tháng</p>
-                      <p className="font-medium font-serif">{monthCan} {THANG_CHI[lunarMonth]}</p>
-                    </div>
-                    <div>
-                      <p className="text-muted-foreground text-xs uppercase tracking-wider mb-1">Ngày</p>
-                      <p className="font-medium font-serif">{dayCan} {dayChi}</p>
-                    </div>
-                  </div>
-                </>
-              );
-            })()}
-          </div>
+                  </>
+                );
+              })()}
+            </div>
           )}
+
           {holidayInfo.length > 0 && (
-            <div className="rounded-md border border-destructive/20 bg-destructive/10 p-3 text-destructive">
-              <div className="flex items-center justify-center gap-2 text-center">
-                <Star className="h-4 w-4" />
-                <span className="font-medium">{holidayInfo.length > 1 ? "Các ngày lễ trong ngày" : "Ngày lễ"}</span>
+            <section className="overflow-hidden rounded-xl border border-destructive/20 bg-gradient-to-br from-destructive/12 via-destructive/6 to-background">
+              <div className="flex items-center justify-between gap-3 border-b border-destructive/10 px-4 py-3">
+                <div className="flex min-w-0 items-center gap-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-destructive/15 text-destructive">
+                    <Star className="h-4 w-4" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="font-serif text-sm font-semibold text-foreground">
+                      {holidayInfo.length > 1 ? "Các ngày lễ trong ngày" : "Ngày lễ"}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {holidayInfo.length > 1
+                        ? `${holidayInfo.length} mốc lễ trùng trong cùng một ngày`
+                        : "1 mốc lễ trong ngày"}
+                    </p>
+                  </div>
+                </div>
+                <div className="shrink-0 rounded-full border border-destructive/20 bg-background/80 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-destructive">
+                  {holidayInfo.length} lễ
+                </div>
               </div>
-              <div className="mt-2 space-y-1 text-center">
+
+              <div className="grid gap-2 p-3">
                 {holidayInfo.map((holiday) => (
-                  <p key={`${holiday.name}-${holiday.date.toISOString()}`} className="text-sm font-medium">
-                    {holiday.name}
-                  </p>
+                  <article
+                    key={`${holiday.name}-${holiday.date.toISOString()}`}
+                    className="rounded-xl border border-destructive/10 bg-background/80 px-3 py-2 shadow-sm"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+                        <Star className="h-3.5 w-3.5" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="font-medium leading-5 text-foreground">{holiday.name}</p>
+                        <div className="mt-1 flex flex-wrap gap-2">
+                          <span className="rounded-full border border-destructive/10 bg-destructive/5 px-2 py-0.5 text-[11px] font-medium text-destructive/80">
+                            Dấu mốc trong ngày
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </article>
                 ))}
               </div>
-            </div>
+            </section>
           )}
+
           {lunarInfo && (
-          <div className="p-3 rounded-lg bg-accent/50 border border-primary/5">
-            <div className="flex items-center gap-2 mb-2">
-              <Clock className="h-4 w-4 text-primary" />
-              <span className="font-semibold font-serif text-sm">Giờ Hoàng Đạo</span>
+            <div className="rounded-lg border border-primary/5 bg-accent/50 p-3">
+              <div className="mb-2 flex items-center gap-2">
+                <Clock className="h-4 w-4 text-primary" />
+                <span className="font-serif text-sm font-semibold">Giờ Hoàng Đạo</span>
+              </div>
+              <p className="text-sm leading-relaxed text-muted-foreground">{getZodiacHours(lunarInfo[5])}</p>
             </div>
-            <p className="text-sm text-muted-foreground leading-relaxed">{getZodiacHours(lunarInfo[5])}</p>
-          </div>
           )}
         </div>
         <DialogFooter>
-          <Button onClick={handleUseDate} className="bg-primary hover:bg-primary/90">Sử dụng ngày này</Button>
+          <Button onClick={handleUseDate} className="bg-primary hover:bg-primary/90">
+            Sử dụng ngày này
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
