@@ -1,9 +1,8 @@
 import { useState, useMemo } from "react";
 import {
+  addDays,
   startOfMonth,
   startOfWeek,
-  endOfMonth,
-  endOfWeek,
   eachDayOfInterval,
   isSameMonth,
   isToday,
@@ -43,7 +42,7 @@ export function CalendarPage() {
 
   const firstDayOfMonth = startOfMonth(currentDate);
   const firstDayOfGrid = startOfWeek(firstDayOfMonth, { locale: vi });
-  const lastDayOfGrid = endOfWeek(endOfMonth(currentDate), { locale: vi });
+  const lastDayOfGrid = addDays(firstDayOfGrid, 41);
   const days = eachDayOfInterval({
     start: firstDayOfGrid,
     end: lastDayOfGrid,
