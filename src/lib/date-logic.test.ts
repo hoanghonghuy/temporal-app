@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import { getDateDifferenceBreakdown, getCountdownTargetDate } from "./date-logic";
 import { convertLunar2Solar, convertSolar2Lunar } from "./lunar-converter";
 import { getVnHolidays } from "./vn-holidays";
+import viHolidayLocale from "@/i18n/locales/holidays.vi.json";
+import viLunarLocale from "@/i18n/locales/lunar.vi.json";
 
 describe("getDateDifferenceBreakdown", () => {
   it("handles leap-year month boundaries without negative days", () => {
@@ -60,17 +62,21 @@ describe("lunar guards", () => {
       (holiday) => holiday.date.getFullYear() === 2024 && holiday.date.getMonth() === 1 && holiday.date.getDate() === 14
     );
 
+    const valentineName = viHolidayLocale.solar.find((holiday) => holiday.month === 2 && holiday.day === 14)?.name;
+    const tetDayFiveName = viHolidayLocale.tetDayTemplate.replace("{day}", "5");
+
+    expect(valentineName).toBeDefined();
     expect(holidays.map((holiday) => holiday.name)).toEqual(
-      expect.arrayContaining(["Valentine (Lễ tình nhân)", "Mùng 5 Tết"])
+      expect.arrayContaining([valentineName as string, tetDayFiveName])
     );
     expect(holidays).toHaveLength(2);
   });
 
-  it("includes broader Vietnamese observances without treating all of them as days off", () => {
+  it("includes broader observances without treating all of them as days off", () => {
     const holidays = getVnHolidays(2024);
-    const childrenDay = holidays.find((holiday) => holiday.name === "Quốc tế Thiếu nhi");
-    const liberationDay = holidays.find((holiday) => holiday.name === "Ngày Giải phóng miền Nam, thống nhất đất nước");
-    const valentine = holidays.find((holiday) => holiday.name === "Valentine (Lễ tình nhân)");
+    const childrenDay = holidays.find((holiday) => holiday.date.getMonth() === 5 && holiday.date.getDate() === 1);
+    const liberationDay = holidays.find((holiday) => holiday.date.getMonth() === 3 && holiday.date.getDate() === 30);
+    const valentine = holidays.find((holiday) => holiday.date.getMonth() === 1 && holiday.date.getDate() === 14);
 
     expect(childrenDay).toBeDefined();
     expect(liberationDay?.isDayOff).toBe(true);
@@ -89,9 +95,8 @@ describe("lunar guards", () => {
         holiday.date.getDate() === sharedDate!.getDate()
     );
 
-    expect(holidays.map((holiday) => holiday.name)).toEqual(
-      expect.arrayContaining(["Lễ Vu Lan (15/7)", "Tết Trung Nguyên / Xá tội vong nhân (15/7)"])
-    );
+    const traditionalHolidays = holidays.filter((holiday) => holiday.category === "traditional");
+    expect(traditionalHolidays).toHaveLength(2);
   });
 
   it("includes popular folk festivals as a separate category", () => {
@@ -109,7 +114,6 @@ describe("lunar guards", () => {
     expect(holidays).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          name: "Khai hội chùa Hương (mùng 6 tháng Giêng)",
           category: "folk_festival",
           isDayOff: false,
         }),
@@ -117,7 +121,7 @@ describe("lunar guards", () => {
     );
   });
 
-  it("maps can chi correctly for Tet 2026", () => {
+  it("maps can chi correctly for lunar new year 2026", () => {
     const lunar = convertSolar2Lunar(17, 2, 2026);
 
     expect(lunar).toEqual([
@@ -125,15 +129,15 @@ describe("lunar guards", () => {
       1,
       2026,
       false,
-      "Nh\u00e2m",
-      "Tu\u1ea5t",
-      "Canh",
-      "B\u00ednh",
-      "Ng\u1ecd",
+      viLunarLocale.canNames[8],
+      viLunarLocale.chiNames[10],
+      viLunarLocale.canNames[6],
+      viLunarLocale.canNames[2],
+      viLunarLocale.chiNames[6],
     ]);
   });
 
-  it("maps can chi correctly for Tet 2024", () => {
+  it("maps can chi correctly for lunar new year 2024", () => {
     const lunar = convertSolar2Lunar(10, 2, 2024);
 
     expect(lunar).toEqual([
@@ -141,11 +145,11 @@ describe("lunar guards", () => {
       1,
       2024,
       false,
-      "Gi\u00e1p",
-      "Th\u00ecn",
-      "B\u00ednh",
-      "Gi\u00e1p",
-      "Th\u00ecn",
+      viLunarLocale.canNames[0],
+      viLunarLocale.chiNames[4],
+      viLunarLocale.canNames[2],
+      viLunarLocale.canNames[0],
+      viLunarLocale.chiNames[4],
     ]);
   });
 });

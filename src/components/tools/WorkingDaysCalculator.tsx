@@ -1,18 +1,21 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { eachDayOfInterval, format, isSaturday, isSunday } from "date-fns";
 import { ToolCard } from "@/components/ToolCard";
 import { Button } from "@/components/ui/button";
 import { CardFooter } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { getVnHolidays } from "@/lib/vn-holidays";
-import { isSaturday, isSunday, eachDayOfInterval, format } from "date-fns";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useHistory } from "@/contexts/HistoryContext";
 import { DatePickerWithToday } from "@/components/ui/date-picker-with-today";
-import { MAX_SUPPORTED_SOLAR_DATE, MIN_SUPPORTED_SOLAR_DATE } from "@/lib/lunar-converter";
 import { ToolResultDisplay } from "@/components/ui/tool-result-display";
+import { useHistory } from "@/contexts/HistoryContext";
+import { useI18n } from "@/contexts/I18nContext";
+import { formatTemplate } from "@/i18n/dictionary";
+import { getVnHolidays } from "@/lib/vn-holidays";
+import { MAX_SUPPORTED_SOLAR_DATE, MIN_SUPPORTED_SOLAR_DATE } from "@/lib/lunar-converter";
 
-
-interface WorkingDaysCalculatorProps { id: string; }
+interface WorkingDaysCalculatorProps {
+  id: string;
+}
 
 interface HolidayInRange {
   date: string;
@@ -21,82 +24,84 @@ interface HolidayInRange {
 }
 
 export function WorkingDaysCalculator({ id }: WorkingDaysCalculatorProps) {
+  const { dateLocale, dictionary, locale } = useI18n();
   const { addToHistory } = useHistory();
   const [startDate, setStartDate] = useState<Date | undefined>();
   const [endDate, setEndDate] = useState<Date | undefined>();
   const [holidaysInRange, setHolidaysInRange] = useState<HolidayInRange[]>([]);
   const [result, setResult] = useState<string>("");
   const [error, setError] = useState<string>("");
+  const copy = dictionary.tools.workingDaysCalculator;
+  const toolMeta = dictionary.toolMeta["working-days-calculator"];
 
   useEffect(() => {
     if (startDate && endDate && startDate <= endDate) {
       const startYear = startDate.getFullYear();
       const endYear = endDate.getFullYear();
       const allHolidays = [];
-      for (let year = startYear; year <= endYear; year++) {
-        allHolidays.push(...getVnHolidays(year));
+      for (let year = startYear; year <= endYear; year += 1) {
+        allHolidays.push(...getVnHolidays(year, locale));
       }
 
       const holidaysByDate = new Map<string, HolidayInRange>();
       allHolidays
         .filter((holiday) => holiday.isDayOff)
-        .filter(h => h.date >= startDate && h.date <= endDate)
-        .forEach(h => {
-          const dateKey = format(h.date, "yyyy-MM-dd");
-          const currentHoliday = holidaysByDate.get(dateKey);
-          if (currentHoliday) {
-            if (!currentHoliday.names.includes(h.name)) {
-              currentHoliday.names.push(h.name);
+        .filter((holiday) => holiday.date >= startDate && holiday.date <= endDate)
+        .forEach((holiday) => {
+          const dateKey = format(holiday.date, "yyyy-MM-dd");
+          const existingHoliday = holidaysByDate.get(dateKey);
+          if (existingHoliday) {
+            if (!existingHoliday.names.includes(holiday.name)) {
+              existingHoliday.names.push(holiday.name);
             }
             return;
           }
 
-          holidaysByDate.set(dateKey, { date: dateKey, names: [h.name], checked: true });
+          holidaysByDate.set(dateKey, { date: dateKey, names: [holiday.name], checked: true });
         });
 
-      const foundHolidays = Array.from(holidaysByDate.values());
-      setHolidaysInRange(foundHolidays);
-    } else {
-      setHolidaysInRange([]);
+      setHolidaysInRange(Array.from(holidaysByDate.values()));
+      return;
     }
-  }, [startDate, endDate]);
+
+    setHolidaysInRange([]);
+  }, [startDate, endDate, locale]);
 
   const handleHolidayToggle = (date: string) => {
-    setHolidaysInRange(prev => 
-      prev.map(h => h.date === date ? { ...h, checked: !h.checked } : h)
+    setHolidaysInRange((previous) =>
+      previous.map((holiday) => (holiday.date === date ? { ...holiday, checked: !holiday.checked } : holiday))
     );
   };
 
   const handleCalculate = () => {
     setError("");
     if (!startDate || !endDate) {
-      setError("Vui lòng chọn cả ngày bắt đầu và ngày kết thúc.");
+      setError(copy.errorRequired);
       return;
     }
     if (startDate > endDate) {
-      setError("Ngày kết thúc phải sau ngày bắt đầu.");
+      setError(copy.errorInvalidRange);
       return;
     }
 
     const daysInterval = eachDayOfInterval({ start: startDate, end: endDate });
-    const excludedHolidays = new Set(
-      holidaysInRange.filter(h => h.checked).map(h => h.date)
-    );
-    
+    const excludedHolidays = new Set(holidaysInRange.filter((holiday) => holiday.checked).map((holiday) => holiday.date));
+
     let workingDays = 0;
     for (const day of daysInterval) {
       const isWeekend = isSaturday(day) || isSunday(day);
-      const isHoliday = excludedHolidays.has(format(day, 'yyyy-MM-dd'));
+      const isHoliday = excludedHolidays.has(format(day, "yyyy-MM-dd"));
       if (!isWeekend && !isHoliday) {
-        workingDays++;
+        workingDays += 1;
       }
     }
-    const resultText = `Có tổng cộng ${workingDays} ngày làm việc trong khoảng thời gian đã chọn.`;
-    setResult(resultText);
 
+    setResult(formatTemplate(copy.resultTemplate, { workingDays }));
     addToHistory(
-      "Tính Ngày Làm Việc",
-      `Từ: ${format(startDate, "dd/MM/yyyy")}\nĐến: ${format(endDate, "dd/MM/yyyy")}\nKết quả: ${workingDays} ngày làm việc`
+      copy.historyType,
+      `${copy.historyFrom}: ${format(startDate, "dd/MM/yyyy", { locale: dateLocale })}\n` +
+        `${copy.historyTo}: ${format(endDate, "dd/MM/yyyy", { locale: dateLocale })}\n` +
+        `${copy.historyResultLabel}: ${formatTemplate(copy.historyResultTemplate, { workingDays })}`
     );
   };
 
@@ -108,14 +113,10 @@ export function WorkingDaysCalculator({ id }: WorkingDaysCalculatorProps) {
   };
 
   return (
-    <ToolCard
-      id={id}
-      title="Tính Ngày Làm Việc"
-      description="Tính số ngày làm việc giữa hai mốc thời gian, tự động loại trừ cuối tuần và ngày lễ."
-    >
+    <ToolCard id={id} title={toolMeta.title} description={toolMeta.description}>
       <div className="flex flex-col space-y-4">
         <div className="grid w-full items-center gap-1.5">
-          <Label>Ngày bắt đầu</Label>
+          <Label>{copy.startDate}</Label>
           <DatePickerWithToday
             date={startDate}
             setDate={setStartDate}
@@ -124,7 +125,7 @@ export function WorkingDaysCalculator({ id }: WorkingDaysCalculatorProps) {
           />
         </div>
         <div className="grid w-full items-center gap-1.5">
-          <Label>Ngày kết thúc</Label>
+          <Label>{copy.endDate}</Label>
           <DatePickerWithToday
             date={endDate}
             setDate={setEndDate}
@@ -132,34 +133,37 @@ export function WorkingDaysCalculator({ id }: WorkingDaysCalculatorProps) {
             maxDate={MAX_SUPPORTED_SOLAR_DATE}
           />
         </div>
+
         {holidaysInRange.length > 0 && (
           <div className="space-y-2 pt-2">
-            <Label>Loại trừ các ngày nghỉ/lễ sau:</Label>
+            <Label>{copy.holidaysLabel}</Label>
             <div className="themed-scrollbar max-h-32 space-y-2 overflow-y-auto rounded-md border p-2">
-              {holidaysInRange.map(holiday => (
+              {holidaysInRange.map((holiday) => (
                 <div key={holiday.date} className="flex items-center space-x-2">
-                  <Checkbox 
-                    id={holiday.date} checked={holiday.checked}
+                  <Checkbox
+                    id={holiday.date}
+                    checked={holiday.checked}
                     onCheckedChange={() => handleHolidayToggle(holiday.date)}
                   />
-                  <Label htmlFor={holiday.date} className="text-sm font-normal cursor-pointer">
-                    {holiday.names.join(" · ")} ({format(new Date(holiday.date), 'dd/MM')})
+                  <Label htmlFor={holiday.date} className="cursor-pointer text-sm font-normal">
+                    {holiday.names.join(" / ")} ({format(new Date(holiday.date), "dd/MM", { locale: dateLocale })})
                   </Label>
                 </div>
               ))}
             </div>
           </div>
         )}
+
         {error && <p className="text-sm text-destructive">{error}</p>}
-        {result && (
-          <ToolResultDisplay>
-            {result}
-          </ToolResultDisplay>
-        )}
+        {result && <ToolResultDisplay>{result}</ToolResultDisplay>}
       </div>
-      <CardFooter className="justify-between pt-6 px-0">
-        <Button variant="outline" onClick={handleClear}>Xóa</Button>
-        <Button onClick={handleCalculate} disabled={!startDate || !endDate}>Tính toán</Button>
+      <CardFooter className="justify-between px-0 pt-6">
+        <Button variant="outline" onClick={handleClear}>
+          {copy.clear}
+        </Button>
+        <Button onClick={handleCalculate} disabled={!startDate || !endDate}>
+          {copy.calculate}
+        </Button>
       </CardFooter>
     </ToolCard>
   );

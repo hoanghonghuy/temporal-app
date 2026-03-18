@@ -1,6 +1,7 @@
-﻿import type { ComponentProps } from "react";
+import type { ComponentProps } from "react";
 import { isWithinInterval } from "date-fns";
 
+import { useI18n } from "@/contexts/I18nContext";
 import { DatePicker } from "@/components/ui/date-picker";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "./button";
@@ -22,6 +23,7 @@ export function DatePickerWithToday({
   maxDate,
   disabled,
 }: DatePickerWithTodayProps) {
+  const { dictionary } = useI18n();
   const today = new Date();
   const isTodayAllowed = !minDate && !maxDate
     ? true
@@ -43,7 +45,7 @@ export function DatePickerWithToday({
         />
       </div>
       <Button variant="outline" onClick={() => setDate(today)} disabled={!isTodayAllowed} className="sm:flex-shrink-0">
-        {"H\u00f4m nay"}
+        {dictionary.datePicker.today}
       </Button>
     </div>
   );

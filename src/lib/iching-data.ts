@@ -1,77 +1,22 @@
-// Script to map hexagrams by their bottom-to-top binary sequence.
-// 0 = Yin (broken), 1 = Yang (solid)
-export const HEXAGRAMS: Record<string, { id: number, name: string, meaning: string }> = {
-  "111111": { id: 1, name: "Thuần Càn", meaning: "Trời, cứng mạnh, sáng suốt, chủ động." },
-  "000000": { id: 2, name: "Thuần Khôn", meaning: "Đất, nhu thuận, bao dung, bị động." },
-  "100010": { id: 3, name: "Thủy Lôi Truân", meaning: "Gian nan ban đầu, gặp khó khăn lúc khởi sự." },
-  "010001": { id: 4, name: "Sơn Thủy Mông", meaning: "Che lấp, ngu mờ, cần được giáo dục." },
-  "111010": { id: 5, name: "Thủy Thiên Nhu", meaning: "Chờ đợi, nhẫn nại đợi thời cơ." },
-  "010111": { id: 6, name: "Thiên Thủy Tụng", meaning: "Kiện cáo, tranh chấp, bất hòa." },
-  "010000": { id: 7, name: "Địa Thủy Sư", meaning: "Quân đội, đám đông, chỉ huy." },
-  "000010": { id: 8, name: "Thủy Địa Tỷ", meaning: "Gần gũi, thân thiết, liên kết." },
-  "111011": { id: 9, name: "Phong Thiên Tiểu Súc", meaning: "Tích lũy nhỏ, bị cản trở tạm thời." },
-  "110111": { id: 10, name: "Thiên Trạch Lý", meaning: "Dẫm lên, lễ nghi, cư xử cẩn trọng." },
-  "111000": { id: 11, name: "Địa Thiên Thái", meaning: "Thái bình, yên vui, thông suốt." },
-  "000111": { id: 12, name: "Thiên Địa Bĩ", meaning: "Bế tắc, xúi quẩy, không thông." },
-  "101111": { id: 13, name: "Thiên Hỏa Đồng Nhân", meaning: "Cùng người, hòa đồng, hợp tác." },
-  "111101": { id: 14, name: "Hỏa Thiên Đại Hữu", meaning: "Có lớn, thu hoạch nhiều, sở hữu lớn." },
-  "001000": { id: 15, name: "Địa Sơn Khiêm", meaning: "Khiêm tốn, biết nhún nhường." },
-  "000100": { id: 16, name: "Lôi Địa Dự", meaning: "Vui vẻ, chuẩn bị sẵn sàng." },
-  "100110": { id: 17, name: "Trạch Lôi Tùy", meaning: "Đi theo, thuận theo, tòng phục." },
-  "011001": { id: 18, name: "Sơn Phong Cổ", meaning: "Thối nát, sửa chữa lỗi lầm cũ." },
-  "110000": { id: 19, name: "Địa Trạch Lâm", meaning: "Tiến đến, cai trị, giám sát." },
-  "000011": { id: 20, name: "Phong Địa Quan", meaning: "Nhìn ngắm, quan sát, chiêm nghiệm." },
-  "100101": { id: 21, name: "Hỏa Lôi Phệ Hạp", meaning: "Cắn hợp, kỷ luật, hình phạt." },
-  "101001": { id: 22, name: "Sơn Hỏa Bí", meaning: "Trang sức, vẻ bề ngoài đẹp đẽ." },
-  "000001": { id: 23, name: "Sơn Địa Bác", meaning: "Bóc lột, suy đồi, đẽo gọt." },
-  "100000": { id: 24, name: "Địa Lôi Phục", meaning: "Phục hồi, quay trở lại." },
-  "100111": { id: 25, name: "Thiên Lôi Vô Vọng", meaning: "Không càn bậy, chân thật." },
-  "111001": { id: 26, name: "Sơn Thiên Đại Súc", meaning: "Tích lũy lớn, chứa đựng nhiều." },
-  "100001": { id: 27, name: "Sơn Lôi Di", meaning: "Nuôi dưỡng, ăn uống, bồi đắp." },
-  "011110": { id: 28, name: "Trạch Phong Đại Quá", meaning: "Quá mức, giường gãy, vượt quá." },
-  "010010": { id: 29, name: "Thuần Khảm", meaning: "Hiểm trở, nước sâu, khó khăn." },
-  "101101": { id: 30, name: "Thuần Ly", meaning: "Sáng sủa, bám vào, lửa cháy." },
-  "001110": { id: 31, name: "Trạch Sơn Hàm", meaning: "Cảm ứng, xúc động, rung động." },
-  "011100": { id: 32, name: "Lôi Phong Hằng", meaning: "Mãi mãi, trường cửu, kiên trì." },
-  "001111": { id: 33, name: "Thiên Sơn Độn", meaning: "Rút lui, trốn tránh, ẩn dật." },
-  "111100": { id: 34, name: "Lôi Thiên Đại Tráng", meaning: "Khỏe mạnh, tráng kiện, mạnh mẽ." },
-  "000101": { id: 35, name: "Hỏa Địa Tấn", meaning: "Tiến lên, phát triển, rạng rỡ." },
-  "101000": { id: 36, name: "Địa Hỏa Minh Di", meaning: "Ánh sáng bị thương, tối tăm." },
-  "101011": { id: 37, name: "Phong Hỏa Gia Nhân", meaning: "Người nhà, tề gia, nội bộ." },
-  "110101": { id: 38, name: "Hỏa Trạch Khuê", meaning: "Trái ngược, chia lìa, mâu thuẫn." },
-  "001010": { id: 39, name: "Thủy Sơn Kiển", meaning: "Ngăn trở, què quặt, khó khăn." },
-  "010100": { id: 40, name: "Lôi Thủy Giải", meaning: "Cởi mở, giải thoát, giải quyết." },
-  "110001": { id: 41, name: "Sơn Trạch Tổn", meaning: "Tổn thất, bớt đi, hao hụt." },
-  "100011": { id: 42, name: "Phong Lôi Ích", meaning: "Tăng ích, thêm vào, lợi ích." },
-  "111110": { id: 43, name: "Trạch Thiên Quải", meaning: "Quyết định, dứt khoát, loại bỏ." },
-  "011111": { id: 44, name: "Thiên Phong Cấu", meaning: "Gặp gỡ, cấu kết, âm lớn mạnh." },
-  "000110": { id: 45, name: "Trạch Địa Tụy", meaning: "Tụ tập, đông đúc, quây quần." },
-  "011000": { id: 46, name: "Địa Phong Thăng", meaning: "Tiến lên, thăng tiến, mọc lên." },
-  "010110": { id: 47, name: "Trạch Thủy Khốn", meaning: "Cùng khốn, nguy ngập, mệt mỏi." },
-  "011010": { id: 48, name: "Thủy Phong Tỉnh", meaning: "Cái giếng, nguồn nước, nuôi dưỡng." },
-  "101110": { id: 49, name: "Trạch Hỏa Cách", meaning: "Cải cách, lột xác, đổi mới." },
-  "011101": { id: 50, name: "Hỏa Phong Đỉnh", meaning: "Cái vạc, vững chắc, định mệnh." },
-  "100100": { id: 51, name: "Thuần Chấn", meaning: "Sấm sét, chấn động, sợ hãi." },
-  "001001": { id: 52, name: "Thuần Cấn", meaning: "Ngừng nghỉ, núi non, dừng lại." },
-  "001011": { id: 53, name: "Phong Sơn Tiệm", meaning: "Tiến dần, từ từ, tuần tự." },
-  "110100": { id: 54, name: "Lôi Trạch Quy Muội", meaning: "Gái lấy chồng, không chính đính." },
-  "101100": { id: 55, name: "Lôi Hỏa Phong", meaning: "豊 Dồi dào, phong phú, cực thịnh." },
-  "001101": { id: 56, name: "Hỏa Sơn Lữ", meaning: "Lữ hành, tha hương, tạm bợ." },
-  "011011": { id: 57, name: "Thuần Tốn", meaning: "Gió, thuận theo, nhún nhường." },
-  "110110": { id: 58, name: "Thuần Đoài", meaning: "Đầm lầy, vui sướng, đẹp đẽ." },
-  "010011": { id: 59, name: "Phong Thủy Hoán", meaning: "Ly tán, tan rã, giải tán." },
-  "110010": { id: 60, name: "Thủy Trạch Tiết", meaning: "Tiết độ, chừng mực, tiết chế." },
-  "110011": { id: 61, name: "Phong Trạch Trung Phu", meaning: "Thành tín, trung thực từ đáy lòng." },
-  "001100": { id: 62, name: "Lôi Sơn Tiểu Quá", meaning: "Quá nhỏ, lỗi lầm nhỏ." },
-  "101010": { id: 63, name: "Thủy Hỏa Ký Tế", meaning: "Đã xong, hoàn thành, trật tự." },
-  "010101": { id: 64, name: "Hỏa Thủy Vị Tế", meaning: "Chưa xong, dang dở, chưa hoàn thiện." }
+import type { AppLocale } from "@/i18n/dictionary";
+import viHexagrams from "@/i18n/locales/iching.vi.json";
+import enHexagrams from "@/i18n/locales/iching.en.json";
+
+export interface HexagramInfo {
+  id: number;
+  name: string;
+  meaning: string;
+}
+
+const HEXAGRAMS_BY_LOCALE: Record<AppLocale, Record<string, HexagramInfo>> = {
+  vi: viHexagrams as Record<string, HexagramInfo>,
+  en: enHexagrams as Record<string, HexagramInfo>,
 };
 
 export const tossCoin = () => {
-    // Return 2 (Tail/Sấp) or 3 (Head/Ngửa)
-    return Math.random() < 0.5 ? 2 : 3;
+  return Math.random() < 0.5 ? 2 : 3;
 };
 
-export const getHexagramByLines = (binaryStr: string) => {
-    return HEXAGRAMS[binaryStr] || null;
-}
+export const getHexagramByLines = (binaryStr: string, locale: AppLocale = "vi") => {
+  return HEXAGRAMS_BY_LOCALE[locale][binaryStr] || null;
+};

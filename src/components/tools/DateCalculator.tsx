@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { add, format, sub } from "date-fns";
 import { ToolCard } from "@/components/ToolCard";
 import { Button } from "@/components/ui/button";
 import { CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { DatePickerWithToday } from "@/components/ui/date-picker-with-today";
 import {
   Select,
   SelectContent,
@@ -11,95 +13,103 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { add, sub, format } from 'date-fns';
 import { useHistory } from "@/contexts/HistoryContext";
-import { DatePickerWithToday } from "@/components/ui/date-picker-with-today";
+import { useI18n } from "@/contexts/I18nContext";
+import { formatTemplate } from "@/i18n/dictionary";
 
-interface DateCalculatorProps { id: string; }
+interface DateCalculatorProps {
+  id: string;
+}
+
+type DateUnit = "days" | "weeks" | "months" | "years";
 
 export function DateCalculator({ id }: DateCalculatorProps) {
+  const { localeTag, dateLocale, dictionary } = useI18n();
   const { addToHistory } = useHistory();
   const [baseDate, setBaseDate] = useState<Date | undefined>(new Date());
   const [amount, setAmount] = useState<number>(1);
-  const [unit, setUnit] = useState<string>('days');
+  const [unit, setUnit] = useState<DateUnit>("days");
   const [result, setResult] = useState<string>("");
+  const copy = dictionary.tools.dateCalculator;
+  const toolMeta = dictionary.toolMeta["date-calculator"];
 
-  const handleCalculate = (operation: 'add' | 'subtract') => {
+  const handleCalculate = (operation: "add" | "subtract") => {
     if (!baseDate) return;
 
-    let newDate: Date;
     const options = { [unit]: amount };
-
-    if (operation === 'add') {
-      newDate = add(baseDate, options);
-    } else {
-      newDate = sub(baseDate, options);
-    }
-
-    const formattedDate = newDate.toLocaleDateString("vi-VN", {
-      weekday: "long", year: "numeric", month: "long", day: "numeric",
+    const newDate = operation === "add" ? add(baseDate, options) : sub(baseDate, options);
+    const formattedDate = newDate.toLocaleDateString(localeTag, {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
 
-    setResult(`Ngày kết quả là: ${formattedDate}`);
+    setResult(formatTemplate(copy.resultTemplate, { formattedDate }));
 
-    const unitMap: { [key: string]: string } = { days: 'Ngày', weeks: 'Tuần', months: 'Tháng', years: 'Năm' };
     addToHistory(
-      "Thêm / Bớt Ngày",
-      `Ngày gốc: ${format(baseDate, "dd/MM/yyyy")}\nThao tác: ${operation === 'add' ? 'Thêm' : 'Bớt'} ${amount} ${unitMap[unit]}\nKết quả: ${format(newDate, "dd/MM/yyyy")}`
+      copy.historyType,
+      `${copy.historyLabelBaseDate}: ${format(baseDate, "dd/MM/yyyy", { locale: dateLocale })}\n` +
+        `${copy.historyLabelAction}: ${operation === "add" ? copy.actionAdd : copy.actionSubtract} ${amount} ${copy.units[unit]}\n` +
+        `${copy.historyLabelResult}: ${format(newDate, "dd/MM/yyyy", { locale: dateLocale })}`
     );
   };
 
   const handleClear = () => {
     setBaseDate(new Date());
     setAmount(1);
-    setUnit('days');
+    setUnit("days");
     setResult("");
-  }
+  };
 
   return (
-    <ToolCard
-      id={id}
-      title="Thêm / Bớt Ngày"
-      description="Tính toán một ngày trong tương lai hoặc quá khứ từ một mốc thời gian."
-    >
+    <ToolCard id={id} title={toolMeta.title} description={toolMeta.description}>
       <div className="flex flex-col space-y-4">
         <div className="grid w-full items-center gap-1.5">
-          <Label className="font-serif italic text-primary/80">Chọn một ngày trọng đại</Label>
+          <Label className="font-serif italic text-primary/80">{copy.dateLabel}</Label>
           <DatePickerWithToday date={baseDate} setDate={setBaseDate} />
         </div>
-        <div className="flex flex-col sm:flex-row sm:items-end gap-2 sm:gap-2">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
           <div className="grid flex-grow items-center gap-1.5">
-            <Label htmlFor="amount" className="font-serif">Số lượng *</Label>
-            <Input 
-              id="amount" type="number" value={amount} 
-              onChange={(e) => setAmount(parseInt(e.target.value, 10) || 1)}
+            <Label htmlFor="amount" className="font-serif">
+              {copy.amountLabel}
+            </Label>
+            <Input
+              id="amount"
+              type="number"
+              value={amount}
               min="1"
+              onChange={(event) => setAmount(parseInt(event.target.value, 10) || 1)}
             />
           </div>
-          <div className="grid w-full sm:w-[120px] items-center gap-1.5">
-             <Label className="font-serif">Đơn vị *</Label>
-            <Select value={unit} onValueChange={setUnit}>
-              <SelectTrigger><SelectValue placeholder="Đơn vị" /></SelectTrigger>
+          <div className="grid w-full items-center gap-1.5 sm:w-[140px]">
+            <Label className="font-serif">{copy.unitLabel}</Label>
+            <Select value={unit} onValueChange={(value) => setUnit(value as DateUnit)}>
+              <SelectTrigger>
+                <SelectValue placeholder={copy.unitPlaceholder} />
+              </SelectTrigger>
               <SelectContent>
-                <SelectItem value="days">Ngày</SelectItem>
-                <SelectItem value="weeks">Tuần</SelectItem>
-                <SelectItem value="months">Tháng</SelectItem>
-                <SelectItem value="years">Năm</SelectItem>
+                <SelectItem value="days">{copy.units.days}</SelectItem>
+                <SelectItem value="weeks">{copy.units.weeks}</SelectItem>
+                <SelectItem value="months">{copy.units.months}</SelectItem>
+                <SelectItem value="years">{copy.units.years}</SelectItem>
               </SelectContent>
             </Select>
           </div>
         </div>
         {result && (
-          <div className="mt-2 rounded-lg border border-primary/20 bg-primary/5 p-3 text-sm gold-glow animate-in fade-in duration-300">
-            <p className="font-medium text-foreground font-serif text-center italic leading-relaxed">{result}</p>
+          <div className="gold-glow mt-2 animate-in rounded-lg border border-primary/20 bg-primary/5 p-3 text-sm fade-in duration-300">
+            <p className="text-center font-serif font-medium italic leading-relaxed text-foreground">{result}</p>
           </div>
         )}
       </div>
-      <CardFooter className="justify-between pt-6 px-0">
-        <Button variant="outline" onClick={handleClear}>Xóa</Button>
+      <CardFooter className="justify-between px-0 pt-6">
+        <Button variant="outline" onClick={handleClear}>
+          {copy.clear}
+        </Button>
         <div className="flex space-x-2">
-            <Button onClick={() => handleCalculate('add')}>Thêm (+)</Button>
-            <Button onClick={() => handleCalculate('subtract')}>Bớt (-)</Button>
+          <Button onClick={() => handleCalculate("add")}>{copy.add}</Button>
+          <Button onClick={() => handleCalculate("subtract")}>{copy.subtract}</Button>
         </div>
       </CardFooter>
     </ToolCard>

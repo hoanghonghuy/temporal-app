@@ -3,21 +3,21 @@
 @tailwind utilities;
 
 @layer base {
-  /* ===== LIGHT MODE: Cuộn Thư Cổ ===== */
+  
   :root {
     --background: 37 33% 95%;       /* Ivory warm #F5F0E8 */
-    --foreground: 25 30% 15%;       /* Mực nâu đậm */
+    --foreground: 25 30% 15%;       
 
-    --card: 38 30% 97%;             /* Giấy cổ nhạt */
+    --card: 38 30% 97%;             
     --card-foreground: 25 30% 15%;
 
     --popover: 38 30% 97%;
     --popover-foreground: 25 30% 15%;
 
-    --primary: 38 75% 40%;          /* Vàng kim #B8860B */
+    --primary: 38 75% 40%;          
     --primary-foreground: 38 20% 98%;
 
-    --secondary: 35 25% 90%;        /* Beige nhạt */
+    --secondary: 35 25% 90%;        
     --secondary-foreground: 25 30% 20%;
 
     --muted: 35 20% 91%;
@@ -26,7 +26,7 @@
     --accent: 35 30% 88%;
     --accent-foreground: 25 30% 15%;
 
-    --destructive: 0 60% 35%;       /* Đỏ son cổ */
+    --destructive: 0 60% 35%;       
     --destructive-foreground: 0 0% 98%;
 
     --border: 35 20% 85%;
@@ -42,18 +42,18 @@
     --chart-5: 15 70% 45%;
   }
 
-  /* ===== DARK MODE: Đêm Trăng Huyền Bí ===== */
+  
   .dark {
-    --background: 220 30% 7%;       /* Đen xanh thẫm #0D1117 */
-    --foreground: 38 20% 88%;       /* Ngà nhạt */
+    --background: 220 30% 7%;       
+    --foreground: 38 20% 88%;       
 
-    --card: 220 25% 10%;            /* Tối hơn background một chút */
+    --card: 220 25% 10%;            
     --card-foreground: 38 20% 88%;
 
     --popover: 220 25% 10%;
     --popover-foreground: 38 20% 88%;
 
-    --primary: 40 65% 52%;          /* Vàng trăng #D4A54A */
+    --primary: 40 65% 52%;          
     --primary-foreground: 220 30% 7%;
 
     --secondary: 220 20% 15%;
@@ -90,7 +90,7 @@
   }
 }
 
-/* ===== TU TIÊN CUSTOM STYLES ===== */
+
 
 /* Decorative gold border for special sections */
 .gold-border-top {

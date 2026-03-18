@@ -1,30 +1,34 @@
 import { useState } from "react";
+import { format } from "date-fns";
 import { ToolCard } from "@/components/ToolCard";
 import { Button } from "@/components/ui/button";
 import { CardFooter } from "@/components/ui/card";
-import { format } from "date-fns";
-import { vi } from "date-fns/locale";
-import { useHistory } from "@/contexts/HistoryContext";
 import { DatePickerWithToday } from "@/components/ui/date-picker-with-today";
+import { useHistory } from "@/contexts/HistoryContext";
+import { useI18n } from "@/contexts/I18nContext";
+import { formatTemplate } from "@/i18n/dictionary";
 
-
-interface DayOfWeekFinderProps { id: string; }
+interface DayOfWeekFinderProps {
+  id: string;
+}
 
 export function DayOfWeekFinder({ id }: DayOfWeekFinderProps) {
+  const { dateLocale, dictionary } = useI18n();
   const { addToHistory } = useHistory();
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [result, setResult] = useState<string>("");
+  const copy = dictionary.tools.dayOfWeekFinder;
+  const toolMeta = dictionary.toolMeta["day-of-week-finder"];
 
   const handleFindDay = () => {
     if (!selectedDate) return;
-    
-    const dayName = format(selectedDate, 'eeee', { locale: vi });
-    const resultText = `Ngày đó là: ${dayName}`;
-    setResult(resultText);
+
+    const dayName = format(selectedDate, "eeee", { locale: dateLocale });
+    setResult(formatTemplate(copy.resultTemplate, { dayName }));
 
     addToHistory(
-      "Tìm Thứ Trong Tuần",
-      `Ngày: ${format(selectedDate, "dd/MM/yyyy")}\nKết quả: ${dayName}`
+      copy.historyType,
+      `${copy.historyDate}: ${format(selectedDate, "dd/MM/yyyy", { locale: dateLocale })}\n${copy.historyResult}: ${dayName}`
     );
   };
 
@@ -34,22 +38,22 @@ export function DayOfWeekFinder({ id }: DayOfWeekFinderProps) {
   };
 
   return (
-    <ToolCard
-      id={id}
-      title="Tìm Thứ Trong Tuần"
-      description="Chọn một ngày bất kỳ để biết chính xác đó là thứ mấy."
-    >
+    <ToolCard id={id} title={toolMeta.title} description={toolMeta.description}>
       <div className="flex flex-col space-y-4">
         <DatePickerWithToday date={selectedDate} setDate={setSelectedDate} />
         {result && (
-          <div className="mt-2 rounded-lg border border-primary/20 bg-primary/5 p-4 gold-glow">
-            <p className="font-bold text-primary font-serif text-center text-lg italic">{result}</p>
+          <div className="gold-glow mt-2 rounded-lg border border-primary/20 bg-primary/5 p-4">
+            <p className="text-center font-serif text-lg font-bold italic text-primary">{result}</p>
           </div>
         )}
       </div>
-      <CardFooter className="justify-between pt-6 px-0">
-        <Button variant="outline" onClick={handleClear}>Xóa</Button>
-        <Button onClick={handleFindDay} disabled={!selectedDate}>Tìm Thứ</Button>
+      <CardFooter className="justify-between px-0 pt-6">
+        <Button variant="outline" onClick={handleClear}>
+          {copy.clear}
+        </Button>
+        <Button onClick={handleFindDay} disabled={!selectedDate}>
+          {copy.find}
+        </Button>
       </CardFooter>
     </ToolCard>
   );

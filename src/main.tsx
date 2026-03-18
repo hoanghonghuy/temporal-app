@@ -1,76 +1,81 @@
-import React, { Suspense, lazy } from 'react'
-import ReactDOM from 'react-dom/client'
+import React, { Suspense, lazy } from "react";
+import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { ThemeProvider } from "@/components/theme-provider"; // NEW: Import ThemeProvider
+import { ThemeProvider } from "@/components/theme-provider";
+import { I18nProvider } from "@/contexts/I18nContext";
 import { RouteFallback } from "@/components/RouteFallback";
-import './globals.css'
-
-import { MainLayout } from './components/MainLayout';
+import { RouteErrorBoundary } from "@/components/RouteErrorBoundary";
+import { MainLayout } from "@/components/MainLayout";
+import "./globals.css";
 
 const CalendarPage = lazy(async () => {
-  const module = await import('./pages/CalendarPage');
+  const module = await import("./pages/CalendarPage");
   return { default: module.CalendarPage };
 });
 
 const ToolsPage = lazy(async () => {
-  const module = await import('./pages/ToolsPage');
+  const module = await import("./pages/ToolsPage");
   return { default: module.ToolsPage };
 });
 
 const IChingPage = lazy(async () => {
-  const module = await import('./pages/IChingPage');
+  const module = await import("./pages/IChingPage");
   return { default: module.IChingPage };
 });
 
-const router = createBrowserRouter([
+const router = createBrowserRouter(
+  [
+    {
+      path: "/",
+      element: <MainLayout />,
+      errorElement: <RouteErrorBoundary />,
+      children: [
+        {
+          index: true,
+          element: (
+            <Suspense fallback={<RouteFallback />}>
+              <CalendarPage />
+            </Suspense>
+          ),
+        },
+        {
+          path: "tools",
+          element: (
+            <Suspense fallback={<RouteFallback />}>
+              <ToolsPage />
+            </Suspense>
+          ),
+        },
+        {
+          path: "tools/:toolSlug",
+          element: (
+            <Suspense fallback={<RouteFallback />}>
+              <ToolsPage />
+            </Suspense>
+          ),
+        },
+        {
+          path: "iching",
+          element: (
+            <Suspense fallback={<RouteFallback />}>
+              <IChingPage />
+            </Suspense>
+          ),
+        },
+      ],
+    },
+  ],
   {
-    path: "/",
-    element: <MainLayout />,
-    children: [
-      {
-        index: true,
-        element: (
-          <Suspense fallback={<RouteFallback />}>
-            <CalendarPage />
-          </Suspense>
-        ),
-      },
-      {
-        path: "tools",
-        element: (
-          <Suspense fallback={<RouteFallback />}>
-            <ToolsPage />
-          </Suspense>
-        ),
-      },
-      {
-        path: "tools/:toolSlug",
-        element: (
-          <Suspense fallback={<RouteFallback />}>
-            <ToolsPage />
-          </Suspense>
-        ),
-      },
-      {
-        path: "iching",
-        element: (
-          <Suspense fallback={<RouteFallback />}>
-            <IChingPage />
-          </Suspense>
-        ),
-      },
-    ],
-  },
-], {
-  // basename: "/temporal-app/"
-  basename: import.meta.env.BASE_URL
-});
+    basename: import.meta.env.BASE_URL,
+  }
+);
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    {/* NEW: Bọc toàn bộ ứng dụng trong ThemeProvider */}
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
-      <RouterProvider router={router} />
+      <I18nProvider>
+        <RouterProvider router={router} />
+      </I18nProvider>
     </ThemeProvider>
-  </React.StrictMode>,
-)
+  </React.StrictMode>
+);

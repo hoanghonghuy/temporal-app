@@ -1,6 +1,6 @@
-﻿"use client"
+"use client";
 
-import { useEffect, useMemo, useState, type ComponentProps } from "react"
+import { useEffect, useMemo, useState, type ComponentProps } from "react";
 import {
   addMonths,
   format,
@@ -11,25 +11,23 @@ import {
   setMonth,
   setYear,
   startOfMonth,
-} from "date-fns"
-import { Calendar as CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react"
-import type { Matcher } from "react-day-picker"
+} from "date-fns";
+import { Calendar as CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react";
+import type { Matcher } from "react-day-picker";
 
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
+import { cn } from "@/lib/utils";
+import { useI18n } from "@/contexts/I18nContext";
+import { formatTemplate } from "@/i18n/dictionary";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 
 interface DatePickerProps {
   date: Date | undefined;
@@ -39,21 +37,6 @@ interface DatePickerProps {
   maxDate?: Date;
   disabled?: ComponentProps<typeof Calendar>["disabled"];
 }
-
-const MONTH_OPTIONS = [
-  "Th\u00e1ng 1",
-  "Th\u00e1ng 2",
-  "Th\u00e1ng 3",
-  "Th\u00e1ng 4",
-  "Th\u00e1ng 5",
-  "Th\u00e1ng 6",
-  "Th\u00e1ng 7",
-  "Th\u00e1ng 8",
-  "Th\u00e1ng 9",
-  "Th\u00e1ng 10",
-  "Th\u00e1ng 11",
-  "Th\u00e1ng 12",
-] as const;
 
 function clampMonth(month: Date, startMonth: Date, endMonth: Date) {
   const normalizedMonth = startOfMonth(month);
@@ -72,13 +55,16 @@ function clampMonth(month: Date, startMonth: Date, endMonth: Date) {
 export function DatePicker({
   date,
   setDate,
-  placeholder = "Ch\u1ecdn m\u1ed9t ng\u00e0y",
+  placeholder,
   minDate,
   maxDate,
   disabled,
 }: DatePickerProps) {
+  const { dictionary, dateLocale } = useI18n();
   const today = new Date();
   const currentYear = today.getFullYear();
+  const copy = dictionary.datePicker;
+  const resolvedPlaceholder = placeholder ?? copy.placeholder;
   const minDateTime = minDate?.getTime();
   const maxDateTime = maxDate?.getTime();
   const disabledMatchers: Matcher[] = [disabled]
@@ -121,11 +107,17 @@ export function DatePicker({
   const availableMonths = useMemo(() => {
     const selectedYear = getYear(displayMonth);
 
-    return MONTH_OPTIONS.map((label, monthIndex) => ({ label, monthIndex })).filter(({ monthIndex }) => {
+    return Array.from({ length: 12 }, (_, monthIndex) => {
       const candidateMonth = new Date(selectedYear, monthIndex, 1);
-      return !isBefore(candidateMonth, calendarStartMonth) && !isAfter(candidateMonth, calendarEndMonth);
-    });
-  }, [calendarEndMonth, calendarStartMonth, displayMonth]);
+      const monthName = format(candidateMonth, "MMMM", { locale: dateLocale });
+      const label = formatTemplate(copy.monthLabelTemplate, {
+        month: monthIndex + 1,
+        monthName,
+      });
+
+      return { label, monthIndex, candidateMonth };
+    }).filter(({ candidateMonth }) => !isBefore(candidateMonth, calendarStartMonth) && !isAfter(candidateMonth, calendarEndMonth));
+  }, [calendarEndMonth, calendarStartMonth, copy.monthLabelTemplate, dateLocale, displayMonth]);
 
   const handleMonthSelect = (value: string) => {
     setDisplayMonth((currentMonth) =>
@@ -148,23 +140,21 @@ export function DatePicker({
     <Popover>
       <PopoverTrigger asChild>
         <Button
-          variant={"outline"}
-          className={cn(
-            "w-full justify-start text-left font-normal",
-            !date && "text-muted-foreground"
-          )}
+          variant="outline"
+          aria-label={copy.openCalendar}
+          className={cn("w-full justify-start text-left font-normal", !date && "text-muted-foreground")}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
-          {date ? format(date, "dd/MM/yyyy") : <span>{placeholder}</span>}
+          {date ? format(date, "P", { locale: dateLocale }) : <span>{resolvedPlaceholder}</span>}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0" align="start">
+      <PopoverContent className="w-[18.25rem] max-w-[calc(100vw-1.5rem)] p-0" align="start">
         <div className="border-b border-border/60 p-3">
           <div className="space-y-2">
-            <div className="grid grid-cols-[minmax(0,1fr)_5.5rem] gap-2">
+            <div className="grid grid-cols-2 gap-2">
               <Select value={String(getMonth(displayMonth))} onValueChange={handleMonthSelect}>
                 <SelectTrigger className="h-9 bg-background">
-                  <SelectValue placeholder="Ch\u1ecdn th\u00e1ng" />
+                  <SelectValue placeholder={copy.selectMonth} />
                 </SelectTrigger>
                 <SelectContent>
                   {availableMonths.map((month) => (
@@ -177,7 +167,7 @@ export function DatePicker({
 
               <Select value={String(getYear(displayMonth))} onValueChange={handleYearSelect}>
                 <SelectTrigger className="h-9 bg-background">
-                  <SelectValue placeholder="Ch\u1ecdn n\u0103m" />
+                  <SelectValue placeholder={copy.selectYear} />
                 </SelectTrigger>
                 <SelectContent>
                   {years.map((year) => (
@@ -195,6 +185,7 @@ export function DatePicker({
                 variant="ghost"
                 size="icon"
                 className="h-9 w-9"
+                aria-label={copy.previousMonth}
                 onClick={() => canGoPreviousMonth && setDisplayMonth(previousMonth)}
                 disabled={!canGoPreviousMonth}
               >
@@ -205,6 +196,7 @@ export function DatePicker({
                 variant="ghost"
                 size="icon"
                 className="h-9 w-9"
+                aria-label={copy.nextMonth}
                 onClick={() => canGoNextMonth && setDisplayMonth(nextMonth)}
                 disabled={!canGoNextMonth}
               >
@@ -230,7 +222,9 @@ export function DatePicker({
           startMonth={calendarStartMonth}
           endMonth={calendarEndMonth}
           hideNavigation
+          locale={dateLocale}
           classNames={{
+            root: "w-full",
             month: "flex w-full flex-col gap-2",
             month_caption: "hidden",
           }}
@@ -238,5 +232,5 @@ export function DatePicker({
         />
       </PopoverContent>
     </Popover>
-  )
+  );
 }

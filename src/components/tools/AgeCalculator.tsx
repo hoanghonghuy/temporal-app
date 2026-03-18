@@ -1,31 +1,40 @@
 import { useState } from "react";
+import { format } from "date-fns";
 import { ToolCard } from "@/components/ToolCard";
 import { Button } from "@/components/ui/button";
 import { CardFooter } from "@/components/ui/card";
 import { DatePicker } from "@/components/ui/date-picker";
 import { Label } from "@/components/ui/label";
-import { useHistory } from "@/contexts/HistoryContext";
-import { format } from "date-fns";
 import { ToolResultDisplay } from "@/components/ui/tool-result-display";
+import { useHistory } from "@/contexts/HistoryContext";
+import { useI18n } from "@/contexts/I18nContext";
+import { formatTemplate } from "@/i18n/dictionary";
 
-interface AgeCalculatorProps { id: string; }
+interface AgeCalculatorProps {
+  id: string;
+}
 
 export function AgeCalculator({ id }: AgeCalculatorProps) {
+  const { dictionary } = useI18n();
   const { addToHistory } = useHistory();
   const [birthDate, setBirthDate] = useState<Date | undefined>();
   const [result, setResult] = useState<string>("");
   const [error, setError] = useState<string>("");
+  const copy = dictionary.tools.ageCalculator;
+  const toolMeta = dictionary.toolMeta["age-calculator"];
 
   const handleCalculate = () => {
     setError("");
     setResult("");
+
     if (!birthDate) {
-      setError("Vui lòng chọn ngày sinh của bạn.");
+      setError(copy.errorRequired);
       return;
     }
+
     const today = new Date();
     if (birthDate > today) {
-      setError("Ngày sinh không thể ở trong tương lai.");
+      setError(copy.errorFuture);
       return;
     }
 
@@ -34,21 +43,24 @@ export function AgeCalculator({ id }: AgeCalculatorProps) {
     let days = today.getDate() - birthDate.getDate();
 
     if (days < 0) {
-      months--;
+      months -= 1;
       const lastDayOfPreviousMonth = new Date(today.getFullYear(), today.getMonth(), 0).getDate();
       days += lastDayOfPreviousMonth;
     }
     if (months < 0) {
-      years--;
+      years -= 1;
       months += 12;
     }
-    
-    const resultText = `Tuổi của bạn là: ${years} năm, ${months} tháng, và ${days} ngày.`;
-    setResult(resultText);
 
+    setResult(formatTemplate(copy.resultTemplate, { years, months, days }));
     addToHistory(
-      "Tính Tuổi",
-      `Ngày sinh: ${format(birthDate, "dd/MM/yyyy")}\nKết quả: ${years} năm, ${months} tháng, ${days} ngày`
+      copy.historyType,
+      formatTemplate(copy.historyResultTemplate, {
+        date: format(birthDate, "dd/MM/yyyy"),
+        years,
+        months,
+        days,
+      })
     );
   };
 
@@ -59,27 +71,23 @@ export function AgeCalculator({ id }: AgeCalculatorProps) {
   };
 
   return (
-    <ToolCard
-      id={id}
-      title="Tính Tuổi"
-      description="Nhập ngày sinh của bạn để tính tuổi chính xác đến từng ngày."
-    >
+    <ToolCard id={id} title={toolMeta.title} description={toolMeta.description}>
       <div className="flex flex-col space-y-4">
         <div className="grid w-full items-center gap-1.5">
-          <Label className="font-serif">Ngày sinh của bạn *</Label>
-          <DatePicker date={birthDate} setDate={setBirthDate} placeholder="Chọn ngày sinh để bắt đầu..."/>
-          <p className="text-xs text-muted-foreground font-serif">Hãy nhập ngày tháng năm sinh của bạn</p>
+          <Label className="font-serif">{copy.birthDateLabel}</Label>
+          <DatePicker date={birthDate} setDate={setBirthDate} placeholder={copy.birthDatePlaceholder} />
+          <p className="font-serif text-xs text-muted-foreground">{copy.birthDateHint}</p>
         </div>
         {error && <p className="text-sm text-destructive">{error}</p>}
-        {result && (
-          <ToolResultDisplay>
-            {result}
-          </ToolResultDisplay>
-        )}
+        {result && <ToolResultDisplay>{result}</ToolResultDisplay>}
       </div>
-      <CardFooter className="justify-between pt-6 px-0">
-        <Button variant="outline" onClick={handleClear}>Xóa</Button>
-        <Button onClick={handleCalculate} disabled={!birthDate}>Tính Tuổi</Button>
+      <CardFooter className="justify-between px-0 pt-6">
+        <Button variant="outline" onClick={handleClear}>
+          {copy.clear}
+        </Button>
+        <Button onClick={handleCalculate} disabled={!birthDate}>
+          {copy.calculate}
+        </Button>
       </CardFooter>
     </ToolCard>
   );

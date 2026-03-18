@@ -1,32 +1,18 @@
-﻿import { LUNAR_INFO } from "./lunar-data";
+import { LUNAR_INFO } from "./lunar-data";
+import viLunarNames from "@/i18n/locales/lunar.vi.json";
+import enLunarNames from "@/i18n/locales/lunar.en.json";
 
-const DISPLAY_CAN_NAMES = [
-  "Gi\u00e1p",
-  "\u1ea4t",
-  "B\u00ednh",
-  "\u0110inh",
-  "M\u1eadu",
-  "K\u1ef7",
-  "Canh",
-  "T\u00e2n",
-  "Nh\u00e2m",
-  "Qu\u00fd",
-] as const;
+export type LunarLocale = "vi" | "en";
 
-const DISPLAY_CHI_NAMES = [
-  "T\u00fd",
-  "S\u1eedu",
-  "D\u1ea7n",
-  "M\u00e3o",
-  "Th\u00ecn",
-  "T\u1ef5",
-  "Ng\u1ecd",
-  "M\u00f9i",
-  "Th\u00e2n",
-  "D\u1eadu",
-  "Tu\u1ea5t",
-  "H\u1ee3i",
-] as const;
+interface LunarNames {
+  canNames: string[];
+  chiNames: string[];
+}
+
+const LUNAR_NAMES_BY_LOCALE: Record<LunarLocale, LunarNames> = {
+  vi: viLunarNames as LunarNames,
+  en: enLunarNames as LunarNames,
+};
 
 export const MIN_SUPPORTED_LUNAR_YEAR = 1900;
 export const MAX_SUPPORTED_LUNAR_YEAR = 2100;
@@ -65,17 +51,19 @@ function jdn(dd: number, mm: number, yy: number) {
   return dd + Math.floor((153 * m + 2) / 5) + 365 * y + Math.floor(y / 4) - Math.floor(y / 100) + Math.floor(y / 400) - 32045;
 }
 
-function getCanName(index: number) {
-  return DISPLAY_CAN_NAMES[((index % 10) + 10) % 10];
+function getCanName(index: number, locale: LunarLocale) {
+  const names = LUNAR_NAMES_BY_LOCALE[locale]?.canNames ?? LUNAR_NAMES_BY_LOCALE.vi.canNames;
+  return names[((index % 10) + 10) % 10];
 }
 
-function getChiName(index: number) {
-  return DISPLAY_CHI_NAMES[((index % 12) + 12) % 12];
+function getChiName(index: number, locale: LunarLocale) {
+  const names = LUNAR_NAMES_BY_LOCALE[locale]?.chiNames ?? LUNAR_NAMES_BY_LOCALE.vi.chiNames;
+  return names[((index % 12) + 12) % 12];
 }
 
 export type LunarDateInfo = [number, number, number, boolean, string, string, string, string, string];
 
-export function convertSolar2Lunar(dd: number, mm: number, yy: number): LunarDateInfo | null {
+export function convertSolar2Lunar(dd: number, mm: number, yy: number, locale: LunarLocale = "vi"): LunarDateInfo | null {
   if (!isSupportedLunarYear(yy)) return null;
 
   const date = new Date(Date.UTC(yy, mm - 1, dd));
@@ -122,11 +110,11 @@ export function convertSolar2Lunar(dd: number, mm: number, yy: number): LunarDat
 
   const lunarDay = offset + 1;
   const jd = jdn(dd, mm, yy);
-  const dayCan = getCanName(jd + 9);
-  const dayChi = getChiName(jd + 1);
-  const monthCan = getCanName(lunarYear * 12 + lunarMonth + 3);
-  const yearCan = getCanName(lunarYear + 6);
-  const yearChi = getChiName(lunarYear + 8);
+  const dayCan = getCanName(jd + 9, locale);
+  const dayChi = getChiName(jd + 1, locale);
+  const monthCan = getCanName(lunarYear * 12 + lunarMonth + 3, locale);
+  const yearCan = getCanName(lunarYear + 6, locale);
+  const yearChi = getChiName(lunarYear + 8, locale);
 
   return [lunarDay, lunarMonth, lunarYear, isLeap, dayCan, dayChi, monthCan, yearCan, yearChi];
 }

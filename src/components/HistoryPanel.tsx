@@ -1,15 +1,13 @@
+import { useState } from "react";
+import { ScrollText } from "lucide-react";
 import {
   Sheet,
   SheetContent,
   SheetDescription,
+  SheetFooter,
   SheetHeader,
   SheetTitle,
-  SheetFooter,
 } from "@/components/ui/sheet";
-import { useHistory } from "@/contexts/HistoryContext";
-import { Button } from "./ui/button";
-import { ScrollText } from "lucide-react";
-import { useState } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,6 +18,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { StatusPanel } from "@/components/ui/status-panel";
+import { useHistory } from "@/contexts/HistoryContext";
+import { useI18n } from "@/contexts/I18nContext";
 
 interface HistoryPanelProps {
   isOpen: boolean;
@@ -28,6 +30,7 @@ interface HistoryPanelProps {
 
 export function HistoryPanel({ isOpen, onOpenChange }: HistoryPanelProps) {
   const { history, clearHistory } = useHistory();
+  const { dictionary } = useI18n();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const handleConfirmDelete = () => {
@@ -39,38 +42,32 @@ export function HistoryPanel({ isOpen, onOpenChange }: HistoryPanelProps) {
     <Sheet open={isOpen} onOpenChange={onOpenChange}>
       <SheetContent className="flex flex-col border-l-primary/15">
         <SheetHeader>
-          <SheetTitle className="font-serif flex items-center gap-2">
+          <SheetTitle className="flex items-center gap-2 font-serif">
             <ScrollText className="h-5 w-5 text-primary" />
-            Sử Ký Tính Toán
+            {dictionary.historyTitle}
           </SheetTitle>
-          <SheetDescription>
-            Hiển thị 20 kết quả gần nhất.
-          </SheetDescription>
+          <SheetDescription>{dictionary.historyDescription}</SheetDescription>
         </SheetHeader>
+
         <div className="themed-scrollbar -mr-4 flex-grow overflow-y-auto pr-4">
           {history.length === 0 ? (
-            <div className="flex items-center justify-center h-full text-muted-foreground italic font-serif">
-              Chưa lưu ký nào.
-            </div>
+            <StatusPanel variant="empty" message={dictionary.historyEmpty} className="h-full border-none bg-transparent shadow-none" />
           ) : (
             <ul className="space-y-4">
               {history.map((item) => (
-                <li key={item.id} className="text-sm border-b border-primary/10 pb-3">
-                  <p className="font-semibold text-primary font-serif">{item.type}</p>
-                  <p className="whitespace-pre-wrap text-muted-foreground mt-1">{item.result}</p>
-                  <p className="text-xs text-right text-muted-foreground/50 mt-1">{item.timestamp}</p>
+                <li key={item.id} className="border-b border-primary/10 pb-3 text-sm">
+                  <p className="font-serif font-semibold text-primary">{item.type}</p>
+                  <p className="mt-1 whitespace-pre-wrap text-muted-foreground">{item.result}</p>
+                  <p className="mt-1 text-right text-xs text-muted-foreground/50">{item.timestamp}</p>
                 </li>
               ))}
             </ul>
           )}
         </div>
+
         <SheetFooter className="mt-4">
-          <Button 
-            variant="destructive" 
-            onClick={() => setShowDeleteConfirm(true)} 
-            disabled={history.length === 0}
-          >
-            Xóa Sử Ký
+          <Button variant="destructive" onClick={() => setShowDeleteConfirm(true)} disabled={history.length === 0}>
+            {dictionary.historyClear}
           </Button>
         </SheetFooter>
       </SheetContent>
@@ -78,18 +75,15 @@ export function HistoryPanel({ isOpen, onOpenChange }: HistoryPanelProps) {
       <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle className="font-serif">Xóa tất cả lịch sử?</AlertDialogTitle>
+            <AlertDialogTitle className="font-serif">{dictionary.historyConfirmTitle}</AlertDialogTitle>
             <AlertDialogDescription className="font-serif">
-              Hành động này không thể hoàn tác. Tất cả {history.length} mục lịch sử sẽ bị xóa vĩnh viễn.
+              {dictionary.historyConfirmBody(history.length)}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="font-serif">Hủy</AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={handleConfirmDelete}
-              className="bg-destructive hover:bg-destructive/90 font-serif"
-            >
-              Xóa
+            <AlertDialogCancel className="font-serif">{dictionary.cancel}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmDelete} className="bg-destructive font-serif hover:bg-destructive/90">
+              {dictionary.confirmDelete}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

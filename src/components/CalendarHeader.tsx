@@ -1,10 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, ChevronsUpDown } from "lucide-react";
-import { format, startOfMonth, endOfMonth } from "date-fns";
-import { vi } from "date-fns/locale";
+import { format, endOfMonth, startOfMonth } from "date-fns";
 import { convertSolar2Lunar } from "@/lib/lunar-converter";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useI18n } from "@/contexts/I18nContext";
 
 interface CalendarHeaderProps {
   currentDate: Date;
@@ -29,26 +29,26 @@ export function CalendarHeader({
   canGoPrev,
   canGoNext,
 }: CalendarHeaderProps) {
+  const { dictionary, dateLocale, locale } = useI18n();
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
 
-  const lunarStart = convertSolar2Lunar(monthStart.getDate(), monthStart.getMonth() + 1, monthStart.getFullYear());
-  const lunarEnd = convertSolar2Lunar(monthEnd.getDate(), monthEnd.getMonth() + 1, monthEnd.getFullYear());
+  const lunarStart = convertSolar2Lunar(monthStart.getDate(), monthStart.getMonth() + 1, monthStart.getFullYear(), locale);
+  const lunarEnd = convertSolar2Lunar(monthEnd.getDate(), monthEnd.getMonth() + 1, monthEnd.getFullYear(), locale);
 
   let lunarMonthDisplay = "";
-
   if (!lunarStart || !lunarEnd) {
-    lunarMonthDisplay = "Ngoài phạm vi âm lịch hỗ trợ";
+    lunarMonthDisplay = dictionary.calendarOutOfRange;
   } else {
     const [, lunarMonthStart, lunarYearStart, , , , , yearCanStart, yearChiStart] = lunarStart;
     const [, lunarMonthEnd, lunarYearEnd, , , , , yearCanEnd, yearChiEnd] = lunarEnd;
 
     if (lunarYearStart !== lunarYearEnd) {
-      lunarMonthDisplay = `Năm ${yearCanStart} ${yearChiStart} - ${yearCanEnd} ${yearChiEnd}`;
+      lunarMonthDisplay = dictionary.calendarLunarCrossYear(yearCanStart, yearChiStart, yearCanEnd, yearChiEnd);
     } else if (lunarMonthStart !== lunarMonthEnd) {
-      lunarMonthDisplay = `Tháng ${lunarMonthStart} & ${lunarMonthEnd} · ${yearCanStart} ${yearChiStart}`;
+      lunarMonthDisplay = dictionary.calendarLunarCrossMonth(lunarMonthStart, lunarMonthEnd, yearCanStart, yearChiStart);
     } else {
-      lunarMonthDisplay = `Tháng ${lunarMonthStart} · ${yearCanStart} ${yearChiStart}`;
+      lunarMonthDisplay = dictionary.calendarLunarSingleMonth(lunarMonthStart, yearCanStart, yearChiStart);
     }
   }
 
@@ -67,11 +67,15 @@ export function CalendarHeader({
       <div className="flex items-center gap-3 sm:gap-4">
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="ghost" className="group h-auto p-0 text-left hover:bg-transparent">
+            <Button
+              variant="ghost"
+              className="group h-auto p-0 text-left hover:bg-transparent"
+              aria-label={dictionary.calendarQuickPick}
+            >
               <div>
                 <div className="flex items-center gap-1">
                   <h2 className="font-serif text-xl font-bold capitalize text-foreground md:text-2xl">
-                    {format(currentDate, "MMMM yyyy", { locale: vi })}
+                    {format(currentDate, "MMMM yyyy", { locale: dateLocale })}
                   </h2>
                   <ChevronsUpDown className="h-4 w-4 text-muted-foreground/70 transition-colors group-hover:text-primary" />
                 </div>
@@ -84,24 +88,23 @@ export function CalendarHeader({
             className="w-[270px] border-primary/15 bg-card/95 p-3 backdrop-blur-sm sm:w-[290px]"
           >
             <div className="space-y-3">
-              <p className="text-xs uppercase tracking-[0.14em] text-muted-foreground">Chọn nhanh tháng/năm</p>
+              <p className="text-xs uppercase tracking-[0.14em] text-muted-foreground">{dictionary.calendarQuickPick}</p>
               <div className="grid grid-cols-2 gap-2">
                 <Select value={String(currentDate.getMonth())} onValueChange={handleMonthChange}>
                   <SelectTrigger className="border-primary/20 bg-background/80">
-                    <SelectValue placeholder="Tháng" />
+                    <SelectValue placeholder={dictionary.calendarMonthPlaceholder} />
                   </SelectTrigger>
                   <SelectContent>
                     {Array.from({ length: 12 }, (_, month) => (
                       <SelectItem key={month} value={String(month)}>
-                        {`Tháng ${month + 1}`}
+                        {dictionary.calendarMonthLabel(month)}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
-
                 <Select value={String(currentDate.getFullYear())} onValueChange={handleYearChange}>
                   <SelectTrigger className="border-primary/20 bg-background/80">
-                    <SelectValue placeholder="Năm" />
+                    <SelectValue placeholder={dictionary.calendarYearPlaceholder} />
                   </SelectTrigger>
                   <SelectContent>
                     {years.map((year) => (
@@ -122,7 +125,7 @@ export function CalendarHeader({
           size="sm"
           className="border-primary/20 text-xs hover:bg-primary/10 hover:text-primary"
         >
-          Hôm nay
+          {dictionary.calendarToday}
         </Button>
       </div>
 
@@ -133,6 +136,7 @@ export function CalendarHeader({
           size="icon"
           className="border-primary/20 hover:bg-primary/10 hover:text-primary"
           disabled={!canGoPrev}
+          aria-label={dictionary.calendarPrevMonthAria}
         >
           <ChevronLeft className="h-4 w-4" />
         </Button>
@@ -142,6 +146,7 @@ export function CalendarHeader({
           size="icon"
           className="border-primary/20 hover:bg-primary/10 hover:text-primary"
           disabled={!canGoNext}
+          aria-label={dictionary.calendarNextMonthAria}
         >
           <ChevronRight className="h-4 w-4" />
         </Button>

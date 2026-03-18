@@ -1,5 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { useI18n } from "@/contexts/I18nContext";
 
 interface HistoryItem {
   id: string;
@@ -17,9 +18,9 @@ interface HistoryContextType {
 const HistoryContext = createContext<HistoryContextType | undefined>(undefined);
 
 export function HistoryProvider({ children }: { children: React.ReactNode }) {
+  const { localeTag } = useI18n();
   const [history, setHistory] = useState<HistoryItem[]>([]);
 
-  // Load lịch sử từ localStorage khi component được tạo
   useEffect(() => {
     try {
       const savedHistory = localStorage.getItem("temporal-history");
@@ -36,10 +37,11 @@ export function HistoryProvider({ children }: { children: React.ReactNode }) {
       id: new Date().toISOString(),
       type,
       result,
-      timestamp: new Date().toLocaleString("vi-VN"),
+      timestamp: new Date().toLocaleString(localeTag),
     };
-    setHistory(prev => {
-      const newHistory = [newItem, ...prev].slice(0, 20); // Giữ lại 20 mục gần nhất
+
+    setHistory((prev) => {
+      const newHistory = [newItem, ...prev].slice(0, 20);
       localStorage.setItem("temporal-history", JSON.stringify(newHistory));
       return newHistory;
     });
@@ -50,11 +52,7 @@ export function HistoryProvider({ children }: { children: React.ReactNode }) {
     localStorage.removeItem("temporal-history");
   };
 
-  return (
-    <HistoryContext.Provider value={{ history, addToHistory, clearHistory }}>
-      {children}
-    </HistoryContext.Provider>
-  );
+  return <HistoryContext.Provider value={{ history, addToHistory, clearHistory }}>{children}</HistoryContext.Provider>;
 }
 
 export const useHistory = () => {
