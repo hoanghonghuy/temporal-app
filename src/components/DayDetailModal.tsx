@@ -65,7 +65,8 @@ export function DayDetailModal({ selectedDay, onClose, holidaysInYear }: DayDeta
       }}
     >
       <DialogContent
-        className="inset-x-0 bottom-0 top-auto z-50 w-full max-w-none translate-x-0 translate-y-0 gap-0 rounded-t-[28px] rounded-b-none border-x-0 border-b-0 border-primary/20 p-0 data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom lg:left-[50%] lg:right-auto lg:top-[50%] lg:w-full lg:max-w-[425px] lg:translate-x-[-50%] lg:translate-y-[-50%] lg:gap-4 lg:rounded-lg lg:border lg:p-6 lg:data-[state=closed]:slide-out-to-left-1/2 lg:data-[state=closed]:slide-out-to-top-[48%] lg:data-[state=open]:slide-in-from-left-1/2 lg:data-[state=open]:slide-in-from-top-[48%]"
+        variant="sheet"
+        className="border-primary/20 lg:w-full lg:max-w-[425px]"
         onEscapeKeyDown={onClose}
       >
         <div className="flex max-h-[88dvh] flex-col overflow-hidden">
