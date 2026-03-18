@@ -49,7 +49,7 @@ export function DayDetailModal({ selectedDay, onClose, holidaysInYear }: DayDeta
 
   const lunarInfo = convertSolar2Lunar(selectedDay.getDate(), selectedDay.getMonth() + 1, selectedDay.getFullYear());
 
-  const holidayInfo = holidaysInYear.find(h => format(h.date, 'yyyy-MM-dd') === format(selectedDay, 'yyyy-MM-dd'));
+  const holidayInfo = holidaysInYear.filter(h => format(h.date, 'yyyy-MM-dd') === format(selectedDay, 'yyyy-MM-dd'));
 
   const handleUseDate = () => {
     const dateString = format(selectedDay, "dd/MM/yyyy");
@@ -109,10 +109,19 @@ export function DayDetailModal({ selectedDay, onClose, holidaysInYear }: DayDeta
             })()}
           </div>
           )}
-          {holidayInfo && (
-            <div className="text-center p-2.5 bg-destructive/10 text-destructive rounded-md border border-destructive/20 flex items-center justify-center gap-2">
-              <Star className="h-4 w-4" />
-              <span className="font-medium">{holidayInfo.name}</span>
+          {holidayInfo.length > 0 && (
+            <div className="rounded-md border border-destructive/20 bg-destructive/10 p-3 text-destructive">
+              <div className="flex items-center justify-center gap-2 text-center">
+                <Star className="h-4 w-4" />
+                <span className="font-medium">{holidayInfo.length > 1 ? "Các ngày lễ trong ngày" : "Ngày lễ"}</span>
+              </div>
+              <div className="mt-2 space-y-1 text-center">
+                {holidayInfo.map((holiday) => (
+                  <p key={`${holiday.name}-${holiday.date.toISOString()}`} className="text-sm font-medium">
+                    {holiday.name}
+                  </p>
+                ))}
+              </div>
             </div>
           )}
           {lunarInfo && (

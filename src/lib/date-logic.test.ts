@@ -55,6 +55,17 @@ describe("lunar guards", () => {
     expect(holidays.every((holiday) => holiday.date.getFullYear() === 2101)).toBe(true);
   });
 
+  it("keeps multiple holidays that fall on the same solar day", () => {
+    const holidays = getVnHolidays(2024).filter(
+      (holiday) => holiday.date.getFullYear() === 2024 && holiday.date.getMonth() === 1 && holiday.date.getDate() === 14
+    );
+
+    expect(holidays.map((holiday) => holiday.name)).toEqual(
+      expect.arrayContaining(["Valentine (Lễ tình nhân)", "Mùng 5 Tết"])
+    );
+    expect(holidays).toHaveLength(2);
+  });
+
   it("maps can chi correctly for Tet 2026", () => {
     const lunar = convertSolar2Lunar(17, 2, 2026);
 

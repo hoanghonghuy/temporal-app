@@ -32,10 +32,12 @@ export function CalendarPage() {
   const year = currentDate.getFullYear();
   const holidaysInYear = useMemo(() => getVnHolidays(year), [year]);
   const holidaysInMonth = useMemo(() => {
-    const holidayMap = new Map<string, string>();
+    const holidayMap = new Map<string, string[]>();
     holidaysInYear.forEach(h => {
         const key = format(h.date, 'yyyy-MM-dd');
-        holidayMap.set(key, h.name);
+        const names = holidayMap.get(key) ?? [];
+        names.push(h.name);
+        holidayMap.set(key, names);
     });
     return holidayMap;
   }, [holidaysInYear]);
@@ -91,8 +93,8 @@ export function CalendarPage() {
             const lunarDay = lunarInfo?.[0];
             const lunarMonth = lunarInfo?.[1];
             const isSpecialLunar = lunarDay === 1 || lunarDay === 15;
-            const holidayInfo = holidaysInMonth.get(format(day, 'yyyy-MM-dd'));
-            const isHoliday = !!holidayInfo;
+            const holidayInfo = holidaysInMonth.get(format(day, 'yyyy-MM-dd')) ?? [];
+            const isHoliday = holidayInfo.length > 0;
             const isTodayDate = isToday(day);
             const isWeekend = isSaturday(day) || isSunday(day);
             const isSupportedDay = !!lunarInfo;
@@ -109,7 +111,7 @@ export function CalendarPage() {
                   index % 7 === 6 && "border-r border-primary/5",
                   index >= days.length - 7 && "border-b border-primary/5"
                 )}
-                 title={holidayInfo}
+                 title={holidayInfo.join("\n")}
               >
                 <span className={cn(
                   "flex items-center justify-center h-8 w-8 sm:h-9 sm:w-9 rounded-full text-sm sm:text-base transition-all duration-200",

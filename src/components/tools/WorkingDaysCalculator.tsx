@@ -16,7 +16,7 @@ interface WorkingDaysCalculatorProps { id: string; }
 
 interface HolidayInRange {
   date: string;
-  name: string;
+  names: string[];
   checked: boolean;
 }
 
@@ -42,9 +42,15 @@ export function WorkingDaysCalculator({ id }: WorkingDaysCalculatorProps) {
         .filter(h => h.date >= startDate && h.date <= endDate)
         .forEach(h => {
           const dateKey = format(h.date, "yyyy-MM-dd");
-          if (!holidaysByDate.has(dateKey)) {
-            holidaysByDate.set(dateKey, { date: dateKey, name: h.name, checked: true });
+          const currentHoliday = holidaysByDate.get(dateKey);
+          if (currentHoliday) {
+            if (!currentHoliday.names.includes(h.name)) {
+              currentHoliday.names.push(h.name);
+            }
+            return;
           }
+
+          holidaysByDate.set(dateKey, { date: dateKey, names: [h.name], checked: true });
         });
 
       const foundHolidays = Array.from(holidaysByDate.values());
@@ -136,7 +142,7 @@ export function WorkingDaysCalculator({ id }: WorkingDaysCalculatorProps) {
                     onCheckedChange={() => handleHolidayToggle(holiday.date)}
                   />
                   <Label htmlFor={holiday.date} className="text-sm font-normal cursor-pointer">
-                    {holiday.name} ({format(new Date(holiday.date), 'dd/MM')})
+                    {holiday.names.join(" · ")} ({format(new Date(holiday.date), 'dd/MM')})
                   </Label>
                 </div>
               ))}

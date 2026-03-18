@@ -93,7 +93,7 @@ export function getVnHolidays(solarYear: number): Holiday[] {
 function dedupeHolidays(holidays: Holiday[]) {
     const uniqueHolidays = new Map<string, Holiday>();
     holidays.sort((a, b) => a.date.getTime() - b.date.getTime()).forEach(h => {
-        const key = format(h.date, 'yyyy-MM-dd');
+        const key = `${format(h.date, 'yyyy-MM-dd')}::${h.name}`;
         if (!uniqueHolidays.has(key)) {
             uniqueHolidays.set(key, h);
         }
