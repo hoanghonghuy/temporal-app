@@ -218,6 +218,7 @@ export function DatePicker({
           mode="single"
           month={displayMonth}
           onMonthChange={setDisplayMonth}
+          fixedWeeks
           selected={date}
           onSelect={(nextDate) => {
             setDate(nextDate);
