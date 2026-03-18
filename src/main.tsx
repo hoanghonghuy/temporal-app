@@ -44,6 +44,14 @@ const router = createBrowserRouter([
         ),
       },
       {
+        path: "tools/:toolSlug",
+        element: (
+          <Suspense fallback={<RouteFallback />}>
+            <ToolsPage />
+          </Suspense>
+        ),
+      },
+      {
         path: "iching",
         element: (
           <Suspense fallback={<RouteFallback />}>

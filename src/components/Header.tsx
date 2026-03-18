@@ -1,46 +1,47 @@
-import { useState } from "react";
+﻿import { useState, type ReactNode } from "react";
 import { NavLink } from "react-router-dom";
+import { History, Menu, Scroll } from "lucide-react";
+import { TOOL_DEFINITIONS } from "@/lib/tool-registry";
 import { ThemeToggle } from "./ThemeToggle";
 import { Button } from "./ui/button";
-import { History, Menu, Scroll } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion"
+} from "@/components/ui/accordion";
 import { cn } from "@/lib/utils";
 
 interface HeaderProps {
   onHistoryToggle: () => void;
 }
 
-const tools = [
-  { href: "/tools#date-converter", label: "Bộ Chuyển Đổi Ngày" },
-  { href: "/tools#date-difference", label: "Tính Khoảng Cách Ngày" },
-  { href: "/tools#date-calculator", label: "Thêm / Bớt Ngày" },
-  { href: "/tools#age-calculator", label: "Tính Tuổi" },
-  { href: "/tools#event-countdown", label: "Đếm Ngược Sự Kiện" },
-  { href: "/tools#working-days-calculator", label: "Tính Ngày Làm Việc" },
-  { href: "/tools#leap-year", label: "Kiểm Tra Năm Nhuận" },
-  { href: "/tools#day-of-week-finder", label: "Tìm Thứ Trong Tuần" },
-  { href: "/iching", label: "Gieo Quẻ Kinh Dịch" },
-];
-
 export function Header({ onHistoryToggle }: HeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const navLinkClass = ({ isActive }: { isActive: boolean }) =>
     cn(
-      "px-3 py-2 rounded-md text-sm font-medium transition-all duration-200",
+      "rounded-md border px-3 py-2 text-sm font-medium transition-all duration-200",
       isActive
-        ? "bg-primary/10 text-primary border border-primary/20"
-        : "text-muted-foreground hover:bg-accent hover:text-foreground"
+        ? "border-primary/20 bg-primary/10 text-primary"
+        : "border-transparent text-muted-foreground hover:bg-accent hover:text-foreground"
     );
 
-  const MobileNavLink = ({ to, children, className }: { to: string, children: React.ReactNode, className?: string }) => (
-    <NavLink to={to} className={cn("block py-2 text-muted-foreground hover:text-primary transition-colors", className)} onClick={() => setIsMobileMenuOpen(false)}>
+  const MobileNavLink = ({
+    to,
+    children,
+    className,
+  }: {
+    to: string;
+    children: ReactNode;
+    className?: string;
+  }) => (
+    <NavLink
+      to={to}
+      className={cn("block py-2 text-muted-foreground transition-colors hover:text-primary", className)}
+      onClick={() => setIsMobileMenuOpen(false)}
+    >
       {children}
     </NavLink>
   );
@@ -48,31 +49,38 @@ export function Header({ onHistoryToggle }: HeaderProps) {
   return (
     <header className="sticky top-0 z-40 w-full border-b border-primary/15 bg-card/95 backdrop-blur-sm">
       <div className="container flex h-16 items-center">
-        {/* Mobile Menu */}
         <div className="md:hidden">
           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
             <SheetTrigger asChild>
-              <Button variant="outline" size="icon" className="border-primary/20"><Menu className="h-5 w-5" /></Button>
+              <Button variant="outline" size="icon" className="border-primary/20">
+                <Menu className="h-5 w-5" />
+              </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-full sm:w-[320px]">
+            <SheetContent side="left" className="border-r-primary/15">
               <div className="mt-8 flex flex-col">
-                <MobileNavLink to="/" className="text-base font-semibold font-serif">Lịch Tháng</MobileNavLink>
-                <MobileNavLink to="/iching" className="text-base font-semibold font-serif">Gieo Quẻ</MobileNavLink>
+                <MobileNavLink to="/" className="font-serif text-base font-semibold">
+                  {"L\u1ecbch Th\u00e1ng"}
+                </MobileNavLink>
+                <MobileNavLink to="/iching" className="font-serif text-base font-semibold">
+                  {"Gieo Qu\u1ebb"}
+                </MobileNavLink>
                 <Accordion type="single" collapsible className="w-full">
                   <AccordionItem value="tools-accordion" className="border-b-0">
                     <div className="flex items-center text-base font-semibold text-muted-foreground">
-                      <NavLink 
-                        to="/tools" 
+                      <NavLink
+                        to="/tools"
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className="py-2 flex-1 text-left hover:text-primary font-serif"
+                        className="flex-1 py-2 text-left font-serif hover:text-primary"
                       >
-                        Pháp Khí
+                        {"Ph\u00e1p Kh\u00ed"}
                       </NavLink>
-                      <AccordionTrigger className="p-2 -mr-2 hover:text-primary [&[data-state=open]>svg]:rotate-180" />
+                      <AccordionTrigger className="-mr-2 p-2 hover:text-primary [&[data-state=open]>svg]:rotate-180" />
                     </div>
                     <AccordionContent className="pl-4">
-                      {tools.filter(t => t.href !== "/iching").map(tool => (
-                        <MobileNavLink key={tool.href} to={tool.href}>{tool.label}</MobileNavLink>
+                      {TOOL_DEFINITIONS.map((tool) => (
+                        <MobileNavLink key={tool.slug} to={`/tools/${tool.slug}`}>
+                          {tool.title}
+                        </MobileNavLink>
                       ))}
                     </AccordionContent>
                   </AccordionItem>
@@ -82,29 +90,35 @@ export function Header({ onHistoryToggle }: HeaderProps) {
           </Sheet>
         </div>
 
-        {/* Desktop Menu */}
-        <nav className="hidden md:flex items-center space-x-1">
-          <NavLink to="/" className={navLinkClass}>Lịch Tháng</NavLink>
-          <NavLink to="/iching" className={navLinkClass}>Gieo Quẻ</NavLink>
-          <NavLink to="/tools" className={navLinkClass}>Pháp Khí</NavLink>
+        <nav className="hidden items-center space-x-1 md:flex">
+          <NavLink to="/" className={navLinkClass}>
+            {"L\u1ecbch Th\u00e1ng"}
+          </NavLink>
+          <NavLink to="/iching" className={navLinkClass}>
+            {"Gieo Qu\u1ebb"}
+          </NavLink>
+          <NavLink to="/tools" className={navLinkClass}>
+            {"Ph\u00e1p Kh\u00ed"}
+          </NavLink>
         </nav>
 
-        {/* Logo */}
-        <NavLink to="/" className="flex-grow text-center group">
+        <NavLink to="/" className="group flex-grow text-center">
           <div className="inline-flex items-center gap-2">
-            <Scroll className="h-5 w-5 text-primary opacity-70 group-hover:opacity-100 transition-opacity" />
-            <h1 className="text-xl sm:text-2xl font-bold font-serif text-foreground tracking-wide">
-              Temporal
-            </h1>
+            <Scroll className="h-5 w-5 text-primary opacity-70 transition-opacity group-hover:opacity-100" />
+            <h1 className="font-serif text-xl font-bold tracking-wide text-foreground sm:text-2xl">Temporal</h1>
           </div>
-          <p className="hidden sm:block text-xs text-muted-foreground tracking-widest uppercase">
-            Thiên Cơ Lịch
+          <p className="hidden text-xs uppercase tracking-widest text-muted-foreground sm:block">
+            {"Thi\u00ean C\u01a1 L\u1ecbch"}
           </p>
         </NavLink>
 
-        {/* Actions */}
         <div className="flex items-center space-x-2">
-          <Button variant="outline" size="icon" onClick={onHistoryToggle} className="border-primary/20 hover:bg-primary/10 hover:text-primary">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={onHistoryToggle}
+            className="border-primary/20 hover:bg-primary/10 hover:text-primary"
+          >
             <History className="h-5 w-5" />
           </Button>
           <ThemeToggle />

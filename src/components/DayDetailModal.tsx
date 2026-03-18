@@ -53,7 +53,7 @@ export function DayDetailModal({ selectedDay, onClose, holidaysInYear }: DayDeta
 
   const handleUseDate = () => {
     const dateString = format(selectedDay, "dd/MM/yyyy");
-    navigate(`/tools?date=${encodeURIComponent(dateString)}`);
+    navigate(`/tools/date-converter?date=${encodeURIComponent(dateString)}`);
   };
 
   return (

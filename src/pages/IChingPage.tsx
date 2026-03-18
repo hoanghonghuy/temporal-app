@@ -13,7 +13,7 @@ const UI = {
   unchanged: "Kh\u00f4ng \u0111\u1ed5i",
   title: "Thi\u00ean C\u01a1",
   idleStatus:
-    "B\u1ea5m 6 l\u1ea7n \u0111\u1ec3 t\u1ea1o qu\u1ebb. App x\u1ebfp h\u00e0o t\u1eeb d\u01b0\u1edbi l\u00ean tr\u00ean theo th\u1ee9 t\u1ef1 S\u01a1, Nh\u1ecb, Tam, T\u1ee9, Ng\u0169, Th\u01b0\u1ee3ng.",
+    "B\u1ea5m 6 l\u1ea7n \u0111\u1ec3 t\u1ea1o qu\u1ebb. C\u00e1c h\u00e0o \u0111\u01b0\u1ee3c x\u1ebfp t\u1eeb d\u01b0\u1edbi l\u00ean tr\u00ean theo th\u1ee9 t\u1ef1 S\u01a1, Nh\u1ecb, Tam, T\u1ee9, Ng\u0169, Th\u01b0\u1ee3ng.",
   progressLabel: "Ti\u1ebfn \u0111\u1ed9",
   startCasting: "Kh\u1edfi T\u00e2m Gieo Qu\u1ebb",
   continueCasting: "Ti\u1ebfp t\u1ee5c gieo",
@@ -24,13 +24,13 @@ const UI = {
   transformedLead: "S\u1ef1 vi\u1ec7c bi\u1ebfn chuy\u1ec3n th\u00e0nh",
   guideTitle: "M\u1edbi d\u00f9ng l\u1ea7n \u0111\u1ea7u? \u0110\u00e2y l\u00e0 c\u00e1ch gieo qu\u1ebb ho\u1ea1t \u0111\u1ed9ng",
   guideBody1:
-    "M\u1ed7i l\u1ea7n b\u1ea1n b\u1ea5m n\u00fat gieo, app m\u00f4 ph\u1ecfng 3 \u0111\u1ed3ng ti\u1ec1n \u0111\u1ec3 t\u1ea1o ra 1 h\u00e0o. Gieo \u0111\u1ee7 6 l\u1ea7n th\u00ec s\u1ebd c\u00f3 1 qu\u1ebb ho\u00e0n ch\u1ec9nh, c\u00e1c h\u00e0o \u0111\u01b0\u1ee3c x\u1ebfp t\u1eeb d\u01b0\u1edbi l\u00ean tr\u00ean theo th\u1ee9 t\u1ef1 S\u01a1, Nh\u1ecb, Tam, T\u1ee9, Ng\u0169, Th\u01b0\u1ee3ng.",
+    "M\u1ed7i l\u1ea7n b\u1ea1n b\u1ea5m n\u00fat gieo, 3 \u0111\u1ed3ng ti\u1ec1n s\u1ebd \u0111\u01b0\u1ee3c m\u00f4 ph\u1ecfng \u0111\u1ec3 t\u1ea1o ra 1 h\u00e0o. Gieo \u0111\u1ee7 6 l\u1ea7n th\u00ec s\u1ebd c\u00f3 1 qu\u1ebb ho\u00e0n ch\u1ec9nh, c\u00e1c h\u00e0o \u0111\u01b0\u1ee3c x\u1ebfp t\u1eeb d\u01b0\u1edbi l\u00ean tr\u00ean theo th\u1ee9 t\u1ef1 S\u01a1, Nh\u1ecb, Tam, T\u1ee9, Ng\u0169, Th\u01b0\u1ee3ng.",
   guideBody2:
-    "V\u00ec m\u1ed7i h\u00e0o ch\u1ec9 c\u00f3 th\u1ec3 l\u00e0 \u00e2m ho\u1eb7c d\u01b0\u01a1ng, t\u1ed5ng c\u1ed9ng s\u1ebd c\u00f3 64 t\u1ed5 h\u1ee3p qu\u1ebb. App hi\u1ec7n hi\u1ec3n th\u1ecb t\u00ean qu\u1ebb v\u00e0 \u00fd ngh\u0129a ng\u1eafn g\u1ecdn \u0111\u1ec3 b\u1ea1n \u0111\u1ecdc nhanh.",
+    "V\u00ec m\u1ed7i h\u00e0o ch\u1ec9 c\u00f3 th\u1ec3 l\u00e0 \u00e2m ho\u1eb7c d\u01b0\u01a1ng, t\u1ed5ng c\u1ed9ng s\u1ebd c\u00f3 64 t\u1ed5 h\u1ee3p qu\u1ebb. B\u1ea1n s\u1ebd th\u1ea5y t\u00ean qu\u1ebb v\u00e0 \u00fd ngh\u0129a ng\u1eafn g\u1ecdn \u0111\u1ec3 \u0111\u1ecdc nhanh.",
   lineTypesTitle: "4 lo\u1ea1i h\u00e0o 6, 7, 8, 9 ngh\u0129a l\u00e0 g\u00ec?",
   readTitle: "B\u1ea3n qu\u00e1i v\u00e0 bi\u1ebfn qu\u00e1i n\u00ean \u0111\u1ecdc nh\u01b0 th\u1ebf n\u00e0o?",
   readBody1:
-    "B\u1ea3n qu\u00e1i l\u00e0 qu\u1ebb ch\u00ednh, ph\u1ea3n \u00e1nh tr\u1ea1ng th\u00e1i hi\u1ec7n t\u1ea1i ho\u1eb7c v\u1ea5n \u0111\u1ec1 b\u1ea1n \u0111ang h\u1ecfi. N\u1ebfu xu\u1ea5t hi\u1ec7n h\u00e0o \u0111\u1ed9ng (6 ho\u1eb7c 9), app s\u1ebd sinh th\u00eam bi\u1ebfn qu\u00e1i \u0111\u1ec3 ch\u1ec9 ra xu h\u01b0\u1edbng thay \u0111\u1ed5i ti\u1ebfp theo.",
+    "B\u1ea3n qu\u00e1i l\u00e0 qu\u1ebb ch\u00ednh, ph\u1ea3n \u00e1nh tr\u1ea1ng th\u00e1i hi\u1ec7n t\u1ea1i ho\u1eb7c v\u1ea5n \u0111\u1ec1 b\u1ea1n \u0111ang h\u1ecfi. N\u1ebfu xu\u1ea5t hi\u1ec7n h\u00e0o \u0111\u1ed9ng (6 ho\u1eb7c 9), s\u1ebd c\u00f3 th\u00eam bi\u1ebfn qu\u00e1i \u0111\u1ec3 ch\u1ec9 ra xu h\u01b0\u1edbng thay \u0111\u1ed5i ti\u1ebfp theo.",
   readBody2:
     "N\u1ebfu kh\u00f4ng c\u00f3 h\u00e0o \u0111\u1ed9ng, b\u1ea1n ch\u1ec9 c\u1ea7n \u0111\u1ecdc b\u1ea3n qu\u00e1i. N\u1ebfu c\u00f3 bi\u1ebfn qu\u00e1i, h\u00e3y xem b\u1ea3n qu\u00e1i l\u00e0 \"hi\u1ec7n t\u1ea1i\" v\u00e0 bi\u1ebfn qu\u00e1i l\u00e0 \"\u0111i\u1ec3m \u0111\u1ebfn\" ho\u1eb7c \"chi\u1ec1u h\u01b0\u1edbng chuy\u1ec3n h\u00f3a\".",
 };

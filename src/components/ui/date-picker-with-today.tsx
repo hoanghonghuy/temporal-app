@@ -1,8 +1,9 @@
-import type { ComponentProps } from "react";
-import { DatePicker } from "@/components/ui/date-picker";
-import { Button } from "./button";
+﻿import type { ComponentProps } from "react";
 import { isWithinInterval } from "date-fns";
+
+import { DatePicker } from "@/components/ui/date-picker";
 import { Calendar } from "@/components/ui/calendar";
+import { Button } from "./button";
 
 interface DatePickerWithTodayProps {
   date: Date | undefined;
@@ -30,7 +31,7 @@ export function DatePickerWithToday({
       });
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+    <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
       <div className="flex-grow">
         <DatePicker
           date={date}
@@ -42,7 +43,7 @@ export function DatePickerWithToday({
         />
       </div>
       <Button variant="outline" onClick={() => setDate(today)} disabled={!isTodayAllowed} className="sm:flex-shrink-0">
-        Hôm nay
+        {"H\u00f4m nay"}
       </Button>
     </div>
   );

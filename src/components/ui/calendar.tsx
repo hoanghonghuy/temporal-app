@@ -35,7 +35,7 @@ function Calendar({
       captionLayout={captionLayout}
       formatters={{
         formatMonthDropdown: (date) =>
-          date.toLocaleString("default", { month: "short" }),
+          date.toLocaleString("vi-VN", { month: "short" }),
         ...formatters,
       }}
       classNames={{
@@ -46,7 +46,9 @@ function Calendar({
         ),
         month: cn("flex w-full flex-col gap-4", defaultClassNames.month),
         nav: cn(
-          "absolute inset-x-0 top-0 flex w-full items-center justify-between gap-1",
+          captionLayout === "label"
+            ? "absolute inset-x-0 top-0 flex w-full items-center justify-between gap-1"
+            : "flex items-center justify-end gap-1",
           defaultClassNames.nav
         ),
         button_previous: cn(
@@ -60,15 +62,17 @@ function Calendar({
           defaultClassNames.button_next
         ),
         month_caption: cn(
-          "flex h-[--cell-size] w-full items-center justify-center px-[--cell-size]",
+          captionLayout === "label"
+            ? "flex h-[--cell-size] w-full items-center justify-center px-[--cell-size]"
+            : "flex min-h-[--cell-size] w-full items-center justify-between gap-2",
           defaultClassNames.month_caption
         ),
         dropdowns: cn(
-          "flex h-[--cell-size] w-full items-center justify-center gap-1.5 text-sm font-medium",
+          "flex h-auto w-full flex-wrap items-center gap-1.5 text-sm font-medium",
           defaultClassNames.dropdowns
         ),
         dropdown_root: cn(
-          "has-focus:border-ring border-input shadow-xs has-focus:ring-ring/50 has-focus:ring-[3px] relative rounded-md border",
+          "bg-background has-focus:border-ring border-input shadow-xs has-focus:ring-ring/50 has-focus:ring-[3px] relative rounded-md border",
           defaultClassNames.dropdown_root
         ),
         dropdown: cn(
