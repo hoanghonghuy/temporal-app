@@ -1,0 +1,266 @@
+{
+  "solar": [
+    {
+      "name": "New Year's Day",
+      "month": 1,
+      "day": 1,
+      "category": "public",
+      "isDayOff": true
+    },
+    {
+      "name": "Valentine's Day",
+      "month": 2,
+      "day": 14,
+      "category": "observance",
+      "isDayOff": false
+    },
+    {
+      "name": "Vietnamese Doctors' Day",
+      "month": 2,
+      "day": 27,
+      "category": "observance",
+      "isDayOff": false
+    },
+    {
+      "name": "International Women's Day",
+      "month": 3,
+      "day": 8,
+      "category": "observance",
+      "isDayOff": false
+    },
+    {
+      "name": "Ho Chi Minh Communist Youth Union Founding Day",
+      "month": 3,
+      "day": 26,
+      "category": "observance",
+      "isDayOff": false
+    },
+    {
+      "name": "Liberation Day and National Reunification Day",
+      "month": 4,
+      "day": 30,
+      "category": "public",
+      "isDayOff": true
+    },
+    {
+      "name": "International Workers' Day",
+      "month": 5,
+      "day": 1,
+      "category": "public",
+      "isDayOff": true
+    },
+    {
+      "name": "President Ho Chi Minh's Birthday",
+      "month": 5,
+      "day": 19,
+      "category": "observance",
+      "isDayOff": false
+    },
+    {
+      "name": "International Children's Day",
+      "month": 6,
+      "day": 1,
+      "category": "observance",
+      "isDayOff": false
+    },
+    {
+      "name": "Vietnamese Revolutionary Press Day",
+      "month": 6,
+      "day": 21,
+      "category": "observance",
+      "isDayOff": false
+    },
+    {
+      "name": "Vietnamese Family Day",
+      "month": 6,
+      "day": 28,
+      "category": "observance",
+      "isDayOff": false
+    },
+    {
+      "name": "War Invalids and Martyrs Day",
+      "month": 7,
+      "day": 27,
+      "category": "observance",
+      "isDayOff": false
+    },
+    {
+      "name": "August Revolution Day",
+      "month": 8,
+      "day": 19,
+      "category": "observance",
+      "isDayOff": false
+    },
+    {
+      "name": "Vietnam National Day",
+      "month": 9,
+      "day": 2,
+      "category": "public",
+      "isDayOff": true
+    },
+    {
+      "name": "Vietnamese Entrepreneurs' Day",
+      "month": 10,
+      "day": 13,
+      "category": "observance",
+      "isDayOff": false
+    },
+    {
+      "name": "Vietnamese Women's Day",
+      "month": 10,
+      "day": 20,
+      "category": "observance",
+      "isDayOff": false
+    },
+    {
+      "name": "Vietnamese Teachers' Day",
+      "month": 11,
+      "day": 20,
+      "category": "observance",
+      "isDayOff": false
+    },
+    {
+      "name": "People's Army of Vietnam Founding Day",
+      "month": 12,
+      "day": 22,
+      "category": "observance",
+      "isDayOff": false
+    },
+    {
+      "name": "Christmas Eve",
+      "month": 12,
+      "day": 24,
+      "category": "observance",
+      "isDayOff": false
+    },
+    {
+      "name": "Christmas Day",
+      "month": 12,
+      "day": 25,
+      "category": "observance",
+      "isDayOff": false
+    }
+  ],
+  "lunar": [
+    {
+      "name": "Huong Pagoda Festival Opening (Lunar Jan 6)",
+      "lunarMonth": 1,
+      "lunarDay": 6,
+      "category": "folk_festival",
+      "isDayOff": false
+    },
+    {
+      "name": "Yen Tu Festival Opening (Lunar Jan 10)",
+      "lunarMonth": 1,
+      "lunarDay": 10,
+      "category": "folk_festival",
+      "isDayOff": false
+    },
+    {
+      "name": "Lim Festival (Lunar Jan 13)",
+      "lunarMonth": 1,
+      "lunarDay": 13,
+      "category": "folk_festival",
+      "isDayOff": false
+    },
+    {
+      "name": "Tran Temple Seal Opening Ceremony (Lunar Jan 14)",
+      "lunarMonth": 1,
+      "lunarDay": 14,
+      "category": "folk_festival",
+      "isDayOff": false
+    },
+    {
+      "name": "First Full Moon Festival (Lunar Jan 15)",
+      "lunarMonth": 1,
+      "lunarDay": 15,
+      "category": "traditional",
+      "isDayOff": false
+    },
+    {
+      "name": "Cold Food Festival (Lunar 3/3)",
+      "lunarMonth": 3,
+      "lunarDay": 3,
+      "category": "traditional",
+      "isDayOff": false
+    },
+    {
+      "name": "Hung Kings Commemoration Day (Lunar 10/3)",
+      "lunarMonth": 3,
+      "lunarDay": 10,
+      "category": "public",
+      "isDayOff": true
+    },
+    {
+      "name": "Phu Dong Giong Festival (Lunar Apr 9)",
+      "lunarMonth": 4,
+      "lunarDay": 9,
+      "category": "folk_festival",
+      "isDayOff": false
+    },
+    {
+      "name": "Vesak (Lunar 15/4)",
+      "lunarMonth": 4,
+      "lunarDay": 15,
+      "category": "traditional",
+      "isDayOff": false
+    },
+    {
+      "name": "Lady of the Realm Festival at Sam Mountain (Lunar 24/4)",
+      "lunarMonth": 4,
+      "lunarDay": 24,
+      "category": "folk_festival",
+      "isDayOff": false
+    },
+    {
+      "name": "Dragon Boat Festival (Lunar 5/5)",
+      "lunarMonth": 5,
+      "lunarDay": 5,
+      "category": "traditional",
+      "isDayOff": false
+    },
+    {
+      "name": "Qixi Festival (Lunar 7/7)",
+      "lunarMonth": 7,
+      "lunarDay": 7,
+      "category": "traditional",
+      "isDayOff": false
+    },
+    {
+      "name": "Vu Lan Festival (Lunar 15/7)",
+      "lunarMonth": 7,
+      "lunarDay": 15,
+      "category": "traditional",
+      "isDayOff": false
+    },
+    {
+      "name": "Ghost Festival / Mid-Year Pardon (Lunar 15/7)",
+      "lunarMonth": 7,
+      "lunarDay": 15,
+      "category": "traditional",
+      "isDayOff": false
+    },
+    {
+      "name": "Mid-Autumn Festival (Lunar 15/8)",
+      "lunarMonth": 8,
+      "lunarDay": 15,
+      "category": "traditional",
+      "isDayOff": false
+    },
+    {
+      "name": "Kitchen Gods Day (Lunar 23/12)",
+      "lunarMonth": 12,
+      "lunarDay": 23,
+      "category": "traditional",
+      "isDayOff": false
+    }
+  ],
+  "categoryLabels": {
+    "public": "Public holiday",
+    "traditional": "Traditional observance",
+    "folk_festival": "Folk festival",
+    "observance": "Commemorative day"
+  },
+  "tetEveName": "Lunar New Year Eve",
+  "tetDayTemplate": "Tet Day {day}"
+}

@@ -1,0 +1,266 @@
+{
+  "solar": [
+    {
+      "name": "Tết Dương lịch",
+      "month": 1,
+      "day": 1,
+      "category": "public",
+      "isDayOff": true
+    },
+    {
+      "name": "Valentine (Lễ tình nhân)",
+      "month": 2,
+      "day": 14,
+      "category": "observance",
+      "isDayOff": false
+    },
+    {
+      "name": "Ngày Thầy thuốc Việt Nam",
+      "month": 2,
+      "day": 27,
+      "category": "observance",
+      "isDayOff": false
+    },
+    {
+      "name": "Quốc tế Phụ nữ",
+      "month": 3,
+      "day": 8,
+      "category": "observance",
+      "isDayOff": false
+    },
+    {
+      "name": "Ngày thành lập Đoàn TNCS Hồ Chí Minh",
+      "month": 3,
+      "day": 26,
+      "category": "observance",
+      "isDayOff": false
+    },
+    {
+      "name": "Ngày Giải phóng miền Nam, thống nhất đất nước",
+      "month": 4,
+      "day": 30,
+      "category": "public",
+      "isDayOff": true
+    },
+    {
+      "name": "Ngày Quốc tế Lao động",
+      "month": 5,
+      "day": 1,
+      "category": "public",
+      "isDayOff": true
+    },
+    {
+      "name": "Ngày sinh Chủ tịch Hồ Chí Minh",
+      "month": 5,
+      "day": 19,
+      "category": "observance",
+      "isDayOff": false
+    },
+    {
+      "name": "Quốc tế Thiếu nhi",
+      "month": 6,
+      "day": 1,
+      "category": "observance",
+      "isDayOff": false
+    },
+    {
+      "name": "Ngày Báo chí Cách mạng Việt Nam",
+      "month": 6,
+      "day": 21,
+      "category": "observance",
+      "isDayOff": false
+    },
+    {
+      "name": "Ngày Gia đình Việt Nam",
+      "month": 6,
+      "day": 28,
+      "category": "observance",
+      "isDayOff": false
+    },
+    {
+      "name": "Ngày Thương binh - Liệt sĩ",
+      "month": 7,
+      "day": 27,
+      "category": "observance",
+      "isDayOff": false
+    },
+    {
+      "name": "Ngày Cách mạng Tháng Tám thành công",
+      "month": 8,
+      "day": 19,
+      "category": "observance",
+      "isDayOff": false
+    },
+    {
+      "name": "Quốc khánh Việt Nam",
+      "month": 9,
+      "day": 2,
+      "category": "public",
+      "isDayOff": true
+    },
+    {
+      "name": "Ngày Doanh nhân Việt Nam",
+      "month": 10,
+      "day": 13,
+      "category": "observance",
+      "isDayOff": false
+    },
+    {
+      "name": "Ngày Phụ nữ Việt Nam",
+      "month": 10,
+      "day": 20,
+      "category": "observance",
+      "isDayOff": false
+    },
+    {
+      "name": "Ngày Nhà giáo Việt Nam",
+      "month": 11,
+      "day": 20,
+      "category": "observance",
+      "isDayOff": false
+    },
+    {
+      "name": "Ngày thành lập Quân đội Nhân dân Việt Nam",
+      "month": 12,
+      "day": 22,
+      "category": "observance",
+      "isDayOff": false
+    },
+    {
+      "name": "Đêm Giáng Sinh",
+      "month": 12,
+      "day": 24,
+      "category": "observance",
+      "isDayOff": false
+    },
+    {
+      "name": "Lễ Giáng Sinh",
+      "month": 12,
+      "day": 25,
+      "category": "observance",
+      "isDayOff": false
+    }
+  ],
+  "lunar": [
+    {
+      "name": "Khai hội chùa Hương (mùng 6 tháng Giêng)",
+      "lunarMonth": 1,
+      "lunarDay": 6,
+      "category": "folk_festival",
+      "isDayOff": false
+    },
+    {
+      "name": "Khai hội Yên Tử (mùng 10 tháng Giêng)",
+      "lunarMonth": 1,
+      "lunarDay": 10,
+      "category": "folk_festival",
+      "isDayOff": false
+    },
+    {
+      "name": "Hội Lim (13 tháng Giêng)",
+      "lunarMonth": 1,
+      "lunarDay": 13,
+      "category": "folk_festival",
+      "isDayOff": false
+    },
+    {
+      "name": "Khai ấn Đền Trần (14 tháng Giêng)",
+      "lunarMonth": 1,
+      "lunarDay": 14,
+      "category": "folk_festival",
+      "isDayOff": false
+    },
+    {
+      "name": "Rằm tháng Giêng (Tết Nguyên Tiêu)",
+      "lunarMonth": 1,
+      "lunarDay": 15,
+      "category": "traditional",
+      "isDayOff": false
+    },
+    {
+      "name": "Tết Hàn Thực (3/3)",
+      "lunarMonth": 3,
+      "lunarDay": 3,
+      "category": "traditional",
+      "isDayOff": false
+    },
+    {
+      "name": "Giỗ Tổ Hùng Vương (10/3)",
+      "lunarMonth": 3,
+      "lunarDay": 10,
+      "category": "public",
+      "isDayOff": true
+    },
+    {
+      "name": "Hội Gióng Phù Đổng (mùng 9 tháng 4)",
+      "lunarMonth": 4,
+      "lunarDay": 9,
+      "category": "folk_festival",
+      "isDayOff": false
+    },
+    {
+      "name": "Lễ Phật Đản (15/4)",
+      "lunarMonth": 4,
+      "lunarDay": 15,
+      "category": "traditional",
+      "isDayOff": false
+    },
+    {
+      "name": "Lễ vía Bà Chúa Xứ Núi Sam (24/4)",
+      "lunarMonth": 4,
+      "lunarDay": 24,
+      "category": "folk_festival",
+      "isDayOff": false
+    },
+    {
+      "name": "Tết Đoan Ngọ (5/5)",
+      "lunarMonth": 5,
+      "lunarDay": 5,
+      "category": "traditional",
+      "isDayOff": false
+    },
+    {
+      "name": "Lễ Thất Tịch (7/7)",
+      "lunarMonth": 7,
+      "lunarDay": 7,
+      "category": "traditional",
+      "isDayOff": false
+    },
+    {
+      "name": "Lễ Vu Lan (15/7)",
+      "lunarMonth": 7,
+      "lunarDay": 15,
+      "category": "traditional",
+      "isDayOff": false
+    },
+    {
+      "name": "Tết Trung Nguyên / Xá tội vong nhân (15/7)",
+      "lunarMonth": 7,
+      "lunarDay": 15,
+      "category": "traditional",
+      "isDayOff": false
+    },
+    {
+      "name": "Tết Trung Thu (15/8)",
+      "lunarMonth": 8,
+      "lunarDay": 15,
+      "category": "traditional",
+      "isDayOff": false
+    },
+    {
+      "name": "Ông Công Ông Táo chầu trời (23/12)",
+      "lunarMonth": 12,
+      "lunarDay": 23,
+      "category": "traditional",
+      "isDayOff": false
+    }
+  ],
+  "categoryLabels": {
+    "public": "Ngày nghỉ - lễ chính",
+    "traditional": "Lễ truyền thống",
+    "folk_festival": "Lễ hội dân gian",
+    "observance": "Ngày kỷ niệm"
+  },
+  "tetEveName": "Giao Thừa",
+  "tetDayTemplate": "Mùng {day} Tết"
+}

@@ -1,0 +1,293 @@
+{
+  "languageName": "English",
+  "languageOptionVi": "Tiếng Việt",
+  "languageOptionEn": "English",
+  "navCalendar": "Calendar",
+  "navIChing": "I Ching",
+  "navTools": "Tools",
+  "menuAria": "Open navigation menu",
+  "historyAria": "Open calculation history",
+  "homeAria": "Go to homepage",
+  "appSubtitle": "Temporal Almanac",
+  "footerMotto": "Impermanence of Heaven",
+  "footerDesignedBy": "Designed by",
+  "routeLoading": "Loading content...",
+  "routeErrorTitle": "Unable to load this page",
+  "routeErrorBody": "Please try again or return to the homepage.",
+  "routeErrorAction": "Back to Home",
+  "statusLoading": "Loading...",
+  "statusEmpty": "No data yet.",
+  "historyTitle": "Calculation History",
+  "historyDescription": "Showing the latest 20 results.",
+  "historyEmpty": "No records yet.",
+  "historyClear": "Clear History",
+  "historyConfirmTitle": "Clear all history?",
+  "cancel": "Cancel",
+  "confirmDelete": "Delete",
+  "calendarWeekdays": ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
+  "calendarToday": "Today",
+  "calendarQuickPick": "Quick month/year jump",
+  "calendarMonthPlaceholder": "Month",
+  "calendarYearPlaceholder": "Year",
+  "calendarPrevMonthAria": "Previous month",
+  "calendarNextMonthAria": "Next month",
+  "calendarOutOfRange": "Outside supported lunar range",
+  "dayDetailOutOfRangeTitle": "Outside supported lunar range",
+  "dayDetailYear": "Year",
+  "dayDetailMonth": "Month",
+  "dayDetailDay": "Day",
+  "dayDetailLuckyHours": "Auspicious Hours",
+  "dayDetailUseDate": "Use this date",
+  "dayDetailMonthChiLabels": ["", "Tiger", "Rabbit", "Dragon", "Snake", "Horse", "Goat", "Monkey", "Rooster", "Dog", "Pig", "Rat", "Ox"],
+  "toolsFallback": "Loading tools...",
+  "themeToggleAria": "Toggle light or dark theme",
+  "themeLight": "Light",
+  "themeDark": "Dark",
+  "themeSystem": "System",
+  "accessibility": {
+    "skipToContent": "Skip to content"
+  },
+  "templates": {
+    "historyConfirmBody": "This action cannot be undone. All {count} history records will be permanently removed.",
+    "calendarMonthLabel": "Month {month}",
+    "calendarLunarCrossYear": "Year {startCan} {startChi} - {endCan} {endChi}",
+    "calendarLunarCrossMonth": "Month {startMonth} & {endMonth} · {can} {chi}",
+    "calendarLunarSingleMonth": "Month {month} · {can} {chi}",
+    "calendarDataNotice": "Lunar conversion supports years {minYear} to {maxYear}. Official compensatory leave days may vary year by year.",
+    "dayDetailOutOfRangeBody": "Temporal currently supports lunar conversion for {minYear} - {maxYear}.",
+    "dayDetailLunarDate": "Lunar day {day}, month {month}{leapSuffix}"
+  },
+  "dayDetailLunarLeapSuffix": " (leap)",
+  "datePicker": {
+    "placeholder": "Pick a date",
+    "selectMonth": "Select month",
+    "selectYear": "Select year",
+    "previousMonth": "Previous month",
+    "nextMonth": "Next month",
+    "openCalendar": "Open calendar",
+    "today": "Today",
+    "monthLabelTemplate": "{monthName}"
+  },
+  "toolsPage": {
+    "badge": "Tools",
+    "chooseTitle": "Choose a tool",
+    "chooseDescription": "Quick date lookup and calculations.",
+    "selectedDateLabel": "Selected date:",
+    "allTools": "All tools"
+  },
+  "toolMeta": {
+    "date-converter": {
+      "title": "Date Converter",
+      "description": "View one date in multiple formats, including lunar date and sexagenary cycle."
+    },
+    "date-difference": {
+      "title": "Date Difference",
+      "description": "Pick two dates to see the detailed difference between them."
+    },
+    "date-calculator": {
+      "title": "Add / Subtract Date",
+      "description": "Calculate a future or past date from a chosen reference date."
+    },
+    "age-calculator": {
+      "title": "Age Calculator",
+      "description": "Enter your birth date to calculate exact age down to the day."
+    },
+    "event-countdown": {
+      "title": "Event Countdown",
+      "description": "Pick a date and see the time remaining until the end of that day."
+    },
+    "working-days-calculator": {
+      "title": "Working Days",
+      "description": "Count working days between two dates, excluding weekends and selected holidays."
+    },
+    "leap-year": {
+      "title": "Leap Year Checker",
+      "description": "Enter a year to check whether it is a Gregorian leap year."
+    },
+    "day-of-week-finder": {
+      "title": "Day of Week Finder",
+      "description": "Pick any date to know exactly which weekday it is."
+    }
+  },
+  "tools": {
+    "ageCalculator": {
+      "birthDateLabel": "Your birth date *",
+      "birthDatePlaceholder": "Select your birth date...",
+      "birthDateHint": "Please enter your full date of birth.",
+      "clear": "Clear",
+      "calculate": "Calculate age",
+      "errorRequired": "Please select your birth date.",
+      "errorFuture": "Birth date cannot be in the future.",
+      "resultTemplate": "Your age is {years} years, {months} months, and {days} days.",
+      "historyType": "Age Calculator",
+      "historyResultTemplate": "Birth date: {date}\nResult: {years} years, {months} months, {days} days"
+    },
+    "dateCalculator": {
+      "dateLabel": "Reference date",
+      "amountLabel": "Amount *",
+      "unitLabel": "Unit *",
+      "unitPlaceholder": "Unit",
+      "clear": "Clear",
+      "add": "Add (+)",
+      "subtract": "Subtract (-)",
+      "resultTemplate": "Result date: {formattedDate}",
+      "historyType": "Add / Subtract Date",
+      "historyLabelBaseDate": "Base date",
+      "historyLabelAction": "Action",
+      "historyLabelResult": "Result",
+      "actionAdd": "Add",
+      "actionSubtract": "Subtract",
+      "units": {
+        "days": "Days",
+        "weeks": "Weeks",
+        "months": "Months",
+        "years": "Years"
+      }
+    },
+    "dateConverter": {
+      "clear": "Clear",
+      "convert": "Convert",
+      "historyType": "Date Converter",
+      "historySourceDate": "Base date",
+      "outOfRangeTemplate": "Lunar conversion currently supports years {minYear} to {maxYear}.",
+      "labels": {
+        "lunar": "Lunar date",
+        "canChi": "Sexagenary",
+        "iso": "ISO 8601",
+        "localizedText": "Text (localized)"
+      },
+      "localizedDatePattern": "eeee, MMMM d, yyyy",
+      "lunarValueTemplate": "Day {day}/{month}/{year}{leapSuffix}",
+      "lunarLeapSuffix": " (Leap month)",
+      "canChiValueTemplate": "Year {yearCan} {yearChi}, Month {monthCan}, Day {dayCan} {dayChi}"
+    },
+    "dateDifference": {
+      "startDate": "Start date",
+      "endDate": "End date",
+      "clear": "Clear",
+      "calculate": "Calculate",
+      "errorRequired": "Please select both start and end dates.",
+      "errorInvalidRange": "End date must be on or after start date.",
+      "historyType": "Date Difference",
+      "historyFrom": "From",
+      "historyTo": "To",
+      "historyResult": "Result",
+      "resultTemplate": "Difference: {years} years, {months} months, {days} days. (Total: {totalDays} days)",
+      "historyResultTemplate": "{years} years, {months} months, {days} days"
+    },
+    "dayOfWeekFinder": {
+      "clear": "Clear",
+      "find": "Find day",
+      "resultTemplate": "That date is: {dayName}",
+      "historyType": "Day of Week Finder",
+      "historyDate": "Date",
+      "historyResult": "Result"
+    },
+    "eventCountdown": {
+      "eventLabel": "Event name",
+      "eventPlaceholder": "Example: Tet holiday",
+      "dateLabel": "Event date",
+      "clear": "Clear",
+      "start": "Start",
+      "success": "Countdown started successfully",
+      "errorPastDate": "Please choose today or a future date.",
+      "unnamedEvent": "Event",
+      "historyType": "Event Countdown",
+      "historyEvent": "Event",
+      "historyTarget": "Count down to end of day",
+      "endedTemplate": "The day \"{name}\" has passed.",
+      "countdownTemplate": "{days}d {hours}h {minutes}m {seconds}s"
+    },
+    "leapYearChecker": {
+      "year": "Year",
+      "placeholder": "e.g. 2024",
+      "clear": "Clear",
+      "check": "Check",
+      "errorInvalid": "Please enter a valid year (1-9999).",
+      "resultTemplate": "Year {year} {resultWord} a leap year.",
+      "resultWordLeap": "is",
+      "resultWordNotLeap": "is not",
+      "historyType": "Leap Year Checker",
+      "historyResultTemplate": "Year: {year}\nResult: {status}",
+      "historyStatusLeap": "Leap year",
+      "historyStatusNotLeap": "Not a leap year"
+    },
+    "workingDaysCalculator": {
+      "startDate": "Start date",
+      "endDate": "End date",
+      "holidaysLabel": "Exclude these holidays/day-offs:",
+      "clear": "Clear",
+      "calculate": "Calculate",
+      "errorRequired": "Please select both start and end dates.",
+      "errorInvalidRange": "End date must be on or after start date.",
+      "resultTemplate": "There are {workingDays} working days in the selected range.",
+      "historyType": "Working Days",
+      "historyFrom": "From",
+      "historyTo": "To",
+      "historyResultLabel": "Result",
+      "historyResultTemplate": "{workingDays} working days"
+    }
+  },
+  "iching": {
+    "historyTitle": "I Ching Casting",
+    "historyResultLabel": "Hexagram",
+    "unchanged": "Unchanged",
+    "title": "Tianji",
+    "idleStatus": "Tap 6 times to cast a hexagram. Lines are stacked from bottom to top in order: 1st to 6th line.",
+    "progressLabel": "Progress",
+    "startCasting": "Begin Casting",
+    "continueCasting": "Continue casting",
+    "casting": "Casting line...",
+    "primaryHex": "Primary Hexagram",
+    "transformedHex": "Transformed Hexagram",
+    "reset": "Cast Again",
+    "transformedLead": "The situation transforms into",
+    "guideTitle": "First time using this? Here's how casting works",
+    "guideBody1": "Each cast simulates three coins to generate one line. After six casts, you get a full hexagram with lines arranged bottom to top.",
+    "guideBody2": "Because each line is yin or yang, there are 64 possible hexagrams. You will see the hexagram name and a short meaning for quick reading.",
+    "lineTypesTitle": "What do line types 6, 7, 8, 9 mean?",
+    "readTitle": "How should I read primary and transformed hexagrams?",
+    "readBody1": "The primary hexagram reflects your current state or question. If changing lines appear (6 or 9), a transformed hexagram indicates the next direction of change.",
+    "readBody2": "Without changing lines, read only the primary hexagram. With a transformed hexagram, treat the primary as the present and the transformed as the destination.",
+    "linesProgressTemplate": "{count}/6 lines cast. Continue to complete the hexagram.",
+    "statusWithChangingLines": "The primary hexagram shows the present state, while the transformed hexagram shows the direction of change.",
+    "statusWithoutChangingLines": "This cast has no changing lines, so you can focus on the primary hexagram.",
+    "lineLabels": ["1st", "2nd", "3rd", "4th", "5th", "Top"],
+    "lineTypeGuides": [
+      {
+        "code": "6",
+        "name": "Changing Yin",
+        "description": "A broken moving line. It changes to yang in the transformed hexagram."
+      },
+      {
+        "code": "7",
+        "name": "Stable Yang",
+        "description": "A solid stable line. It stays the same in both hexagrams."
+      },
+      {
+        "code": "8",
+        "name": "Stable Yin",
+        "description": "A broken stable line. It remains unchanged."
+      },
+      {
+        "code": "9",
+        "name": "Changing Yang",
+        "description": "A solid moving line. It changes to yin in the transformed hexagram."
+      }
+    ]
+  },
+  "dayDetailZodiacHours": {
+    "Tý": ["Rat (23-1)", "Ox (1-3)", "Rabbit (5-7)", "Horse (11-13)", "Monkey (15-17)", "Rooster (17-19)"],
+    "Sửu": ["Tiger (3-5)", "Rabbit (5-7)", "Snake (9-11)", "Monkey (15-17)", "Dog (19-21)", "Pig (21-23)"],
+    "Dần": ["Rat (23-1)", "Ox (1-3)", "Dragon (7-9)", "Snake (9-11)", "Goat (13-15)", "Dog (19-21)"],
+    "Mão": ["Rat (23-1)", "Tiger (3-5)", "Rabbit (5-7)", "Horse (11-13)", "Goat (13-15)", "Rooster (17-19)"],
+    "Thìn": ["Tiger (3-5)", "Dragon (7-9)", "Snake (9-11)", "Monkey (15-17)", "Rooster (17-19)", "Pig (21-23)"],
+    "Tỵ": ["Ox (1-3)", "Dragon (7-9)", "Horse (11-13)", "Goat (13-15)", "Dog (19-21)", "Pig (21-23)"],
+    "Ngọ": ["Rat (23-1)", "Ox (1-3)", "Rabbit (5-7)", "Horse (11-13)", "Monkey (15-17)", "Rooster (17-19)"],
+    "Mùi": ["Tiger (3-5)", "Rabbit (5-7)", "Snake (9-11)", "Monkey (15-17)", "Dog (19-21)", "Pig (21-23)"],
+    "Thân": ["Rat (23-1)", "Ox (1-3)", "Dragon (7-9)", "Snake (9-11)", "Goat (13-15)", "Dog (19-21)"],
+    "Dậu": ["Rat (23-1)", "Tiger (3-5)", "Rabbit (5-7)", "Horse (11-13)", "Goat (13-15)", "Rooster (17-19)"],
+    "Tuất": ["Tiger (3-5)", "Dragon (7-9)", "Snake (9-11)", "Monkey (15-17)", "Rooster (17-19)", "Pig (21-23)"],
+    "Hợi": ["Ox (1-3)", "Dragon (7-9)", "Horse (11-13)", "Goat (13-15)", "Dog (19-21)", "Pig (21-23)"]
+  }
+}

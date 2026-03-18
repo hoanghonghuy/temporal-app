@@ -1,0 +1,293 @@
+{
+  "languageName": "Tiếng Việt",
+  "languageOptionVi": "Tiếng Việt",
+  "languageOptionEn": "English",
+  "navCalendar": "Lịch Tháng",
+  "navIChing": "Gieo Quẻ",
+  "navTools": "Pháp Khí",
+  "menuAria": "Mở menu điều hướng",
+  "historyAria": "Mở sử ký tính toán",
+  "homeAria": "Về trang chủ",
+  "appSubtitle": "Thiên Cơ Lịch",
+  "footerMotto": "Thiên Đạo Vô Thường",
+  "footerDesignedBy": "Thiết kế bởi",
+  "routeLoading": "Đang tải nội dung...",
+  "routeErrorTitle": "Có lỗi khi tải trang",
+  "routeErrorBody": "Vui lòng thử lại hoặc quay về trang chủ.",
+  "routeErrorAction": "Về trang chủ",
+  "statusLoading": "Đang tải...",
+  "statusEmpty": "Chưa có dữ liệu.",
+  "historyTitle": "Sử Ký Tính Toán",
+  "historyDescription": "Hiển thị 20 kết quả gần nhất.",
+  "historyEmpty": "Chưa lưu kỳ nào.",
+  "historyClear": "Xóa Sử Ký",
+  "historyConfirmTitle": "Xóa tất cả lịch sử?",
+  "cancel": "Hủy",
+  "confirmDelete": "Xóa",
+  "calendarWeekdays": ["T2", "T3", "T4", "T5", "T6", "T7", "CN"],
+  "calendarToday": "Hôm nay",
+  "calendarQuickPick": "Chọn nhanh tháng/năm",
+  "calendarMonthPlaceholder": "Tháng",
+  "calendarYearPlaceholder": "Năm",
+  "calendarPrevMonthAria": "Tháng trước",
+  "calendarNextMonthAria": "Tháng sau",
+  "calendarOutOfRange": "Ngoài phạm vi âm lịch hỗ trợ",
+  "dayDetailOutOfRangeTitle": "Ngoài phạm vi âm lịch hỗ trợ",
+  "dayDetailYear": "Năm",
+  "dayDetailMonth": "Tháng",
+  "dayDetailDay": "Ngày",
+  "dayDetailLuckyHours": "Giờ Hoàng Đạo",
+  "dayDetailUseDate": "Sử dụng ngày này",
+  "dayDetailMonthChiLabels": ["", "Dần", "Mão", "Thìn", "Tỵ", "Ngọ", "Mùi", "Thân", "Dậu", "Tuất", "Hợi", "Tý", "Sửu"],
+  "toolsFallback": "Đang tải pháp khí...",
+  "themeToggleAria": "Đổi giao diện sáng/tối",
+  "themeLight": "Nhật Quang",
+  "themeDark": "Nguyệt Huy",
+  "themeSystem": "Thiên Đạo",
+  "accessibility": {
+    "skipToContent": "Bỏ qua để vào nội dung"
+  },
+  "templates": {
+    "historyConfirmBody": "Hành động này không thể hoàn tác. Tất cả {count} mục lịch sử sẽ bị xóa vĩnh viễn.",
+    "calendarMonthLabel": "Tháng {month}",
+    "calendarLunarCrossYear": "Năm {startCan} {startChi} - {endCan} {endChi}",
+    "calendarLunarCrossMonth": "Tháng {startMonth} & {endMonth} · {can} {chi}",
+    "calendarLunarSingleMonth": "Tháng {month} · {can} {chi}",
+    "calendarDataNotice": "Dữ liệu âm lịch hỗ trợ từ {minYear} đến {maxYear}. Lịch nghỉ bù thực tế có thể thay đổi theo thông báo từng năm.",
+    "dayDetailOutOfRangeBody": "Temporal hiện hỗ trợ chuyển đổi Âm lịch trong giai đoạn {minYear} - {maxYear}.",
+    "dayDetailLunarDate": "Ngày {day} tháng {month}{leapSuffix} Âm Lịch"
+  },
+  "dayDetailLunarLeapSuffix": " (nhuận)",
+  "datePicker": {
+    "placeholder": "Chọn một ngày",
+    "selectMonth": "Chọn tháng",
+    "selectYear": "Chọn năm",
+    "previousMonth": "Tháng trước",
+    "nextMonth": "Tháng sau",
+    "openCalendar": "Mở lịch",
+    "today": "Hôm nay",
+    "monthLabelTemplate": "Tháng {month}"
+  },
+  "toolsPage": {
+    "badge": "Pháp Khí",
+    "chooseTitle": "Chọn công cụ",
+    "chooseDescription": "Tra cứu và tính toán ngày tháng nhanh chóng.",
+    "selectedDateLabel": "Đã chọn ngày:",
+    "allTools": "Tất cả công cụ"
+  },
+  "toolMeta": {
+    "date-converter": {
+      "title": "Bộ Chuyển Đổi Ngày",
+      "description": "Xem một ngày dưới nhiều định dạng khác nhau, bao gồm cả âm lịch và can chi."
+    },
+    "date-difference": {
+      "title": "Tính Khoảng Cách 2 Ngày",
+      "description": "Chọn hai mốc thời gian để xem khoảng cách chi tiết giữa chúng."
+    },
+    "date-calculator": {
+      "title": "Thêm / Bớt Ngày",
+      "description": "Tính toán một ngày trong tương lai hoặc quá khứ từ một mốc thời gian."
+    },
+    "age-calculator": {
+      "title": "Tính Tuổi",
+      "description": "Nhập ngày sinh của bạn để tính tuổi chính xác đến từng ngày."
+    },
+    "event-countdown": {
+      "title": "Đếm Ngược Sự Kiện",
+      "description": "Chọn một ngày và xem thời gian còn lại đến cuối ngày đó."
+    },
+    "working-days-calculator": {
+      "title": "Tính Ngày Làm Việc",
+      "description": "Tính số ngày làm việc giữa hai mốc thời gian, tự động loại trừ cuối tuần và ngày lễ."
+    },
+    "leap-year": {
+      "title": "Kiểm Tra Năm Nhuận",
+      "description": "Nhập một năm để kiểm tra xem đó có phải là năm nhuận dương lịch hay không."
+    },
+    "day-of-week-finder": {
+      "title": "Tìm Thứ Trong Tuần",
+      "description": "Chọn một ngày bất kỳ để biết chính xác đó là thứ mấy."
+    }
+  },
+  "tools": {
+    "ageCalculator": {
+      "birthDateLabel": "Ngày sinh của bạn *",
+      "birthDatePlaceholder": "Chọn ngày sinh để bắt đầu...",
+      "birthDateHint": "Hãy nhập ngày tháng năm sinh của bạn.",
+      "clear": "Xóa",
+      "calculate": "Tính Tuổi",
+      "errorRequired": "Vui lòng chọn ngày sinh của bạn.",
+      "errorFuture": "Ngày sinh không thể ở trong tương lai.",
+      "resultTemplate": "Tuổi của bạn là: {years} năm, {months} tháng, và {days} ngày.",
+      "historyType": "Tính Tuổi",
+      "historyResultTemplate": "Ngày sinh: {date}\nKết quả: {years} năm, {months} tháng, {days} ngày"
+    },
+    "dateCalculator": {
+      "dateLabel": "Chọn một ngày trọng đại",
+      "amountLabel": "Số lượng *",
+      "unitLabel": "Đơn vị *",
+      "unitPlaceholder": "Đơn vị",
+      "clear": "Xóa",
+      "add": "Thêm (+)",
+      "subtract": "Bớt (-)",
+      "resultTemplate": "Ngày kết quả là: {formattedDate}",
+      "historyType": "Thêm / Bớt Ngày",
+      "historyLabelBaseDate": "Ngày gốc",
+      "historyLabelAction": "Thao tác",
+      "historyLabelResult": "Kết quả",
+      "actionAdd": "Thêm",
+      "actionSubtract": "Bớt",
+      "units": {
+        "days": "Ngày",
+        "weeks": "Tuần",
+        "months": "Tháng",
+        "years": "Năm"
+      }
+    },
+    "dateConverter": {
+      "clear": "Xóa",
+      "convert": "Chuyển đổi",
+      "historyType": "Bộ Chuyển Đổi Ngày",
+      "historySourceDate": "Ngày gốc",
+      "outOfRangeTemplate": "Bộ chuyển đổi Âm lịch hiện chỉ hỗ trợ các năm từ {minYear} đến {maxYear}.",
+      "labels": {
+        "lunar": "Âm Lịch",
+        "canChi": "Can Chi",
+        "iso": "ISO 8601",
+        "localizedText": "Văn bản (Việt)"
+      },
+      "localizedDatePattern": "eeee, 'ngày' dd 'tháng' MM 'năm' yyyy",
+      "lunarValueTemplate": "Ngày {day}/{month}/{year}{leapSuffix}",
+      "lunarLeapSuffix": " (Nhuận)",
+      "canChiValueTemplate": "Năm {yearCan} {yearChi}, Tháng {monthCan}, Ngày {dayCan} {dayChi}"
+    },
+    "dateDifference": {
+      "startDate": "Ngày bắt đầu",
+      "endDate": "Ngày kết thúc",
+      "clear": "Xóa",
+      "calculate": "Tính toán",
+      "errorRequired": "Vui lòng chọn cả ngày bắt đầu và ngày kết thúc.",
+      "errorInvalidRange": "Ngày kết thúc phải sau ngày bắt đầu.",
+      "historyType": "Tính Khoảng Cách 2 Ngày",
+      "historyFrom": "Từ",
+      "historyTo": "Đến",
+      "historyResult": "Kết quả",
+      "resultTemplate": "Khoảng cách là {years} năm, {months} tháng, {days} ngày. (Tổng cộng {totalDays} ngày)",
+      "historyResultTemplate": "{years} năm, {months} tháng, {days} ngày"
+    },
+    "dayOfWeekFinder": {
+      "clear": "Xóa",
+      "find": "Tìm Thứ",
+      "resultTemplate": "Ngày đó là: {dayName}",
+      "historyType": "Tìm Thứ Trong Tuần",
+      "historyDate": "Ngày",
+      "historyResult": "Kết quả"
+    },
+    "eventCountdown": {
+      "eventLabel": "Tên sự kiện",
+      "eventPlaceholder": "Ví dụ: Tết Nguyên Đán",
+      "dateLabel": "Ngày diễn ra",
+      "clear": "Xóa",
+      "start": "Bắt đầu",
+      "success": "Bắt đầu đếm ngược thành công",
+      "errorPastDate": "Vui lòng chọn hôm nay hoặc một ngày trong tương lai.",
+      "unnamedEvent": "Sự kiện",
+      "historyType": "Đếm Ngược Sự Kiện",
+      "historyEvent": "Sự kiện",
+      "historyTarget": "Đếm đến cuối ngày",
+      "endedTemplate": "Ngày \"{name}\" đã khép lại.",
+      "countdownTemplate": "{days} ngày {hours} giờ {minutes} phút {seconds} giây"
+    },
+    "leapYearChecker": {
+      "year": "Năm",
+      "placeholder": "VD: 2024",
+      "clear": "Xóa",
+      "check": "Kiểm tra",
+      "errorInvalid": "Vui lòng nhập một năm hợp lệ (1-9999).",
+      "resultTemplate": "Năm {year} {resultWord} năm nhuận.",
+      "resultWordLeap": "là",
+      "resultWordNotLeap": "không phải là",
+      "historyType": "Kiểm Tra Năm Nhuận",
+      "historyResultTemplate": "Năm: {year}\nKết quả: {status}",
+      "historyStatusLeap": "Là năm nhuận",
+      "historyStatusNotLeap": "Không phải năm nhuận"
+    },
+    "workingDaysCalculator": {
+      "startDate": "Ngày bắt đầu",
+      "endDate": "Ngày kết thúc",
+      "holidaysLabel": "Loại trừ các ngày nghỉ/lễ sau:",
+      "clear": "Xóa",
+      "calculate": "Tính toán",
+      "errorRequired": "Vui lòng chọn cả ngày bắt đầu và ngày kết thúc.",
+      "errorInvalidRange": "Ngày kết thúc phải sau ngày bắt đầu.",
+      "resultTemplate": "Có tổng cộng {workingDays} ngày làm việc trong khoảng thời gian đã chọn.",
+      "historyType": "Tính Ngày Làm Việc",
+      "historyFrom": "Từ",
+      "historyTo": "Đến",
+      "historyResultLabel": "Kết quả",
+      "historyResultTemplate": "{workingDays} ngày làm việc"
+    }
+  },
+  "iching": {
+    "historyTitle": "Gieo Quẻ",
+    "historyResultLabel": "Quẻ",
+    "unchanged": "Không đổi",
+    "title": "Thiên Cơ",
+    "idleStatus": "Bấm 6 lần để tạo quẻ. Các hào được xếp từ dưới lên trên theo thứ tự Sơ, Nhị, Tam, Tứ, Ngũ, Thượng.",
+    "progressLabel": "Tiến độ",
+    "startCasting": "Khởi Tâm Gieo Quẻ",
+    "continueCasting": "Tiếp tục gieo",
+    "casting": "Đang định hào...",
+    "primaryHex": "Bản Quái",
+    "transformedHex": "Biến Quái",
+    "reset": "Gieo Quẻ Khác",
+    "transformedLead": "Sự việc biến chuyển thành",
+    "guideTitle": "Mới dùng lần đầu? Đây là cách gieo quẻ hoạt động",
+    "guideBody1": "Mỗi lần bấm nút gieo, 3 đồng tiền sẽ được mô phỏng để tạo ra 1 hào. Gieo đủ 6 lần sẽ tạo thành 1 quẻ hoàn chỉnh, xếp từ dưới lên trên.",
+    "guideBody2": "Mỗi hào chỉ có thể là âm hoặc dương, nên tổng cộng có 64 tổ hợp quẻ. Kết quả hiển thị tên quẻ và ý nghĩa ngắn gọn để bạn đọc nhanh.",
+    "lineTypesTitle": "4 loại hào 6, 7, 8, 9 nghĩa là gì?",
+    "readTitle": "Bản quái và biến quái nên đọc như thế nào?",
+    "readBody1": "Bản quái phản ánh trạng thái hiện tại hoặc vấn đề bạn đang hỏi. Nếu xuất hiện hào động (6 hoặc 9), sẽ có thêm biến quái để chỉ ra xu hướng chuyển hóa tiếp theo.",
+    "readBody2": "Nếu không có hào động, bạn chỉ cần đọc bản quái. Nếu có biến quái, hãy xem bản quái là hiện tại và biến quái là điểm đến.",
+    "linesProgressTemplate": "Đã có {count}/6 hào. Tiếp tục gieo để hoàn thành quẻ.",
+    "statusWithChangingLines": "Bản quái thể hiện trạng thái hiện tại, còn biến quái cho thấy hướng chuyển hóa khi có hào động.",
+    "statusWithoutChangingLines": "Quẻ này không có hào động, vì vậy bạn chỉ cần đọc bản quái để luận ý nghĩa chính.",
+    "lineLabels": ["Sơ", "Nhị", "Tam", "Tứ", "Ngũ", "Thượng"],
+    "lineTypeGuides": [
+      {
+        "code": "6",
+        "name": "Âm động",
+        "description": "Hào đứt và đang biến. Khi luận sang biến quái, hào này đổi thành dương."
+      },
+      {
+        "code": "7",
+        "name": "Dương tĩnh",
+        "description": "Hào liền và ổn định. Hào này giữ nguyên ở bản quái lẫn biến quái."
+      },
+      {
+        "code": "8",
+        "name": "Âm tĩnh",
+        "description": "Hào đứt và ổn định. Hào này giữ nguyên, không tạo chuyển động."
+      },
+      {
+        "code": "9",
+        "name": "Dương động",
+        "description": "Hào liền và đang biến. Khi luận sang biến quái, hào này đổi thành âm."
+      }
+    ]
+  },
+  "dayDetailZodiacHours": {
+    "Tý": ["Tý (23-1)", "Sửu (1-3)", "Mão (5-7)", "Ngọ (11-13)", "Thân (15-17)", "Dậu (17-19)"],
+    "Sửu": ["Dần (3-5)", "Mão (5-7)", "Tỵ (9-11)", "Thân (15-17)", "Tuất (19-21)", "Hợi (21-23)"],
+    "Dần": ["Tý (23-1)", "Sửu (1-3)", "Thìn (7-9)", "Tỵ (9-11)", "Mùi (13-15)", "Tuất (19-21)"],
+    "Mão": ["Tý (23-1)", "Dần (3-5)", "Mão (5-7)", "Ngọ (11-13)", "Mùi (13-15)", "Dậu (17-19)"],
+    "Thìn": ["Dần (3-5)", "Thìn (7-9)", "Tỵ (9-11)", "Thân (15-17)", "Dậu (17-19)", "Hợi (21-23)"],
+    "Tỵ": ["Sửu (1-3)", "Thìn (7-9)", "Ngọ (11-13)", "Mùi (13-15)", "Tuất (19-21)", "Hợi (21-23)"],
+    "Ngọ": ["Tý (23-1)", "Sửu (1-3)", "Mão (5-7)", "Ngọ (11-13)", "Thân (15-17)", "Dậu (17-19)"],
+    "Mùi": ["Dần (3-5)", "Mão (5-7)", "Tỵ (9-11)", "Thân (15-17)", "Tuất (19-21)", "Hợi (21-23)"],
+    "Thân": ["Tý (23-1)", "Sửu (1-3)", "Thìn (7-9)", "Tỵ (9-11)", "Mùi (13-15)", "Tuất (19-21)"],
+    "Dậu": ["Tý (23-1)", "Dần (3-5)", "Mão (5-7)", "Ngọ (11-13)", "Mùi (13-15)", "Dậu (17-19)"],
+    "Tuất": ["Dần (3-5)", "Thìn (7-9)", "Tỵ (9-11)", "Thân (15-17)", "Dậu (17-19)", "Hợi (21-23)"],
+    "Hợi": ["Sửu (1-3)", "Thìn (7-9)", "Ngọ (11-13)", "Mùi (13-15)", "Tuất (19-21)", "Hợi (21-23)"]
+  }
+}

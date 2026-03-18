@@ -1,0 +1,322 @@
+{
+  "100000": {
+    "id": 24,
+    "name": "Fu (Return)",
+    "meaning": "Renewal, return, and recovery."
+  },
+  "100001": {
+    "id": 27,
+    "name": "Yi (Nourishment)",
+    "meaning": "Nurture, food, and sustaining life."
+  },
+  "100010": {
+    "id": 3,
+    "name": "Zhun (Difficulty at the Beginning)",
+    "meaning": "Initial hardship and obstacles at the start."
+  },
+  "100011": {
+    "id": 42,
+    "name": "Yi (Increase)",
+    "meaning": "Gain, growth, and benefit."
+  },
+  "100100": {
+    "id": 51,
+    "name": "Zhen (The Arousing)",
+    "meaning": "Shock, awakening, and sudden movement."
+  },
+  "100101": {
+    "id": 21,
+    "name": "Shi He (Biting Through)",
+    "meaning": "Firm action, law, and removing obstacles."
+  },
+  "100110": {
+    "id": 17,
+    "name": "Sui (Following)",
+    "meaning": "Adaptation, following, and alignment."
+  },
+  "100111": {
+    "id": 25,
+    "name": "Wu Wang (Innocence)",
+    "meaning": "Sincerity, spontaneity, and the unforced way."
+  },
+  "101000": {
+    "id": 36,
+    "name": "Ming Yi (Darkening of the Light)",
+    "meaning": "Light wounded; conceal brilliance to endure."
+  },
+  "101001": {
+    "id": 22,
+    "name": "Bi (Grace)",
+    "meaning": "Adornment, refinement, and appearance."
+  },
+  "101010": {
+    "id": 63,
+    "name": "Ji Ji (After Completion)",
+    "meaning": "Completion, order, and vigilance after success."
+  },
+  "101011": {
+    "id": 37,
+    "name": "Jia Ren (The Family)",
+    "meaning": "Household order, roles, and inner cohesion."
+  },
+  "101100": {
+    "id": 55,
+    "name": "Feng (Abundance)",
+    "meaning": "Fullness, peak power, and flourishing."
+  },
+  "101101": {
+    "id": 30,
+    "name": "Li (The Clinging)",
+    "meaning": "Brightness, attachment, and illumination."
+  },
+  "101110": {
+    "id": 49,
+    "name": "Ge (Revolution)",
+    "meaning": "Transformation, reform, and renewal."
+  },
+  "101111": {
+    "id": 13,
+    "name": "Tong Ren (Fellowship)",
+    "meaning": "Community, cooperation, and shared purpose."
+  },
+  "110000": {
+    "id": 19,
+    "name": "Lin (Approach)",
+    "meaning": "Advance, guidance, and oversight."
+  },
+  "110001": {
+    "id": 41,
+    "name": "Sun (Decrease)",
+    "meaning": "Reduction, simplification, and sacrifice."
+  },
+  "110010": {
+    "id": 60,
+    "name": "Jie (Limitation)",
+    "meaning": "Boundaries, measure, and moderation."
+  },
+  "110011": {
+    "id": 61,
+    "name": "Zhong Fu (Inner Truth)",
+    "meaning": "Sincerity, trust, and inner alignment."
+  },
+  "110100": {
+    "id": 54,
+    "name": "Gui Mei (The Marrying Maiden)",
+    "meaning": "Unequal union and adapting to position."
+  },
+  "110101": {
+    "id": 38,
+    "name": "Kui (Opposition)",
+    "meaning": "Difference, divergence, and tension."
+  },
+  "110110": {
+    "id": 58,
+    "name": "Dui (The Joyous)",
+    "meaning": "Pleasure, openness, and harmonious exchange."
+  },
+  "110111": {
+    "id": 10,
+    "name": "Lu (Treading)",
+    "meaning": "Careful conduct, propriety, and mindful steps."
+  },
+  "111000": {
+    "id": 11,
+    "name": "Tai (Peace)",
+    "meaning": "Harmony, prosperity, and smooth progress."
+  },
+  "111001": {
+    "id": 26,
+    "name": "Da Chu (Great Taming)",
+    "meaning": "Great restraint, cultivation, and stored strength."
+  },
+  "111010": {
+    "id": 5,
+    "name": "Xu (Waiting)",
+    "meaning": "Wait with patience for the right moment."
+  },
+  "111011": {
+    "id": 9,
+    "name": "Xiao Chu (Small Taming)",
+    "meaning": "Small accumulations and temporary restraint."
+  },
+  "111100": {
+    "id": 34,
+    "name": "Da Zhuang (Great Power)",
+    "meaning": "Strong force, vigor, and assertive energy."
+  },
+  "111101": {
+    "id": 14,
+    "name": "Da You (Great Possession)",
+    "meaning": "Great abundance, success, and resources."
+  },
+  "111110": {
+    "id": 43,
+    "name": "Guai (Breakthrough)",
+    "meaning": "Decisive action and declaring the truth."
+  },
+  "111111": {
+    "id": 1,
+    "name": "Qian (The Creative)",
+    "meaning": "Heaven, strength, clarity, and initiative."
+  },
+  "000000": {
+    "id": 2,
+    "name": "Kun (The Receptive)",
+    "meaning": "Earth, yielding, support, and devotion."
+  },
+  "010001": {
+    "id": 4,
+    "name": "Meng (Youthful Folly)",
+    "meaning": "Inexperience and confusion; learning is needed."
+  },
+  "010111": {
+    "id": 6,
+    "name": "Song (Conflict)",
+    "meaning": "Dispute, litigation, and disagreement."
+  },
+  "010000": {
+    "id": 7,
+    "name": "Shi (The Army)",
+    "meaning": "Discipline, leadership, and organized force."
+  },
+  "000010": {
+    "id": 8,
+    "name": "Bi (Holding Together)",
+    "meaning": "Union, closeness, and mutual support."
+  },
+  "000111": {
+    "id": 12,
+    "name": "Pi (Standstill)",
+    "meaning": "Stagnation, blockage, and decline."
+  },
+  "001000": {
+    "id": 15,
+    "name": "Qian (Modesty)",
+    "meaning": "Humility, restraint, and balance."
+  },
+  "000100": {
+    "id": 16,
+    "name": "Yu (Enthusiasm)",
+    "meaning": "Joy, readiness, and momentum."
+  },
+  "011001": {
+    "id": 18,
+    "name": "Gu (Work on Decay)",
+    "meaning": "Repairing corruption and correcting old faults."
+  },
+  "000011": {
+    "id": 20,
+    "name": "Guan (Contemplation)",
+    "meaning": "Observation, reflection, and perspective."
+  },
+  "000001": {
+    "id": 23,
+    "name": "Bo (Splitting Apart)",
+    "meaning": "Erosion, loss, and disintegration."
+  },
+  "011110": {
+    "id": 28,
+    "name": "Da Guo (Great Preponderance)",
+    "meaning": "Excess pressure and structural strain."
+  },
+  "010010": {
+    "id": 29,
+    "name": "Kan (The Abyss)",
+    "meaning": "Danger, trials, and repeated challenges."
+  },
+  "001110": {
+    "id": 31,
+    "name": "Xian (Influence)",
+    "meaning": "Attraction, resonance, and mutual response."
+  },
+  "011100": {
+    "id": 32,
+    "name": "Heng (Duration)",
+    "meaning": "Persistence, continuity, and constancy."
+  },
+  "001111": {
+    "id": 33,
+    "name": "Dun (Retreat)",
+    "meaning": "Withdrawal, strategic retreat, and preservation."
+  },
+  "000101": {
+    "id": 35,
+    "name": "Jin (Progress)",
+    "meaning": "Advancement, growth, and rising visibility."
+  },
+  "001010": {
+    "id": 39,
+    "name": "Jian (Obstruction)",
+    "meaning": "Hindrance, difficulty, and limping progress."
+  },
+  "010100": {
+    "id": 40,
+    "name": "Xie (Deliverance)",
+    "meaning": "Release, relief, and resolution."
+  },
+  "011111": {
+    "id": 44,
+    "name": "Gou (Coming to Meet)",
+    "meaning": "Unexpected encounter and subtle influence."
+  },
+  "000110": {
+    "id": 45,
+    "name": "Cui (Gathering Together)",
+    "meaning": "Assembly, convergence, and shared focus."
+  },
+  "011000": {
+    "id": 46,
+    "name": "Sheng (Pushing Upward)",
+    "meaning": "Rising step by step through steady effort."
+  },
+  "010110": {
+    "id": 47,
+    "name": "Kun (Oppression)",
+    "meaning": "Constraint, exhaustion, and pressure."
+  },
+  "011010": {
+    "id": 48,
+    "name": "Jing (The Well)",
+    "meaning": "Source, nourishment, and communal resource."
+  },
+  "011101": {
+    "id": 50,
+    "name": "Ding (The Cauldron)",
+    "meaning": "Stability, culture, and spiritual nourishment."
+  },
+  "001001": {
+    "id": 52,
+    "name": "Gen (Keeping Still)",
+    "meaning": "Stillness, stopping, and composure."
+  },
+  "001011": {
+    "id": 53,
+    "name": "Jian (Development)",
+    "meaning": "Gradual progress and patient maturation."
+  },
+  "001101": {
+    "id": 56,
+    "name": "Lu (The Wanderer)",
+    "meaning": "Travel, impermanence, and caution away from home."
+  },
+  "011011": {
+    "id": 57,
+    "name": "Xun (The Gentle)",
+    "meaning": "Penetrating influence, flexibility, and humility."
+  },
+  "010011": {
+    "id": 59,
+    "name": "Huan (Dispersion)",
+    "meaning": "Dissolving barriers and spreading tension."
+  },
+  "001100": {
+    "id": 62,
+    "name": "Xiao Guo (Small Preponderance)",
+    "meaning": "Small excess; attend to details."
+  },
+  "010101": {
+    "id": 64,
+    "name": "Wei Ji (Before Completion)",
+    "meaning": "Not yet finished; transition and becoming."
+  }
+}
