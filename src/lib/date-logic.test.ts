@@ -54,4 +54,36 @@ describe("lunar guards", () => {
     expect(holidays.length).toBeGreaterThan(0);
     expect(holidays.every((holiday) => holiday.date.getFullYear() === 2101)).toBe(true);
   });
+
+  it("maps can chi correctly for Tet 2026", () => {
+    const lunar = convertSolar2Lunar(17, 2, 2026);
+
+    expect(lunar).toEqual([
+      1,
+      1,
+      2026,
+      false,
+      "Nh\u00e2m",
+      "Tu\u1ea5t",
+      "Canh",
+      "B\u00ednh",
+      "Ng\u1ecd",
+    ]);
+  });
+
+  it("maps can chi correctly for Tet 2024", () => {
+    const lunar = convertSolar2Lunar(10, 2, 2024);
+
+    expect(lunar).toEqual([
+      1,
+      1,
+      2024,
+      false,
+      "Gi\u00e1p",
+      "Th\u00ecn",
+      "B\u00ednh",
+      "Gi\u00e1p",
+      "Th\u00ecn",
+    ]);
+  });
 });
