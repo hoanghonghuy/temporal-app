@@ -25,6 +25,7 @@ const tools = [
   { href: "/tools#working-days-calculator", label: "Tính Ngày Làm Việc" },
   { href: "/tools#leap-year", label: "Kiểm Tra Năm Nhuận" },
   { href: "/tools#day-of-week-finder", label: "Tìm Thứ Trong Tuần" },
+  { href: "/iching", label: "Gieo Quẻ Kinh Dịch" },
 ];
 
 export function Header({ onHistoryToggle }: HeaderProps) {
@@ -56,6 +57,7 @@ export function Header({ onHistoryToggle }: HeaderProps) {
             <SheetContent side="left" className="w-full sm:w-[320px]">
               <div className="mt-8 flex flex-col">
                 <MobileNavLink to="/" className="text-base font-semibold font-serif">Lịch Tháng</MobileNavLink>
+                <MobileNavLink to="/iching" className="text-base font-semibold font-serif">Gieo Quẻ</MobileNavLink>
                 <Accordion type="single" collapsible className="w-full">
                   <AccordionItem value="tools-accordion" className="border-b-0">
                     <div className="flex items-center text-base font-semibold text-muted-foreground">
@@ -69,7 +71,7 @@ export function Header({ onHistoryToggle }: HeaderProps) {
                       <AccordionTrigger className="p-2 -mr-2 hover:text-primary [&[data-state=open]>svg]:rotate-180" />
                     </div>
                     <AccordionContent className="pl-4">
-                      {tools.map(tool => (
+                      {tools.filter(t => t.href !== "/iching").map(tool => (
                         <MobileNavLink key={tool.href} to={tool.href}>{tool.label}</MobileNavLink>
                       ))}
                     </AccordionContent>
@@ -83,6 +85,7 @@ export function Header({ onHistoryToggle }: HeaderProps) {
         {/* Desktop Menu */}
         <nav className="hidden md:flex items-center space-x-1">
           <NavLink to="/" className={navLinkClass}>Lịch Tháng</NavLink>
+          <NavLink to="/iching" className={navLinkClass}>Gieo Quẻ</NavLink>
           <NavLink to="/tools" className={navLinkClass}>Pháp Khí</NavLink>
         </nav>
 

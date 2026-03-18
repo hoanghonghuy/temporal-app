@@ -17,6 +17,11 @@ const ToolsPage = lazy(async () => {
   return { default: module.ToolsPage };
 });
 
+const IChingPage = lazy(async () => {
+  const module = await import('./pages/IChingPage');
+  return { default: module.IChingPage };
+});
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -35,6 +40,14 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<RouteFallback />}>
             <ToolsPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: "iching",
+        element: (
+          <Suspense fallback={<RouteFallback />}>
+            <IChingPage />
           </Suspense>
         ),
       },

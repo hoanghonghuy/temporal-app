@@ -84,15 +84,26 @@ export function DayDetailModal({ selectedDay, onClose, holidaysInYear }: DayDeta
           <div className="text-center p-4 rounded-lg bg-primary/5 border border-primary/10">
             {(() => {
               const [lunarDay, lunarMonth, , isLeap, dayCan, dayChi, monthCan, yearCan, yearChi] = lunarInfo;
+              const THANG_CHI = ["", "Dần", "Mão", "Thìn", "Tỵ", "Ngọ", "Mùi", "Thân", "Dậu", "Tuất", "Hợi", "Tý", "Sửu"];
               return (
                 <>
-            <p className="font-bold text-xl text-primary font-serif">
-              Ngày {lunarDay} tháng {lunarMonth} {isLeap ? "(nhuận)" : ""}
-            </p>
-            <p className="font-serif text-foreground/80">Năm {yearCan} {yearChi}</p>
-            <p className="text-sm text-muted-foreground mt-1">
-              Ngày {dayCan} {dayChi} · Tháng {monthCan}
-            </p>
+                  <p className="font-bold text-xl text-primary font-serif mb-2">
+                    Ngày {lunarDay} tháng {lunarMonth} {isLeap ? "(nhuận)" : ""} Âm Lịch
+                  </p>
+                  <div className="grid grid-cols-3 gap-2 text-sm mt-3 border-t border-primary/10 pt-3">
+                    <div>
+                      <p className="text-muted-foreground text-xs uppercase tracking-wider mb-1">Năm</p>
+                      <p className="font-medium font-serif">{yearCan} {yearChi}</p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground text-xs uppercase tracking-wider mb-1">Tháng</p>
+                      <p className="font-medium font-serif">{monthCan} {THANG_CHI[lunarMonth]}</p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground text-xs uppercase tracking-wider mb-1">Ngày</p>
+                      <p className="font-medium font-serif">{dayCan} {dayChi}</p>
+                    </div>
+                  </div>
                 </>
               );
             })()}

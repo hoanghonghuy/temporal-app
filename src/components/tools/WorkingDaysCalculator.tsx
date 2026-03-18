@@ -9,6 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useHistory } from "@/contexts/HistoryContext";
 import { DatePickerWithToday } from "@/components/ui/date-picker-with-today";
 import { MAX_SUPPORTED_SOLAR_DATE, MIN_SUPPORTED_SOLAR_DATE } from "@/lib/lunar-converter";
+import { ToolResultDisplay } from "@/components/ui/tool-result-display";
 
 
 interface WorkingDaysCalculatorProps { id: string; }
@@ -144,9 +145,9 @@ export function WorkingDaysCalculator({ id }: WorkingDaysCalculatorProps) {
         )}
         {error && <p className="text-sm text-destructive">{error}</p>}
         {result && (
-          <div className="mt-2 rounded-lg border border-primary/20 bg-primary/5 p-3 text-sm gold-glow">
-            <p className="font-medium text-foreground font-serif text-center italic leading-relaxed">{result}</p>
-          </div>
+          <ToolResultDisplay>
+            {result}
+          </ToolResultDisplay>
         )}
       </div>
       <CardFooter className="justify-between pt-6 px-0">

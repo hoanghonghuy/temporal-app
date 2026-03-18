@@ -6,6 +6,7 @@ import { DatePicker } from "@/components/ui/date-picker";
 import { Label } from "@/components/ui/label";
 import { useHistory } from "@/contexts/HistoryContext";
 import { format } from "date-fns";
+import { ToolResultDisplay } from "@/components/ui/tool-result-display";
 
 interface AgeCalculatorProps { id: string; }
 
@@ -71,9 +72,9 @@ export function AgeCalculator({ id }: AgeCalculatorProps) {
         </div>
         {error && <p className="text-sm text-destructive">{error}</p>}
         {result && (
-          <div className="mt-2 rounded-lg border border-primary/10 bg-primary/5 p-3 text-sm gold-glow animate-in fade-in duration-300">
-            <p className="font-medium text-foreground font-serif text-center italic">{result}</p>
-          </div>
+          <ToolResultDisplay>
+            {result}
+          </ToolResultDisplay>
         )}
       </div>
       <CardFooter className="justify-between pt-6 px-0">
