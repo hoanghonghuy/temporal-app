@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { getDateDifferenceBreakdown, getCountdownTargetDate } from "./date-logic";
-import { convertSolar2Lunar } from "./lunar-converter";
+import { convertLunar2Solar, convertSolar2Lunar } from "./lunar-converter";
 import { getVnHolidays } from "./vn-holidays";
 
 describe("getDateDifferenceBreakdown", () => {
@@ -64,6 +64,57 @@ describe("lunar guards", () => {
       expect.arrayContaining(["Valentine (Lễ tình nhân)", "Mùng 5 Tết"])
     );
     expect(holidays).toHaveLength(2);
+  });
+
+  it("includes broader Vietnamese observances without treating all of them as days off", () => {
+    const holidays = getVnHolidays(2024);
+    const childrenDay = holidays.find((holiday) => holiday.name === "Quốc tế Thiếu nhi");
+    const liberationDay = holidays.find((holiday) => holiday.name === "Ngày Giải phóng miền Nam, thống nhất đất nước");
+    const valentine = holidays.find((holiday) => holiday.name === "Valentine (Lễ tình nhân)");
+
+    expect(childrenDay).toBeDefined();
+    expect(liberationDay?.isDayOff).toBe(true);
+    expect(valentine?.isDayOff).toBe(false);
+  });
+
+  it("keeps multiple traditional observances that share the same lunar date", () => {
+    const sharedDate = convertLunar2Solar(15, 7, 2024, false);
+
+    expect(sharedDate).not.toBeNull();
+
+    const holidays = getVnHolidays(sharedDate!.getFullYear()).filter(
+      (holiday) =>
+        holiday.date.getFullYear() === sharedDate!.getFullYear() &&
+        holiday.date.getMonth() === sharedDate!.getMonth() &&
+        holiday.date.getDate() === sharedDate!.getDate()
+    );
+
+    expect(holidays.map((holiday) => holiday.name)).toEqual(
+      expect.arrayContaining(["Lễ Vu Lan (15/7)", "Tết Trung Nguyên / Xá tội vong nhân (15/7)"])
+    );
+  });
+
+  it("includes popular folk festivals as a separate category", () => {
+    const festivalDate = convertLunar2Solar(6, 1, 2024, false);
+
+    expect(festivalDate).not.toBeNull();
+
+    const holidays = getVnHolidays(festivalDate!.getFullYear()).filter(
+      (holiday) =>
+        holiday.date.getFullYear() === festivalDate!.getFullYear() &&
+        holiday.date.getMonth() === festivalDate!.getMonth() &&
+        holiday.date.getDate() === festivalDate!.getDate()
+    );
+
+    expect(holidays).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          name: "Khai hội chùa Hương (mùng 6 tháng Giêng)",
+          category: "folk_festival",
+          isDayOff: false,
+        }),
+      ])
+    );
   });
 
   it("maps can chi correctly for Tet 2026", () => {

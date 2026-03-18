@@ -39,6 +39,7 @@ export function WorkingDaysCalculator({ id }: WorkingDaysCalculatorProps) {
 
       const holidaysByDate = new Map<string, HolidayInRange>();
       allHolidays
+        .filter((holiday) => holiday.isDayOff)
         .filter(h => h.date >= startDate && h.date <= endDate)
         .forEach(h => {
           const dateKey = format(h.date, "yyyy-MM-dd");
@@ -133,7 +134,7 @@ export function WorkingDaysCalculator({ id }: WorkingDaysCalculatorProps) {
         </div>
         {holidaysInRange.length > 0 && (
           <div className="space-y-2 pt-2">
-            <Label>Loại trừ các ngày lễ sau:</Label>
+            <Label>Loại trừ các ngày nghỉ/lễ sau:</Label>
             <div className="themed-scrollbar max-h-32 space-y-2 overflow-y-auto rounded-md border p-2">
               {holidaysInRange.map(holiday => (
                 <div key={holiday.date} className="flex items-center space-x-2">

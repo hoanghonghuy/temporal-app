@@ -7,7 +7,7 @@
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "./ui/button";
-import { Holiday } from "@/lib/vn-holidays";
+import { getHolidayCategoryLabel, type Holiday } from "@/lib/vn-holidays";
 import {
   convertSolar2Lunar,
   MAX_SUPPORTED_LUNAR_YEAR,
@@ -48,9 +48,9 @@ export function DayDetailModal({ selectedDay, onClose, holidaysInYear }: DayDeta
   if (!selectedDay) return null;
 
   const lunarInfo = convertSolar2Lunar(selectedDay.getDate(), selectedDay.getMonth() + 1, selectedDay.getFullYear());
-  const holidayInfo = holidaysInYear.filter(
-    (holiday) => format(holiday.date, "yyyy-MM-dd") === format(selectedDay, "yyyy-MM-dd")
-  );
+  const holidayInfo = holidaysInYear
+    .filter((holiday) => format(holiday.date, "yyyy-MM-dd") === format(selectedDay, "yyyy-MM-dd"))
+    .sort((left, right) => left.name.localeCompare(right.name, "vi"));
 
   const handleUseDate = () => {
     const dateString = format(selectedDay, "dd/MM/yyyy");
@@ -119,51 +119,28 @@ export function DayDetailModal({ selectedDay, onClose, holidaysInYear }: DayDeta
               )}
 
               {holidayInfo.length > 0 && (
-                <section className="overflow-hidden rounded-xl border border-destructive/20 bg-gradient-to-br from-destructive/12 via-destructive/6 to-background">
-                  <div className="flex items-center justify-between gap-3 border-b border-destructive/10 px-4 py-3">
-                    <div className="flex min-w-0 items-center gap-3">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-destructive/15 text-destructive">
-                        <Star className="h-4 w-4" />
-                      </div>
-                      <div className="min-w-0">
-                        <p className="font-serif text-sm font-semibold text-foreground">
-                          {holidayInfo.length > 1 ? "Các ngày lễ trong ngày" : "Ngày lễ"}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {holidayInfo.length > 1
-                            ? `${holidayInfo.length} mốc lễ trùng trong cùng một ngày`
-                            : "1 mốc lễ trong ngày"}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="shrink-0 rounded-full border border-destructive/20 bg-background/80 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-destructive">
-                      {holidayInfo.length} lễ
-                    </div>
-                  </div>
-
-                  <div className="grid gap-2 p-3">
-                    {holidayInfo.map((holiday) => (
-                      <article
-                        key={`${holiday.name}-${holiday.date.toISOString()}`}
-                        className="rounded-xl border border-destructive/10 bg-background/80 px-3 py-2 shadow-sm"
-                      >
-                        <div className="flex items-start gap-3">
-                          <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-destructive/10 text-destructive">
-                            <Star className="h-3.5 w-3.5" />
-                          </div>
-                          <div className="min-w-0">
-                            <p className="font-medium leading-5 text-foreground">{holiday.name}</p>
-                            <div className="mt-1 flex flex-wrap gap-2">
-                              <span className="rounded-full border border-destructive/10 bg-destructive/5 px-2 py-0.5 text-[11px] font-medium text-destructive/80">
-                                Dấu mốc trong ngày
-                              </span>
-                            </div>
+                <div className="grid gap-2">
+                  {holidayInfo.map((holiday) => (
+                    <article
+                      key={`${holiday.name}-${holiday.date.toISOString()}`}
+                      className="rounded-xl border border-primary/12 bg-background/70 px-3 py-2 shadow-sm"
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                          <Star className="h-3.5 w-3.5" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="font-medium leading-5 text-foreground">{holiday.name}</p>
+                          <div className="mt-1 flex flex-wrap gap-2">
+                            <span className="rounded-full border border-primary/15 bg-primary/10 px-2 py-0.5 text-[11px] font-medium text-primary">
+                              {getHolidayCategoryLabel(holiday.category)}
+                            </span>
                           </div>
                         </div>
-                      </article>
-                    ))}
-                  </div>
-                </section>
+                      </div>
+                    </article>
+                  ))}
+                </div>
               )}
 
               {lunarInfo && (
