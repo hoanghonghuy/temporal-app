@@ -83,6 +83,7 @@ const TOOL_BASE_DEFINITIONS: ToolDefinitionBase[] = [
     slug: "event-countdown",
     id: "event-countdown",
     component: EventCountdown,
+    supportsInitialDate: true,
   },
   {
     slug: "working-days-calculator",
