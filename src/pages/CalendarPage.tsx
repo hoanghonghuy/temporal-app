@@ -6,6 +6,7 @@ import {
   differenceInCalendarDays,
   eachDayOfInterval,
   format,
+  isAfter,
   isSameMonth,
   isSaturday,
   isSunday,
@@ -43,18 +44,23 @@ import {
   subscribeToSavedFavoriteDays,
   type SavedFavoriteDay,
 } from "@/lib/saved-favorite-days";
+import { useSearchParams } from "react-router-dom";
+
+const MIN_CALENDAR_MONTH = new Date(MIN_SUPPORTED_LUNAR_YEAR, 0, 1);
+const MAX_CALENDAR_MONTH = new Date(MAX_SUPPORTED_LUNAR_YEAR, 11, 1);
+const MAX_CALENDAR_DAY = new Date(MAX_SUPPORTED_LUNAR_YEAR, 11, 31);
 
 export function CalendarPage() {
   const { dictionary, dateLocale, locale } = useI18n();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDay, setSelectedDay] = useState<Date | null>(null);
   const [savedEvents, setSavedEvents] = useState<SavedCountdownEvent[]>([]);
   const [savedDayNotes, setSavedDayNotes] = useState<SavedDayNote[]>([]);
   const [savedFavoriteDays, setSavedFavoriteDays] = useState<SavedFavoriteDay[]>([]);
-  const minCalendarMonth = new Date(MIN_SUPPORTED_LUNAR_YEAR, 0, 1);
-  const maxCalendarMonth = new Date(MAX_SUPPORTED_LUNAR_YEAR, 11, 1);
-  const maxCalendarDay = new Date(MAX_SUPPORTED_LUNAR_YEAR, 11, 31);
   const todayStart = startOfToday();
+  const requestedDayKey = searchParams.get("date");
+  const searchParamsString = searchParams.toString();
 
   useEffect(() => {
     const loadEvents = () =>
@@ -77,6 +83,24 @@ export function CalendarPage() {
     loadFavoriteDays();
     return subscribeToSavedFavoriteDays(loadFavoriteDays);
   }, []);
+  useEffect(() => {
+    if (!requestedDayKey) {
+      return;
+    }
+
+    const requestedDay = fromDateKey(requestedDayKey);
+    if (!requestedDay || requestedDay < MIN_CALENDAR_MONTH || isAfter(requestedDay, MAX_CALENDAR_DAY)) {
+      const nextSearchParams = new URLSearchParams(searchParamsString);
+      nextSearchParams.delete("date");
+      setSearchParams(nextSearchParams, { replace: true });
+      return;
+    }
+
+    setCurrentDate(startOfMonth(requestedDay));
+    setSelectedDay((currentSelectedDay) =>
+      currentSelectedDay && toDateKey(currentSelectedDay) === requestedDayKey ? currentSelectedDay : requestedDay
+    );
+  }, [requestedDayKey, searchParamsString, setSearchParams]);
 
   const year = currentDate.getFullYear();
   const holidaysInYear = useMemo(() => getVnHolidays(year, locale), [year, locale]);
@@ -104,7 +128,7 @@ export function CalendarPage() {
       savedEvents
         .map((savedEvent) => {
           const savedDate = fromDateKey(savedEvent.dateKey);
-          if (!savedDate || savedDate < minCalendarMonth || savedDate > maxCalendarDay) {
+          if (!savedDate || savedDate < MIN_CALENDAR_MONTH || savedDate > MAX_CALENDAR_DAY) {
             return null;
           }
 
@@ -129,7 +153,7 @@ export function CalendarPage() {
         })
         .filter((savedEvent): savedEvent is NonNullable<typeof savedEvent> => savedEvent !== null)
         .slice(0, 4),
-    [dateLocale, dictionary.tools.eventCountdown, maxCalendarDay, minCalendarMonth, savedEvents, todayStart]
+    [dateLocale, dictionary.tools.eventCountdown, savedEvents, todayStart]
   );
   const savedDayNotesByDate = useMemo(
     () => new Map(savedDayNotes.map((savedDayNote) => [savedDayNote.dateKey, savedDayNote])),
@@ -148,8 +172,8 @@ export function CalendarPage() {
     end: lastDayOfGrid,
   });
 
-  const canGoPrev = currentDate > minCalendarMonth;
-  const canGoNext = currentDate < maxCalendarMonth;
+  const canGoPrev = currentDate > MIN_CALENDAR_MONTH;
+  const canGoNext = currentDate < MAX_CALENDAR_MONTH;
 
   const handlePrevMonth = () => {
     if (canGoPrev) {
@@ -165,25 +189,40 @@ export function CalendarPage() {
 
   const handleGoToToday = () => {
     const today = new Date();
-    const nextDate = today < minCalendarMonth ? minCalendarMonth : today > maxCalendarMonth ? maxCalendarMonth : today;
+    const nextDate = today < MIN_CALENDAR_MONTH ? MIN_CALENDAR_MONTH : today > MAX_CALENDAR_MONTH ? MAX_CALENDAR_MONTH : today;
     setCurrentDate(nextDate);
   };
 
   const handleMonthYearChange = (nextYear: number, nextMonth: number) => {
     const nextDate = new Date(nextYear, nextMonth, 1);
-    if (nextDate < minCalendarMonth) {
-      setCurrentDate(minCalendarMonth);
+    if (nextDate < MIN_CALENDAR_MONTH) {
+      setCurrentDate(MIN_CALENDAR_MONTH);
       return;
     }
-    if (nextDate > maxCalendarMonth) {
-      setCurrentDate(maxCalendarMonth);
+    if (nextDate > MAX_CALENDAR_MONTH) {
+      setCurrentDate(MAX_CALENDAR_MONTH);
       return;
     }
     setCurrentDate(nextDate);
   };
+
+  const updateSelectedDay = (nextDay: Date | null) => {
+    const nextSearchParams = new URLSearchParams(searchParamsString);
+
+    if (nextDay) {
+      nextSearchParams.set("date", toDateKey(nextDay));
+      setCurrentDate(startOfMonth(nextDay));
+      setSelectedDay(nextDay);
+    } else {
+      nextSearchParams.delete("date");
+      setSelectedDay(null);
+    }
+
+    setSearchParams(nextSearchParams, { replace: true });
+  };
+
   const handleJumpToSavedEvent = (savedDate: Date) => {
-    setCurrentDate(startOfMonth(savedDate));
-    setSelectedDay(savedDate);
+    updateSelectedDay(savedDate);
   };
 
   const selectedDaySavedEvents = selectedDay ? savedEventsByDate.get(toDateKey(selectedDay)) ?? [] : [];
@@ -245,7 +284,7 @@ export function CalendarPage() {
               <button
                 key={index}
                 type="button"
-                onClick={() => isSupportedDay && setSelectedDay(day)}
+                onClick={() => isSupportedDay && updateSelectedDay(day)}
                 disabled={!isSupportedDay}
                 aria-label={dayAria}
                 className={cn(
@@ -342,7 +381,7 @@ export function CalendarPage() {
 
       <DayDetailModal
         selectedDay={selectedDay}
-        onClose={() => setSelectedDay(null)}
+        onClose={() => updateSelectedDay(null)}
         holidaysInYear={holidaysInYear}
         savedEventsForDay={selectedDaySavedEvents}
         savedDayNote={selectedDay ? savedDayNotesByDate.get(toDateKey(selectedDay)) ?? null : null}
