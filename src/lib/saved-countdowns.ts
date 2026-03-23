@@ -75,13 +75,39 @@ export function findDuplicateSavedCountdownEvent(
   events: SavedCountdownEvent[],
   name: string,
   date: Date,
-  fallbackName: string
+  fallbackName: string,
+  options?: {
+    excludeId?: string;
+  }
 ) {
   const normalizedName = normalizeSavedCountdownName(name, fallbackName).toLocaleLowerCase();
   const dateKey = toDateKey(date);
 
   return events.find(
-    (event) => event.dateKey === dateKey && event.name.trim().toLocaleLowerCase() === normalizedName
+    (event) =>
+      event.id !== options?.excludeId &&
+      event.dateKey === dateKey &&
+      event.name.trim().toLocaleLowerCase() === normalizedName
+  );
+}
+
+export function updateSavedCountdownEvent(
+  events: SavedCountdownEvent[],
+  eventId: string,
+  name: string,
+  date: Date,
+  fallbackName: string
+) {
+  return sortSavedCountdownEvents(
+    events.map((event) =>
+      event.id === eventId
+        ? {
+            ...event,
+            name: normalizeSavedCountdownName(name, fallbackName),
+            dateKey: toDateKey(date),
+          }
+        : event
+    )
   );
 }
 

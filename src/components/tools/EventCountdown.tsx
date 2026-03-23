@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { differenceInCalendarDays, format, isBefore, isValid, parse, startOfToday } from "date-fns";
-import { BookmarkPlus, CalendarDays, Play, Trash2 } from "lucide-react";
+import { BookmarkPlus, CalendarDays, Check, Pencil, Play, Trash2, X } from "lucide-react";
 import { ToolCard } from "@/components/ToolCard";
 import { Button } from "@/components/ui/button";
 import { CardFooter } from "@/components/ui/card";
@@ -20,6 +20,7 @@ import {
   sortSavedCountdownEvents,
   subscribeToSavedCountdownEvents,
   type SavedCountdownEvent,
+  updateSavedCountdownEvent,
 } from "@/lib/saved-countdowns";
 
 interface EventCountdownProps {
@@ -42,6 +43,10 @@ export function EventCountdown({ id, initialDate }: EventCountdownProps) {
   const [error, setError] = useState<string>("");
   const [feedback, setFeedback] = useState<FeedbackState | null>(null);
   const [savedEvents, setSavedEvents] = useState<SavedCountdownEvent[]>([]);
+  const [editingEventId, setEditingEventId] = useState<string | null>(null);
+  const [editingEventName, setEditingEventName] = useState<string>("");
+  const [editingEventDate, setEditingEventDate] = useState<Date | undefined>();
+  const [editingError, setEditingError] = useState<string>("");
   const copy = dictionary.tools.eventCountdown;
   const toolMeta = dictionary.toolMeta["event-countdown"];
   const today = startOfToday();
@@ -76,6 +81,19 @@ export function EventCountdown({ id, initialDate }: EventCountdownProps) {
     const timeoutId = window.setTimeout(() => setFeedback(null), 3000);
     return () => window.clearTimeout(timeoutId);
   }, [feedback]);
+  useEffect(() => {
+    if (!editingEventId) {
+      return;
+    }
+
+    const editedEventStillExists = savedEvents.some((savedEvent) => savedEvent.id === editingEventId);
+    if (!editedEventStillExists) {
+      setEditingEventId(null);
+      setEditingEventName("");
+      setEditingEventDate(undefined);
+      setEditingError("");
+    }
+  }, [editingEventId, savedEvents]);
 
   useEffect(() => {
     if (!isActive || !targetDate) {
@@ -229,10 +247,73 @@ export function EventCountdown({ id, initialDate }: EventCountdownProps) {
   const handleDeleteSavedEvent = (savedEventId: string) => {
     const deletedEvent = savedEvents.find((savedEvent) => savedEvent.id === savedEventId);
     persistEvents(savedEvents.filter((savedEvent) => savedEvent.id !== savedEventId));
+    if (editingEventId === savedEventId) {
+      handleCancelEdit();
+    }
     setFeedback({
       message: formatTemplate(copy.deleteSavedTemplate, { name: deletedEvent?.name ?? copy.unnamedEvent }),
       variant: "info",
     });
+  };
+  const handleBeginEdit = (savedEvent: SavedCountdownEvent) => {
+    const savedDate = fromDateKey(savedEvent.dateKey);
+    if (!savedDate) {
+      return;
+    }
+
+    setEditingEventId(savedEvent.id);
+    setEditingEventName(savedEvent.name);
+    setEditingEventDate(savedDate);
+    setEditingError("");
+  };
+
+  const handleCancelEdit = () => {
+    setEditingEventId(null);
+    setEditingEventName("");
+    setEditingEventDate(undefined);
+    setEditingError("");
+  };
+
+  const handleSaveEdit = () => {
+    if (!editingEventId) {
+      return;
+    }
+
+    if (!editingEventDate) {
+      setEditingError(copy.errorDateRequired);
+      return;
+    }
+
+    if (isBefore(editingEventDate, today)) {
+      setEditingError(copy.errorPastDate);
+      return;
+    }
+
+    if (
+      findDuplicateSavedCountdownEvent(savedEvents, editingEventName, editingEventDate, copy.unnamedEvent, {
+        excludeId: editingEventId,
+      })
+    ) {
+      setEditingError(copy.saveDuplicate);
+      return;
+    }
+
+    const updatedEvents = updateSavedCountdownEvent(
+      savedEvents,
+      editingEventId,
+      editingEventName,
+      editingEventDate,
+      copy.unnamedEvent
+    );
+
+    persistEvents(updatedEvents);
+    setFeedback({
+      message: formatTemplate(copy.updatedSavedTemplate, {
+        name: editingEventName.trim() || copy.unnamedEvent,
+      }),
+      variant: "success",
+    });
+    handleCancelEdit();
   };
 
   const handleClear = () => {
@@ -296,45 +377,89 @@ export function EventCountdown({ id, initialDate }: EventCountdownProps) {
                   key={savedEvent.id}
                   className="rounded-xl border border-primary/10 bg-background/80 p-3 shadow-sm transition-colors hover:border-primary/20"
                 >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <p className="truncate font-serif text-base text-foreground">{savedEvent.name}</p>
-                      <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                        <span className="inline-flex items-center gap-1">
-                          <CalendarDays className="h-3.5 w-3.5" />
-                          {savedEvent.formattedDate}
-                        </span>
-                        <span className="rounded-full border border-primary/10 bg-primary/5 px-2 py-0.5 text-primary/80">
-                          {savedEvent.statusLabel}
-                        </span>
+                  {editingEventId === savedEvent.id ? (
+                    <div className="space-y-3">
+                      <div className="grid gap-1.5">
+                        <Label htmlFor={`saved-event-name-${savedEvent.id}`}>{copy.eventLabel}</Label>
+                        <Input
+                          id={`saved-event-name-${savedEvent.id}`}
+                          value={editingEventName}
+                          onChange={(event) => setEditingEventName(event.target.value)}
+                          placeholder={copy.eventPlaceholder}
+                        />
+                      </div>
+                      <div className="grid gap-1.5">
+                        <Label>{copy.dateLabel}</Label>
+                        <DatePicker date={editingEventDate} setDate={setEditingEventDate} minDate={today} />
+                      </div>
+                      {editingError && <p className="text-sm text-destructive">{editingError}</p>}
+                      <div className="flex flex-wrap gap-2">
+                        <Button type="button" size="sm" onClick={handleSaveEdit}>
+                          <Check className="h-3.5 w-3.5" />
+                          {copy.saveEdit}
+                        </Button>
+                        <Button type="button" variant="outline" size="sm" onClick={handleCancelEdit}>
+                          <X className="h-3.5 w-3.5" />
+                          {copy.cancelEdit}
+                        </Button>
                       </div>
                     </div>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleDeleteSavedEvent(savedEvent.id)}
-                      aria-label={formatTemplate(copy.deleteSavedAriaTemplate, { name: savedEvent.name })}
-                      title={copy.deleteSaved}
-                      className="h-8 w-8 shrink-0 text-muted-foreground hover:text-destructive"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    <Button type="button" variant="outline" size="sm" onClick={() => handleLoadSavedEvent(savedEvent)}>
-                      {copy.useSaved}
-                    </Button>
-                    <Button
-                      type="button"
-                      size="sm"
-                      onClick={() => handleStartSavedEvent(savedEvent)}
-                      disabled={savedEvent.daysRemaining < 0}
-                    >
-                      <Play className="h-3.5 w-3.5" />
-                      {copy.startSaved}
-                    </Button>
-                  </div>
+                  ) : (
+                    <>
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="truncate font-serif text-base text-foreground">{savedEvent.name}</p>
+                          <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                            <span className="inline-flex items-center gap-1">
+                              <CalendarDays className="h-3.5 w-3.5" />
+                              {savedEvent.formattedDate}
+                            </span>
+                            <span className="rounded-full border border-primary/10 bg-primary/5 px-2 py-0.5 text-primary/80">
+                              {savedEvent.statusLabel}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex shrink-0 gap-1">
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleBeginEdit(savedEvent)}
+                            aria-label={formatTemplate(copy.editSavedAriaTemplate, { name: savedEvent.name })}
+                            title={copy.editSaved}
+                            className="h-8 w-8 text-muted-foreground hover:text-primary"
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleDeleteSavedEvent(savedEvent.id)}
+                            aria-label={formatTemplate(copy.deleteSavedAriaTemplate, { name: savedEvent.name })}
+                            title={copy.deleteSaved}
+                            className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        <Button type="button" variant="outline" size="sm" onClick={() => handleLoadSavedEvent(savedEvent)}>
+                          {copy.useSaved}
+                        </Button>
+                        <Button
+                          type="button"
+                          size="sm"
+                          onClick={() => handleStartSavedEvent(savedEvent)}
+                          disabled={savedEvent.daysRemaining < 0}
+                        >
+                          <Play className="h-3.5 w-3.5" />
+                          {copy.startSaved}
+                        </Button>
+                      </div>
+                    </>
+                  )}
                 </article>
               ))
             )}

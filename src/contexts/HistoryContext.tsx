@@ -1,13 +1,14 @@
 /* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useI18n } from "@/contexts/I18nContext";
-
-interface HistoryItem {
-  id: string;
-  type: string;
-  result: string;
-  timestamp: string;
-}
+import {
+  appendHistoryItem,
+  clearHistoryItems,
+  loadHistoryItems,
+  persistHistoryItems,
+  subscribeToHistoryItems,
+  type HistoryItem,
+} from "@/lib/history-storage";
 
 interface HistoryContextType {
   history: HistoryItem[];
@@ -22,14 +23,11 @@ export function HistoryProvider({ children }: { children: React.ReactNode }) {
   const [history, setHistory] = useState<HistoryItem[]>([]);
 
   useEffect(() => {
-    try {
-      const savedHistory = localStorage.getItem("temporal-history");
-      if (savedHistory) {
-        setHistory(JSON.parse(savedHistory));
-      }
-    } catch (error) {
-      console.error("Failed to load history from localStorage", error);
-    }
+    const loadItems = () =>
+      setHistory(loadHistoryItems(typeof window === "undefined" ? undefined : window.localStorage));
+
+    loadItems();
+    return subscribeToHistoryItems(loadItems);
   }, []);
 
   const addToHistory = (type: string, result: string) => {
@@ -39,17 +37,18 @@ export function HistoryProvider({ children }: { children: React.ReactNode }) {
       result,
       timestamp: new Date().toLocaleString(localeTag),
     };
-
-    setHistory((prev) => {
-      const newHistory = [newItem, ...prev].slice(0, 20);
-      localStorage.setItem("temporal-history", JSON.stringify(newHistory));
-      return newHistory;
-    });
+    const newHistory = appendHistoryItem(history, newItem);
+    setHistory(newHistory);
+    if (typeof window !== "undefined") {
+      persistHistoryItems(newHistory, window.localStorage);
+    }
   };
 
   const clearHistory = () => {
     setHistory([]);
-    localStorage.removeItem("temporal-history");
+    if (typeof window !== "undefined") {
+      clearHistoryItems(window.localStorage);
+    }
   };
 
   return <HistoryContext.Provider value={{ history, addToHistory, clearHistory }}>{children}</HistoryContext.Provider>;

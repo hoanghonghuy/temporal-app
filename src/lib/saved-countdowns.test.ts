@@ -8,6 +8,7 @@ import {
   persistSavedCountdownEvents,
   sanitizeSavedCountdownEvents,
   toDateKey,
+  updateSavedCountdownEvent,
 } from "./saved-countdowns";
 
 describe("saved countdown helpers", () => {
@@ -67,6 +68,53 @@ describe("saved countdown helpers", () => {
     );
 
     expect(duplicate?.name).toBe("Tet Nguyen Dan");
+  });
+
+  it("ignores the current event when checking duplicates for edits", () => {
+    const savedEvents = [
+      {
+        id: "current",
+        name: "Tet Nguyen Dan",
+        dateKey: "2026-02-17",
+        createdAt: "2026-03-19T00:00:00.000Z",
+      },
+    ];
+
+    const duplicate = findDuplicateSavedCountdownEvent(
+      savedEvents,
+      "Tet Nguyen Dan",
+      new Date(2026, 1, 17),
+      "Su kien",
+      { excludeId: "current" }
+    );
+
+    expect(duplicate).toBeUndefined();
+  });
+
+  it("updates an existing countdown while preserving identity", () => {
+    const updatedEvents = updateSavedCountdownEvent(
+      [
+        {
+          id: "event-1",
+          name: "Old name",
+          dateKey: "2026-04-01",
+          createdAt: "2026-03-19T00:00:00.000Z",
+        },
+      ],
+      "event-1",
+      "New name",
+      new Date(2026, 4, 2),
+      "Su kien"
+    );
+
+    expect(updatedEvents).toEqual([
+      {
+        id: "event-1",
+        name: "New name",
+        dateKey: "2026-05-02",
+        createdAt: "2026-03-19T00:00:00.000Z",
+      },
+    ]);
   });
 
   it("loads safely from broken storage payloads", () => {

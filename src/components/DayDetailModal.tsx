@@ -18,7 +18,7 @@ import {
 } from "@/lib/lunar-converter";
 import { differenceInCalendarDays, format, isBefore, startOfToday } from "date-fns";
 import { useNavigate } from "react-router-dom";
-import { BookmarkPlus, Clock, Hourglass, Star, Trash2 } from "lucide-react";
+import { BookmarkPlus, Clock, Hourglass, ScrollText, Star, Trash2 } from "lucide-react";
 import { useI18n } from "@/contexts/I18nContext";
 import { formatTemplate } from "@/i18n/dictionary";
 import {
@@ -28,22 +28,38 @@ import {
   persistSavedCountdownEvents,
   type SavedCountdownEvent,
 } from "@/lib/saved-countdowns";
+import {
+  loadSavedDayNotes,
+  persistSavedDayNotes,
+  removeSavedDayNote,
+  upsertSavedDayNote,
+  type SavedDayNote,
+} from "@/lib/saved-day-notes";
+import {
+  loadSavedFavoriteDays,
+  persistSavedFavoriteDays,
+  toggleSavedFavoriteDay,
+} from "@/lib/saved-favorite-days";
 
 interface DayDetailModalProps {
   selectedDay: Date | null;
   onClose: () => void;
   holidaysInYear: Holiday[];
   savedEventsForDay: SavedCountdownEvent[];
+  savedDayNote: SavedDayNote | null;
+  isFavoriteDay: boolean;
 }
 
 const getZodiacHours = (chiNgay: string, zodiacHoursMap: Record<string, string[]>): string =>
   (zodiacHoursMap[chiNgay] || []).join(", ");
 
-export function DayDetailModal({ selectedDay, onClose, holidaysInYear, savedEventsForDay }: DayDetailModalProps) {
+export function DayDetailModal({ selectedDay, onClose, holidaysInYear, savedEventsForDay, savedDayNote, isFavoriteDay }: DayDetailModalProps) {
   const navigate = useNavigate();
   const { dictionary, dateLocale, locale } = useI18n();
   const [draftEventName, setDraftEventName] = useState("");
   const [feedback, setFeedback] = useState<{ message: string; variant: "success" | "info" } | null>(null);
+  const [draftNote, setDraftNote] = useState("");
+  const [noteFeedback, setNoteFeedback] = useState<{ message: string; variant: "success" | "info" } | null>(null);
   const todayStart = startOfToday();
   const selectedDayKey = selectedDay ? format(selectedDay, "yyyy-MM-dd") : "";
   const holidayInfo = selectedDay
@@ -57,6 +73,10 @@ export function DayDetailModal({ selectedDay, onClose, holidaysInYear, savedEven
     setDraftEventName(suggestedEventName);
     setFeedback(null);
   }, [selectedDay?.getTime(), suggestedEventName]);
+  useEffect(() => {
+    setDraftNote(savedDayNote?.note ?? "");
+    setNoteFeedback(null);
+  }, [savedDayNote?.note, selectedDay?.getTime()]);
 
   useEffect(() => {
     if (!feedback) {
@@ -66,6 +86,14 @@ export function DayDetailModal({ selectedDay, onClose, holidaysInYear, savedEven
     const timeoutId = window.setTimeout(() => setFeedback(null), 3000);
     return () => window.clearTimeout(timeoutId);
   }, [feedback]);
+  useEffect(() => {
+    if (!noteFeedback) {
+      return undefined;
+    }
+
+    const timeoutId = window.setTimeout(() => setNoteFeedback(null), 3000);
+    return () => window.clearTimeout(timeoutId);
+  }, [noteFeedback]);
 
   if (!selectedDay) {
     return null;
@@ -123,6 +151,28 @@ export function DayDetailModal({ selectedDay, onClose, holidaysInYear, savedEven
       variant: "info",
     });
   };
+  const handleSaveDayNote = () => {
+    const storage = typeof window === "undefined" ? undefined : window.localStorage;
+    const allSavedNotes = loadSavedDayNotes(storage);
+
+    persistSavedDayNotes(upsertSavedDayNote(allSavedNotes, selectedDay, draftNote), storage);
+    setNoteFeedback({ message: dictionary.dayDetailNoteSaved, variant: "success" });
+  };
+
+  const handleClearDayNote = () => {
+    const storage = typeof window === "undefined" ? undefined : window.localStorage;
+    const allSavedNotes = loadSavedDayNotes(storage);
+
+    persistSavedDayNotes(removeSavedDayNote(allSavedNotes, selectedDay), storage);
+    setDraftNote("");
+    setNoteFeedback({ message: dictionary.dayDetailNoteCleared, variant: "info" });
+  };
+  const handleToggleFavoriteDay = () => {
+    const storage = typeof window === "undefined" ? undefined : window.localStorage;
+    const allFavoriteDays = loadSavedFavoriteDays(storage);
+
+    persistSavedFavoriteDays(toggleSavedFavoriteDay(allFavoriteDays, selectedDay), storage);
+  };
 
   return (
     <Dialog
@@ -140,12 +190,25 @@ export function DayDetailModal({ selectedDay, onClose, holidaysInYear, savedEven
           <div className="mx-auto mt-2 h-1.5 w-12 rounded-full bg-primary/15 lg:hidden" />
 
           <div className="themed-scrollbar overflow-y-auto px-4 pb-4 pt-3 lg:px-0 lg:pb-0 lg:pt-0">
-            <DialogHeader className="pr-8 text-left">
-              <DialogTitle className="text-2xl font-serif">{format(selectedDay, "dd/MM/yyyy")}</DialogTitle>
-              <DialogDescription className="font-serif italic">
-                {format(selectedDay, "eeee", { locale: dateLocale })}
-              </DialogDescription>
-            </DialogHeader>
+            <div className="flex items-start justify-between gap-3 pr-8">
+              <DialogHeader className="min-w-0 flex-1 text-left">
+                <DialogTitle className="text-2xl font-serif">{format(selectedDay, "dd/MM/yyyy")}</DialogTitle>
+                <DialogDescription className="font-serif italic">
+                  {format(selectedDay, "eeee", { locale: dateLocale })}
+                </DialogDescription>
+              </DialogHeader>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={handleToggleFavoriteDay}
+                aria-label={isFavoriteDay ? dictionary.dayDetailUnfavorite : dictionary.dayDetailFavorite}
+                title={isFavoriteDay ? dictionary.dayDetailUnfavorite : dictionary.dayDetailFavorite}
+                className="mt-0.5 h-9 w-9 shrink-0 rounded-full border border-primary/10 bg-background/70 text-muted-foreground hover:bg-primary/5 hover:text-primary"
+              >
+                <Star className={isFavoriteDay ? "h-4 w-4 fill-primary/25 text-primary" : "h-4 w-4"} />
+              </Button>
+            </div>
 
             <div className="grid gap-4 py-4">
               {!lunarInfo ? (
@@ -210,6 +273,57 @@ export function DayDetailModal({ selectedDay, onClose, holidaysInYear, savedEven
                   ))}
                 </div>
               )}
+
+              <div className="rounded-xl border border-primary/10 bg-background/70 p-3 shadow-sm">
+                <div className="flex items-start gap-3">
+                  <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                    <ScrollText className="h-4 w-4" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-serif text-sm font-semibold text-foreground">{dictionary.dayDetailNoteTitle}</p>
+                    <p className="mt-1 text-xs leading-5 text-muted-foreground">{dictionary.dayDetailNoteDescription}</p>
+                  </div>
+                </div>
+
+                <div className="mt-3 grid gap-2">
+                  <Label htmlFor="day-detail-note" className="text-xs uppercase tracking-wider text-muted-foreground">
+                    {dictionary.dayDetailNoteTitle}
+                  </Label>
+                  <Input
+                    id="day-detail-note"
+                    value={draftNote}
+                    placeholder={dictionary.dayDetailNotePlaceholder}
+                    maxLength={96}
+                    onChange={(event) => setDraftNote(event.target.value)}
+                  />
+                </div>
+
+                {noteFeedback && (
+                  <div
+                    className={
+                      noteFeedback.variant === "success"
+                        ? "mt-3 rounded-md bg-green-100/50 p-2 text-center font-serif text-sm text-green-600 dark:bg-green-900/20 dark:text-green-400"
+                        : "mt-3 rounded-md bg-primary/10 p-2 text-center font-serif text-sm text-primary"
+                    }
+                  >
+                    {noteFeedback.message}
+                  </div>
+                )}
+
+                <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+                  <Button onClick={handleSaveDayNote} disabled={draftNote.trim().length === 0} className="sm:w-auto">
+                    {dictionary.dayDetailSaveNote}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={handleClearDayNote}
+                    disabled={!savedDayNote && draftNote.trim().length === 0}
+                    className="sm:w-auto"
+                  >
+                    {dictionary.dayDetailClearNote}
+                  </Button>
+                </div>
+              </div>
 
               {canOpenCountdown && (
                 <div className="rounded-xl border border-primary/10 bg-primary/[0.04] p-3 shadow-sm">

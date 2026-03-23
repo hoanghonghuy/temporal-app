@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Star } from "lucide-react";
 import {
   addDays,
   addMonths,
@@ -32,12 +33,24 @@ import {
   toDateKey,
   type SavedCountdownEvent,
 } from "@/lib/saved-countdowns";
+import {
+  loadSavedDayNotes,
+  subscribeToSavedDayNotes,
+  type SavedDayNote,
+} from "@/lib/saved-day-notes";
+import {
+  loadSavedFavoriteDays,
+  subscribeToSavedFavoriteDays,
+  type SavedFavoriteDay,
+} from "@/lib/saved-favorite-days";
 
 export function CalendarPage() {
   const { dictionary, dateLocale, locale } = useI18n();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDay, setSelectedDay] = useState<Date | null>(null);
   const [savedEvents, setSavedEvents] = useState<SavedCountdownEvent[]>([]);
+  const [savedDayNotes, setSavedDayNotes] = useState<SavedDayNote[]>([]);
+  const [savedFavoriteDays, setSavedFavoriteDays] = useState<SavedFavoriteDay[]>([]);
   const minCalendarMonth = new Date(MIN_SUPPORTED_LUNAR_YEAR, 0, 1);
   const maxCalendarMonth = new Date(MAX_SUPPORTED_LUNAR_YEAR, 11, 1);
   const maxCalendarDay = new Date(MAX_SUPPORTED_LUNAR_YEAR, 11, 31);
@@ -49,6 +62,20 @@ export function CalendarPage() {
 
     loadEvents();
     return subscribeToSavedCountdownEvents(loadEvents);
+  }, []);
+  useEffect(() => {
+    const loadNotes = () =>
+      setSavedDayNotes(loadSavedDayNotes(typeof window === "undefined" ? undefined : window.localStorage));
+
+    loadNotes();
+    return subscribeToSavedDayNotes(loadNotes);
+  }, []);
+  useEffect(() => {
+    const loadFavoriteDays = () =>
+      setSavedFavoriteDays(loadSavedFavoriteDays(typeof window === "undefined" ? undefined : window.localStorage));
+
+    loadFavoriteDays();
+    return subscribeToSavedFavoriteDays(loadFavoriteDays);
   }, []);
 
   const year = currentDate.getFullYear();
@@ -103,6 +130,14 @@ export function CalendarPage() {
         .filter((savedEvent): savedEvent is NonNullable<typeof savedEvent> => savedEvent !== null)
         .slice(0, 4),
     [dateLocale, dictionary.tools.eventCountdown, maxCalendarDay, minCalendarMonth, savedEvents, todayStart]
+  );
+  const savedDayNotesByDate = useMemo(
+    () => new Map(savedDayNotes.map((savedDayNote) => [savedDayNote.dateKey, savedDayNote])),
+    [savedDayNotes]
+  );
+  const savedFavoriteDayKeys = useMemo(
+    () => new Set(savedFavoriteDays.map((savedFavoriteDay) => savedFavoriteDay.dateKey)),
+    [savedFavoriteDays]
   );
 
   const firstDayOfMonth = startOfMonth(currentDate);
@@ -189,13 +224,21 @@ export function CalendarPage() {
             const dayKey = toDateKey(day);
             const holidayInfo = holidaysInMonth.get(dayKey) ?? [];
             const savedEventsForDay = savedEventsByDate.get(dayKey) ?? [];
+            const savedDayNote = savedDayNotesByDate.get(dayKey);
+            const isFavoriteDay = savedFavoriteDayKeys.has(dayKey);
             const savedEventNames = savedEventsForDay.map((savedEvent) => savedEvent.name);
             const hasSavedEvents = savedEventsForDay.length > 0;
+            const hasDayNote = !!savedDayNote;
             const isHoliday = holidayInfo.length > 0;
             const isTodayDate = isToday(day);
             const isWeekend = isSaturday(day) || isSunday(day);
             const isSupportedDay = !!lunarInfo;
-            const dayNotes = [...holidayInfo, ...savedEventNames];
+            const dayNotes = [
+              ...holidayInfo,
+              ...savedEventNames,
+              ...(savedDayNote ? [`${dictionary.dayDetailNoteTitle}: ${savedDayNote.note}`] : []),
+              ...(isFavoriteDay ? [dictionary.dayDetailFavoriteTitle] : []),
+            ];
             const dayAria = `${format(day, "dd/MM/yyyy")}${dayNotes.length > 0 ? ` - ${dayNotes.join(", ")}` : ""}`;
 
             return (
@@ -218,6 +261,22 @@ export function CalendarPage() {
                 )}
                 title={dayNotes.join("\n")}
               >
+                {isFavoriteDay && (
+                  <Star
+                    className={cn(
+                      "absolute left-1 top-1 h-3 w-3 fill-primary/25 text-primary/60",
+                      !isSameMonth(day, currentDate) && "opacity-60"
+                    )}
+                  />
+                )}
+                {hasDayNote && (
+                  <span
+                    className={cn(
+                      "absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-primary/45",
+                      !isSameMonth(day, currentDate) && "opacity-60"
+                    )}
+                  />
+                )}
                 <span
                   className={cn(
                     "flex h-8 w-8 items-center justify-center rounded-full text-sm transition-all duration-200 sm:h-9 sm:w-9 sm:text-base",
@@ -286,6 +345,8 @@ export function CalendarPage() {
         onClose={() => setSelectedDay(null)}
         holidaysInYear={holidaysInYear}
         savedEventsForDay={selectedDaySavedEvents}
+        savedDayNote={selectedDay ? savedDayNotesByDate.get(toDateKey(selectedDay)) ?? null : null}
+        isFavoriteDay={selectedDay ? savedFavoriteDayKeys.has(toDateKey(selectedDay)) : false}
       />
     </>
   );
