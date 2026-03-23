@@ -22,6 +22,7 @@
   "historyEmpty": "No records yet.",
   "historyClear": "Clear History",
   "sidebarNavigationTitle": "Wayfinding",
+  "sidebarQuickTitle": "Quick Glance",
   "sidebarFavoritesEmpty": "No starred days yet.",
   "sidebarFavoriteFallback": "Starred for a quick return.",
   "sidebarUpcomingEmpty": "No upcoming milestones saved yet.",
@@ -33,7 +34,7 @@
   "sidebarAccountSignedOut": "Signed out",
   "sidebarOpenHistory": "Open History & Data",
   "dataPortability": {
-    "title": "Carry your data",
+    "title": "Data",
     "description": "Export, share, or import saved milestones, day notes, favorite days, and calculation history.",
     "export": "Export data",
     "share": "Share file",

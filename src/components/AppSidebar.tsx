@@ -77,6 +77,7 @@ export function AppSidebar({ onHistoryToggle, onNavigate, className }: AppSideba
   const [savedDayNotes, setSavedDayNotes] = useState<SavedDayNote[]>([]);
   const [savedFavoriteDays, setSavedFavoriteDays] = useState<SavedFavoriteDay[]>([]);
   const [isToolsListOpen, setIsToolsListOpen] = useState(location.pathname.startsWith("/tools"));
+  const [quickView, setQuickView] = useState<"favorites" | "upcoming">("favorites");
   const toolDefinitions = useMemo(() => getToolDefinitions(locale), [locale]);
   const todayStart = startOfToday();
 
@@ -174,6 +175,10 @@ export function AppSidebar({ onHistoryToggle, onNavigate, className }: AppSideba
     onHistoryToggle();
     onNavigate?.();
   };
+  const activeQuickView =
+    quickView === "favorites" && favoriteQuickLinks.length === 0 && upcomingSavedEvents.length > 0
+      ? "upcoming"
+      : quickView;
 
   const mainNavLinkClass = ({ isActive }: { isActive: boolean }) =>
     cn(
@@ -253,62 +258,91 @@ export function AppSidebar({ onHistoryToggle, onNavigate, className }: AppSideba
           </nav>
         </SidebarSection>
 
-        <SidebarSection title={dictionary.dayDetailFavoriteTitle} count={favoriteQuickLinks.length}>
-          {favoriteQuickLinks.length === 0 ? (
-            <p className="px-2 py-1 text-sm leading-6 text-muted-foreground">{dictionary.sidebarFavoritesEmpty}</p>
-          ) : (
-            <div className="grid gap-1">
-              {favoriteQuickLinks.map((favoriteDay) => (
-                <Link
-                  key={favoriteDay.dateKey}
-                  to={`/?date=${favoriteDay.dateKey}`}
-                  onClick={handleNavigate}
-                  className="flex items-center gap-2 rounded-lg px-2 py-2 transition-colors hover:bg-primary/[0.04]"
-                >
-                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-                    <Star className="h-3.5 w-3.5 fill-primary/25" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center justify-between gap-2">
-                      <p className="font-serif text-sm text-foreground">{favoriteDay.formattedDate}</p>
-                      <span className="text-[11px] text-muted-foreground">{favoriteDay.weekdayLabel}</span>
-                    </div>
-                    <p className="truncate text-xs leading-5 text-muted-foreground">
-                      {favoriteDay.note || dictionary.sidebarFavoriteFallback}
-                    </p>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          )}
-        </SidebarSection>
+        <SidebarSection title={dictionary.sidebarQuickTitle}>
+          <div className="grid grid-cols-2 gap-1">
+            <button
+              type="button"
+              onClick={() => setQuickView("favorites")}
+              className={cn(
+                "flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 text-left text-xs transition-colors",
+                activeQuickView === "favorites"
+                  ? "bg-primary/10 text-primary"
+                  : "text-muted-foreground hover:bg-primary/[0.04] hover:text-foreground"
+              )}
+            >
+              <span className="truncate">{dictionary.dayDetailFavoriteTitle}</span>
+              <span className="rounded-full bg-background/80 px-1.5 py-0.5 text-[10px]">{favoriteQuickLinks.length}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setQuickView("upcoming")}
+              className={cn(
+                "flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 text-left text-xs transition-colors",
+                activeQuickView === "upcoming"
+                  ? "bg-primary/10 text-primary"
+                  : "text-muted-foreground hover:bg-primary/[0.04] hover:text-foreground"
+              )}
+            >
+              <span className="truncate">{dictionary.calendarUpcomingTitle}</span>
+              <span className="rounded-full bg-background/80 px-1.5 py-0.5 text-[10px]">{upcomingSavedEvents.length}</span>
+            </button>
+          </div>
 
-        <SidebarSection title={dictionary.calendarUpcomingTitle} count={upcomingSavedEvents.length}>
-          {upcomingSavedEvents.length === 0 ? (
-            <p className="px-2 py-1 text-sm leading-6 text-muted-foreground">{dictionary.sidebarUpcomingEmpty}</p>
-          ) : (
-            <div className="grid gap-1">
-              {upcomingSavedEvents.map((savedEvent) => (
-                <Link
-                  key={savedEvent.id}
-                  to={`/?date=${savedEvent.dateKey}`}
-                  onClick={handleNavigate}
-                  className="flex items-center gap-2 rounded-lg px-2 py-2 transition-colors hover:bg-primary/[0.04]"
-                >
-                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-                    <Hourglass className="h-3.5 w-3.5" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate font-serif text-sm text-foreground">{savedEvent.name}</p>
-                    <div className="mt-0.5 flex items-center gap-2 text-xs text-muted-foreground">
-                      <span>{savedEvent.formattedDate}</span>
-                      <span className="truncate">{savedEvent.statusLabel}</span>
+          <div className="mt-2">
+            {activeQuickView === "favorites" ? (
+              favoriteQuickLinks.length === 0 ? (
+                <p className="px-2 py-1 text-sm leading-6 text-muted-foreground">{dictionary.sidebarFavoritesEmpty}</p>
+              ) : (
+                <div className="grid gap-1">
+                  {favoriteQuickLinks.map((favoriteDay) => (
+                    <Link
+                      key={favoriteDay.dateKey}
+                      to={`/?date=${favoriteDay.dateKey}`}
+                      onClick={handleNavigate}
+                      className="flex items-center gap-2 rounded-lg px-2 py-2 transition-colors hover:bg-primary/[0.04]"
+                    >
+                      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                        <Star className="h-3.5 w-3.5 fill-primary/25" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center justify-between gap-2">
+                          <p className="font-serif text-sm text-foreground">{favoriteDay.formattedDate}</p>
+                          <span className="text-[11px] text-muted-foreground">{favoriteDay.weekdayLabel}</span>
+                        </div>
+                        <p className="truncate text-xs leading-5 text-muted-foreground">
+                          {favoriteDay.note || dictionary.sidebarFavoriteFallback}
+                        </p>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              )
+            ) : upcomingSavedEvents.length === 0 ? (
+              <p className="px-2 py-1 text-sm leading-6 text-muted-foreground">{dictionary.sidebarUpcomingEmpty}</p>
+            ) : (
+              <div className="grid gap-1">
+                {upcomingSavedEvents.map((savedEvent) => (
+                  <Link
+                    key={savedEvent.id}
+                    to={`/?date=${savedEvent.dateKey}`}
+                    onClick={handleNavigate}
+                    className="flex items-center gap-2 rounded-lg px-2 py-2 transition-colors hover:bg-primary/[0.04]"
+                  >
+                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                      <Hourglass className="h-3.5 w-3.5" />
                     </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          )}
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate font-serif text-sm text-foreground">{savedEvent.name}</p>
+                      <div className="mt-0.5 flex items-center gap-2 text-xs text-muted-foreground">
+                        <span>{savedEvent.formattedDate}</span>
+                        <span className="truncate">{savedEvent.statusLabel}</span>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
         </SidebarSection>
       </div>
 

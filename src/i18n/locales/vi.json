@@ -22,6 +22,7 @@
   "historyEmpty": "Chưa lưu kỳ nào.",
   "historyClear": "Xóa Sử Ký",
   "sidebarNavigationTitle": "Đường Dẫn",
+  "sidebarQuickTitle": "Nhìn Nhanh",
   "sidebarFavoritesEmpty": "Chưa có ngày nào được đánh dấu sao.",
   "sidebarFavoriteFallback": "Đã đánh dấu sao để quay lại nhanh.",
   "sidebarUpcomingEmpty": "Chưa có mốc sắp tới nào được lưu.",
@@ -33,7 +34,7 @@
   "sidebarAccountSignedOut": "Chưa đăng nhập",
   "sidebarOpenHistory": "Mở Sử Ký & Dữ Liệu",
   "dataPortability": {
-    "title": "Mang dữ liệu theo bạn",
+    "title": "Dữ liệu",
     "description": "Xuất, chia sẻ hoặc nhập lại các mốc đã lưu, bút ký, ngày sao và sử ký tính toán.",
     "export": "Xuất dữ liệu",
     "share": "Chia sẻ tệp",

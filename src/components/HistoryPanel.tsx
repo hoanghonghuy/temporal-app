@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState, type ChangeEvent } from "react";
-import { Download, ScrollText, Share2, Upload } from "lucide-react";
+import { Download, EllipsisVertical, ScrollText, Share2, Upload } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -19,6 +19,14 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { StatusPanel } from "@/components/ui/status-panel";
 import { useHistory } from "@/contexts/HistoryContext";
 import { useI18n } from "@/contexts/I18nContext";
@@ -148,12 +156,64 @@ export function HistoryPanel({ isOpen, onOpenChange }: HistoryPanelProps) {
   return (
     <Sheet open={isOpen} onOpenChange={onOpenChange}>
       <SheetContent className="flex flex-col border-l-primary/15">
-        <SheetHeader>
-          <SheetTitle className="flex items-center gap-2 font-serif">
-            <ScrollText className="h-5 w-5 text-primary" />
-            {dictionary.historyTitle}
-          </SheetTitle>
-          <SheetDescription>{dictionary.historyDescription}</SheetDescription>
+        <SheetHeader className="pr-16 text-left">
+          <div className="flex items-start gap-3">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="mt-0.5 h-8 w-8 shrink-0 rounded-lg text-muted-foreground hover:text-foreground"
+                  aria-label={dataCopy.title}
+                  title={dataCopy.title}
+                >
+                  <EllipsisVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel className="font-serif text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                  {dataCopy.title}
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onSelect={handleExport}>
+                  <Download className="h-4 w-4" />
+                  {dataCopy.export}
+                </DropdownMenuItem>
+                {canShareFiles && (
+                  <DropdownMenuItem onSelect={() => void handleShare()}>
+                    <Share2 className="h-4 w-4" />
+                    {dataCopy.share}
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuItem onSelect={handleOpenImport}>
+                  <Upload className="h-4 w-4" />
+                  {dataCopy.import}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <div className="min-w-0 flex-1">
+              <SheetTitle className="flex items-center gap-2 font-serif">
+                <ScrollText className="h-5 w-5 text-primary" />
+                {dictionary.historyTitle}
+              </SheetTitle>
+              <SheetDescription className="mt-1">{dictionary.historyDescription}</SheetDescription>
+            </div>
+          </div>
+
+          {dataFeedback && (
+            <div
+              className={
+                dataFeedback.variant === "success"
+                  ? "rounded-md bg-green-100/50 px-3 py-2 text-center font-serif text-sm text-green-600 dark:bg-green-900/20 dark:text-green-400"
+                  : dataFeedback.variant === "error"
+                    ? "rounded-md bg-destructive/10 px-3 py-2 text-center font-serif text-sm text-destructive"
+                    : "rounded-md bg-primary/10 px-3 py-2 text-center font-serif text-sm text-primary"
+              }
+            >
+              {dataFeedback.message}
+            </div>
+          )}
         </SheetHeader>
 
         <div className="themed-scrollbar -mr-4 flex-grow overflow-y-auto pr-4">
@@ -172,57 +232,13 @@ export function HistoryPanel({ isOpen, onOpenChange }: HistoryPanelProps) {
           )}
         </div>
 
-        <div className="mt-4 rounded-2xl border border-primary/10 bg-primary/[0.04] p-4 shadow-sm">
-          <div className="flex items-start gap-3">
-            <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-              <ScrollText className="h-4 w-4" />
-            </div>
-            <div className="min-w-0">
-              <p className="font-serif text-sm font-semibold text-foreground">{dataCopy.title}</p>
-              <p className="mt-1 text-xs leading-5 text-muted-foreground">{dataCopy.description}</p>
-            </div>
-          </div>
-
-          {dataFeedback && (
-            <div
-              className={
-                dataFeedback.variant === "success"
-                  ? "mt-3 rounded-md bg-green-100/50 p-2 text-center font-serif text-sm text-green-600 dark:bg-green-900/20 dark:text-green-400"
-                  : dataFeedback.variant === "error"
-                    ? "mt-3 rounded-md bg-destructive/10 p-2 text-center font-serif text-sm text-destructive"
-                    : "mt-3 rounded-md bg-primary/10 p-2 text-center font-serif text-sm text-primary"
-              }
-            >
-              {dataFeedback.message}
-            </div>
-          )}
-
-          <div className="mt-3 flex flex-col gap-2">
-            <Button variant="outline" onClick={handleExport}>
-              <Download className="h-4 w-4" />
-              {dataCopy.export}
-            </Button>
-            {canShareFiles && (
-              <Button variant="outline" onClick={() => void handleShare()}>
-                <Share2 className="h-4 w-4" />
-                {dataCopy.share}
-              </Button>
-            )}
-            <Button variant="secondary" onClick={handleOpenImport}>
-              <Upload className="h-4 w-4" />
-              {dataCopy.import}
-            </Button>
-            <input
-              ref={importInputRef}
-              type="file"
-              accept="application/json"
-              className="hidden"
-              onChange={(event) => void handleImportFileChange(event)}
-            />
-          </div>
-
-          <p className="mt-3 text-xs leading-5 text-muted-foreground">{dataCopy.importHint}</p>
-        </div>
+        <input
+          ref={importInputRef}
+          type="file"
+          accept="application/json"
+          className="hidden"
+          onChange={(event) => void handleImportFileChange(event)}
+        />
 
         <SheetFooter className="mt-4">
           <Button variant="destructive" onClick={() => setShowDeleteConfirm(true)} disabled={history.length === 0}>
