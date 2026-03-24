@@ -23,6 +23,11 @@ const IChingPage = lazy(async () => {
   return { default: module.IChingPage };
 });
 
+const AccountPage = lazy(async () => {
+  const module = await import("./pages/AccountPage");
+  return { default: module.AccountPage };
+});
+
 const router = createBrowserRouter(
   [
     {
@@ -59,6 +64,14 @@ const router = createBrowserRouter(
           element: (
             <Suspense fallback={<RouteFallback />}>
               <IChingPage />
+            </Suspense>
+          ),
+        },
+        {
+          path: "account",
+          element: (
+            <Suspense fallback={<RouteFallback />}>
+              <AccountPage />
             </Suspense>
           ),
         },

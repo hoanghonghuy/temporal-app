@@ -308,7 +308,7 @@ export function AppSidebar({ onHistoryToggle, onNavigate, className }: AppSideba
 
       <section className="shrink-0 space-y-2">
         <p className="px-1 text-[10px] uppercase tracking-[0.24em] text-muted-foreground">{dictionary.sidebarSystemTitle}</p>
-        <AccountPanel onOpenHistory={handleOpenHistory} />
+        <AccountPanel onOpenHistory={handleOpenHistory} onNavigateAccount={handleNavigate} />
       </section>
     </div>
   );

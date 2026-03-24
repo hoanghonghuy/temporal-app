@@ -4,7 +4,6 @@ import {
   createSavedCountdownEvent,
   loadSavedCountdownEvents,
   persistSavedCountdownEvents,
-  sanitizeSavedCountdownEvents,
   sortSavedCountdownEvents,
   subscribeToSavedCountdownEvents,
   toDateKey,
@@ -37,26 +36,24 @@ import {
   type TemporalApiSession,
   type TemporalApiUser,
 } from "@/lib/temporal-api";
+import {
+  createSyncedDataSignature,
+  getSyncedDataSnapshotCounts,
+  hasSyncedData,
+  mergeSyncedDataSnapshots,
+  normalizeSyncedDataSnapshot,
+  type SyncedDataCounts,
+  type SyncedDataSnapshot,
+} from "@/lib/synced-data";
 
 type DataMode = "local" | "cloud";
 type AuthStatus = "signed_out" | "authenticating" | "signed_in";
 type SyncState = "idle" | "loading" | "syncing" | "error";
 
-interface SyncedDataSnapshot {
-  savedCountdowns: SavedCountdownEvent[];
-  savedDayNotes: SavedDayNote[];
-  savedFavoriteDays: SavedFavoriteDay[];
-}
-
-interface SyncedDataCounts {
-  savedCountdowns: number;
-  savedDayNotes: number;
-  savedFavoriteDays: number;
-}
-
 interface PendingFirstSyncChoice {
   userId: string;
   localSnapshot: SyncedDataSnapshot;
+  cloudSnapshot: SyncedDataSnapshot;
   localCounts: SyncedDataCounts;
   cloudCounts: SyncedDataCounts;
   localSignature: string;
@@ -86,6 +83,7 @@ interface TemporalDataContextType extends SyncedDataSnapshot {
   toggleFavoriteDay: (date: Date) => Promise<boolean>;
   keepCloudData: () => void;
   replaceCloudWithLocalData: () => Promise<void>;
+  mergeCloudWithLocalData: () => Promise<void>;
   replaceSavedData: (snapshot: SyncedDataSnapshot) => Promise<void>;
 }
 
@@ -119,43 +117,6 @@ function persistLocalSnapshot(snapshot: SyncedDataSnapshot, storage?: StorageLik
   persistSavedCountdownEvents(snapshot.savedCountdowns, storage);
   persistSavedDayNotes(snapshot.savedDayNotes, storage);
   persistSavedFavoriteDays(snapshot.savedFavoriteDays, storage);
-}
-
-function normalizeSnapshot(snapshot: SyncedDataSnapshot): SyncedDataSnapshot {
-  return {
-    savedCountdowns: sanitizeSavedCountdownEvents(snapshot.savedCountdowns),
-    savedDayNotes: sanitizeSavedDayNotes(snapshot.savedDayNotes),
-    savedFavoriteDays: sanitizeSavedFavoriteDays(snapshot.savedFavoriteDays),
-  };
-}
-
-function getSnapshotCounts(snapshot: SyncedDataSnapshot): SyncedDataCounts {
-  return {
-    savedCountdowns: snapshot.savedCountdowns.length,
-    savedDayNotes: snapshot.savedDayNotes.length,
-    savedFavoriteDays: snapshot.savedFavoriteDays.length,
-  };
-}
-
-function hasSnapshotData(snapshot: SyncedDataSnapshot) {
-  const counts = getSnapshotCounts(snapshot);
-  return counts.savedCountdowns + counts.savedDayNotes + counts.savedFavoriteDays > 0;
-}
-
-function createSnapshotSignature(snapshot: SyncedDataSnapshot) {
-  const normalizedSnapshot = normalizeSnapshot(snapshot);
-
-  return JSON.stringify({
-    savedCountdowns: normalizedSnapshot.savedCountdowns.map((event) => ({
-      name: event.name,
-      dateKey: event.dateKey,
-    })),
-    savedDayNotes: normalizedSnapshot.savedDayNotes.map((note) => ({
-      dateKey: note.dateKey,
-      note: note.note,
-    })),
-    savedFavoriteDays: normalizedSnapshot.savedFavoriteDays.map((day) => day.dateKey),
-  });
 }
 
 function parseStoredSession(storage?: StorageLike): StoredSession | null {
@@ -330,7 +291,7 @@ export function TemporalDataProvider({ children }: { children: React.ReactNode }
     ]);
 
     return {
-      savedCountdowns: sanitizeSavedCountdownEvents(countdownsResponse.items.map(normalizeRemoteCountdownItem)),
+      savedCountdowns: sortSavedCountdownEvents(countdownsResponse.items.map(normalizeRemoteCountdownItem)),
       savedDayNotes: sanitizeSavedDayNotes(dayNotesResponse.items.map(normalizeRemoteDayNoteItem)),
       savedFavoriteDays: sanitizeSavedFavoriteDays(favoriteDaysResponse.items.map(normalizeRemoteFavoriteDayItem)),
     };
@@ -349,16 +310,16 @@ export function TemporalDataProvider({ children }: { children: React.ReactNode }
 
   const maybePrepareFirstSyncChoice = (userId: string, localSnapshot: SyncedDataSnapshot, remoteSnapshot: SyncedDataSnapshot) => {
     const storage = typeof window === "undefined" ? undefined : window.localStorage;
-    const normalizedLocalSnapshot = normalizeSnapshot(localSnapshot);
-    const normalizedRemoteSnapshot = normalizeSnapshot(remoteSnapshot);
+    const normalizedLocalSnapshot = normalizeSyncedDataSnapshot(localSnapshot);
+    const normalizedRemoteSnapshot = normalizeSyncedDataSnapshot(remoteSnapshot);
 
-    if (!hasSnapshotData(normalizedLocalSnapshot)) {
+    if (!hasSyncedData(normalizedLocalSnapshot)) {
       clearPendingFirstSyncChoice();
       return false;
     }
 
-    const localSignature = createSnapshotSignature(normalizedLocalSnapshot);
-    const cloudSignature = createSnapshotSignature(normalizedRemoteSnapshot);
+    const localSignature = createSyncedDataSignature(normalizedLocalSnapshot);
+    const cloudSignature = createSyncedDataSignature(normalizedRemoteSnapshot);
 
     if (localSignature === cloudSignature) {
       clearPendingFirstSyncChoice();
@@ -379,8 +340,9 @@ export function TemporalDataProvider({ children }: { children: React.ReactNode }
     setPendingFirstSyncChoice({
       userId,
       localSnapshot: normalizedLocalSnapshot,
-      localCounts: getSnapshotCounts(normalizedLocalSnapshot),
-      cloudCounts: getSnapshotCounts(normalizedRemoteSnapshot),
+      cloudSnapshot: normalizedRemoteSnapshot,
+      localCounts: getSyncedDataSnapshotCounts(normalizedLocalSnapshot),
+      cloudCounts: getSyncedDataSnapshotCounts(normalizedRemoteSnapshot),
       localSignature,
       cloudSignature,
     });
@@ -866,8 +828,23 @@ export function TemporalDataProvider({ children }: { children: React.ReactNode }
     clearPendingFirstSyncChoice();
   };
 
+  const mergeCloudWithLocalData = async () => {
+    if (!pendingFirstSyncChoice) {
+      return;
+    }
+
+    const latestCloudSnapshot =
+      dataMode === "cloud"
+        ? await withCloudSession((activeSession) => loadRemoteSnapshot(activeSession.accessToken))
+        : pendingFirstSyncChoice.cloudSnapshot;
+    const mergedSnapshot = mergeSyncedDataSnapshots(pendingFirstSyncChoice.localSnapshot, latestCloudSnapshot);
+
+    await replaceSavedData(mergedSnapshot);
+    clearPendingFirstSyncChoice();
+  };
+
   const replaceSavedData = async (snapshot: SyncedDataSnapshot) => {
-    const normalizedSnapshot = normalizeSnapshot(snapshot);
+    const normalizedSnapshot = normalizeSyncedDataSnapshot(snapshot);
 
     if (dataMode === "local") {
       persistLocalSnapshot(normalizedSnapshot, typeof window === "undefined" ? undefined : window.localStorage);
@@ -946,6 +923,7 @@ export function TemporalDataProvider({ children }: { children: React.ReactNode }
       toggleFavoriteDay,
       keepCloudData,
       replaceCloudWithLocalData,
+      mergeCloudWithLocalData,
       replaceSavedData,
     }),
     [
