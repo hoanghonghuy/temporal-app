@@ -156,49 +156,13 @@ export function HistoryPanel({ isOpen, onOpenChange }: HistoryPanelProps) {
   return (
     <Sheet open={isOpen} onOpenChange={onOpenChange}>
       <SheetContent className="flex flex-col border-l-primary/15">
-        <SheetHeader className="pr-16 text-left">
-          <div className="flex items-start gap-3">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="mt-0.5 h-8 w-8 shrink-0 rounded-lg text-muted-foreground hover:text-foreground"
-                  aria-label={dataCopy.title}
-                  title={dataCopy.title}
-                >
-                  <EllipsisVertical className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel className="font-serif text-xs uppercase tracking-[0.2em] text-muted-foreground">
-                  {dataCopy.title}
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onSelect={handleExport}>
-                  <Download className="h-4 w-4" />
-                  {dataCopy.export}
-                </DropdownMenuItem>
-                {canShareFiles && (
-                  <DropdownMenuItem onSelect={() => void handleShare()}>
-                    <Share2 className="h-4 w-4" />
-                    {dataCopy.share}
-                  </DropdownMenuItem>
-                )}
-                <DropdownMenuItem onSelect={handleOpenImport}>
-                  <Upload className="h-4 w-4" />
-                  {dataCopy.import}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            <div className="min-w-0 flex-1">
-              <SheetTitle className="flex items-center gap-2 font-serif">
-                <ScrollText className="h-5 w-5 text-primary" />
-                {dictionary.historyTitle}
-              </SheetTitle>
-              <SheetDescription className="mt-1">{dictionary.historyDescription}</SheetDescription>
-            </div>
+        <SheetHeader className="text-left">
+          <div className="min-w-0">
+            <SheetTitle className="flex items-center gap-2 font-serif">
+              <ScrollText className="h-5 w-5 text-primary" />
+              {dictionary.historyTitle}
+            </SheetTitle>
+            <SheetDescription className="mt-1">{dictionary.historyDescription}</SheetDescription>
           </div>
 
           {dataFeedback && (
@@ -240,10 +204,43 @@ export function HistoryPanel({ isOpen, onOpenChange }: HistoryPanelProps) {
           onChange={(event) => void handleImportFileChange(event)}
         />
 
-        <SheetFooter className="mt-4">
+        <SheetFooter className="mt-4 flex-row items-center justify-between gap-2 sm:justify-between sm:space-x-0">
           <Button variant="destructive" onClick={() => setShowDeleteConfirm(true)} disabled={history.length === 0}>
             {dictionary.historyClear}
           </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 shrink-0 rounded-lg text-muted-foreground hover:text-foreground"
+                aria-label={dataCopy.title}
+                title={dataCopy.title}
+              >
+                <EllipsisVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuLabel className="font-serif text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                {dataCopy.title}
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onSelect={handleExport}>
+                <Download className="h-4 w-4" />
+                {dataCopy.export}
+              </DropdownMenuItem>
+              {canShareFiles && (
+                <DropdownMenuItem onSelect={() => void handleShare()}>
+                  <Share2 className="h-4 w-4" />
+                  {dataCopy.share}
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuItem onSelect={handleOpenImport}>
+                <Upload className="h-4 w-4" />
+                {dataCopy.import}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </SheetFooter>
       </SheetContent>
 
