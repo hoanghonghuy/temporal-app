@@ -20,26 +20,15 @@ import { differenceInCalendarDays, format, isBefore, startOfToday } from "date-f
 import { useNavigate } from "react-router-dom";
 import { BookmarkPlus, Clock, Hourglass, ScrollText, Star, Trash2 } from "lucide-react";
 import { useI18n } from "@/contexts/I18nContext";
+import { useTemporalData } from "@/contexts/TemporalDataContext";
 import { formatTemplate } from "@/i18n/dictionary";
 import {
-  createSavedCountdownEvent,
   findDuplicateSavedCountdownEvent,
-  loadSavedCountdownEvents,
-  persistSavedCountdownEvents,
   type SavedCountdownEvent,
 } from "@/lib/saved-countdowns";
 import {
-  loadSavedDayNotes,
-  persistSavedDayNotes,
-  removeSavedDayNote,
-  upsertSavedDayNote,
   type SavedDayNote,
 } from "@/lib/saved-day-notes";
-import {
-  loadSavedFavoriteDays,
-  persistSavedFavoriteDays,
-  toggleSavedFavoriteDay,
-} from "@/lib/saved-favorite-days";
 
 interface DayDetailModalProps {
   selectedDay: Date | null;
@@ -56,6 +45,14 @@ const getZodiacHours = (chiNgay: string, zodiacHoursMap: Record<string, string[]
 export function DayDetailModal({ selectedDay, onClose, holidaysInYear, savedEventsForDay, savedDayNote, isFavoriteDay }: DayDetailModalProps) {
   const navigate = useNavigate();
   const { dictionary, dateLocale, locale } = useI18n();
+  const {
+    savedCountdowns,
+    addSavedCountdown,
+    deleteSavedCountdown,
+    saveDayNote,
+    clearDayNote,
+    toggleFavoriteDay,
+  } = useTemporalData();
   const [draftEventName, setDraftEventName] = useState("");
   const [feedback, setFeedback] = useState<{ message: string; variant: "success" | "info" } | null>(null);
   const [draftNote, setDraftNote] = useState("");
@@ -68,6 +65,8 @@ export function DayDetailModal({ selectedDay, onClose, holidaysInYear, savedEven
         .sort((left, right) => left.name.localeCompare(right.name, locale === "en" ? "en" : "vi"))
     : [];
   const suggestedEventName = holidayInfo[0]?.name ?? "";
+  const getFeedbackMessage = (error: unknown, fallbackMessage: string) =>
+    error instanceof Error && error.message.trim() ? error.message : fallbackMessage;
 
   useEffect(() => {
     setDraftEventName(suggestedEventName);
@@ -123,55 +122,71 @@ export function DayDetailModal({ selectedDay, onClose, holidaysInYear, savedEven
   };
 
   const handleSaveCountdown = () => {
-    const storage = typeof window === "undefined" ? undefined : window.localStorage;
-    const allSavedEvents = loadSavedCountdownEvents(storage);
     const fallbackName = suggestedEventName || countdownCopy.unnamedEvent;
 
-    if (findDuplicateSavedCountdownEvent(allSavedEvents, draftEventName, selectedDay, fallbackName)) {
+    if (findDuplicateSavedCountdownEvent(savedCountdowns, draftEventName, selectedDay, fallbackName)) {
       setFeedback({ message: countdownCopy.saveDuplicate, variant: "info" });
       return;
     }
 
-    persistSavedCountdownEvents([...allSavedEvents, createSavedCountdownEvent(draftEventName, selectedDay, fallbackName)], storage);
-    setDraftEventName(suggestedEventName);
-    setFeedback({ message: countdownCopy.saveSuccess, variant: "success" });
+    void addSavedCountdown(draftEventName, selectedDay, fallbackName)
+      .then(() => {
+        setDraftEventName(suggestedEventName);
+        setFeedback({ message: countdownCopy.saveSuccess, variant: "success" });
+      })
+      .catch((error: unknown) => {
+        setFeedback({
+          message: getFeedbackMessage(error, countdownCopy.saveDuplicate),
+          variant: "info",
+        });
+      });
   };
 
   const handleDeleteSavedEvent = (savedEventId: string) => {
-    const storage = typeof window === "undefined" ? undefined : window.localStorage;
-    const allSavedEvents = loadSavedCountdownEvents(storage);
-    const deletedEvent = allSavedEvents.find((savedEvent) => savedEvent.id === savedEventId);
+    const deletedEvent = savedCountdowns.find((savedEvent) => savedEvent.id === savedEventId);
 
-    persistSavedCountdownEvents(
-      allSavedEvents.filter((savedEvent) => savedEvent.id !== savedEventId),
-      storage
-    );
-    setFeedback({
-      message: formatTemplate(countdownCopy.deleteSavedTemplate, { name: deletedEvent?.name ?? countdownCopy.unnamedEvent }),
-      variant: "info",
-    });
+    void deleteSavedCountdown(savedEventId)
+      .then(() => {
+        setFeedback({
+          message: formatTemplate(countdownCopy.deleteSavedTemplate, { name: deletedEvent?.name ?? countdownCopy.unnamedEvent }),
+          variant: "info",
+        });
+      })
+      .catch((error: unknown) => {
+        setFeedback({
+          message: getFeedbackMessage(error, countdownCopy.deleteSaved),
+          variant: "info",
+        });
+      });
   };
   const handleSaveDayNote = () => {
-    const storage = typeof window === "undefined" ? undefined : window.localStorage;
-    const allSavedNotes = loadSavedDayNotes(storage);
-
-    persistSavedDayNotes(upsertSavedDayNote(allSavedNotes, selectedDay, draftNote), storage);
-    setNoteFeedback({ message: dictionary.dayDetailNoteSaved, variant: "success" });
+    void saveDayNote(selectedDay, draftNote)
+      .then(() => {
+        setNoteFeedback({ message: dictionary.dayDetailNoteSaved, variant: "success" });
+      })
+      .catch((error: unknown) => {
+        setNoteFeedback({
+          message: getFeedbackMessage(error, dictionary.dayDetailNoteSaved),
+          variant: "info",
+        });
+      });
   };
 
   const handleClearDayNote = () => {
-    const storage = typeof window === "undefined" ? undefined : window.localStorage;
-    const allSavedNotes = loadSavedDayNotes(storage);
-
-    persistSavedDayNotes(removeSavedDayNote(allSavedNotes, selectedDay), storage);
-    setDraftNote("");
-    setNoteFeedback({ message: dictionary.dayDetailNoteCleared, variant: "info" });
+    void clearDayNote(selectedDay)
+      .then(() => {
+        setDraftNote("");
+        setNoteFeedback({ message: dictionary.dayDetailNoteCleared, variant: "info" });
+      })
+      .catch((error: unknown) => {
+        setNoteFeedback({
+          message: getFeedbackMessage(error, dictionary.dayDetailNoteCleared),
+          variant: "info",
+        });
+      });
   };
   const handleToggleFavoriteDay = () => {
-    const storage = typeof window === "undefined" ? undefined : window.localStorage;
-    const allFavoriteDays = loadSavedFavoriteDays(storage);
-
-    persistSavedFavoriteDays(toggleSavedFavoriteDay(allFavoriteDays, selectedDay), storage);
+    void toggleFavoriteDay(selectedDay).catch(() => undefined);
   };
 
   return (

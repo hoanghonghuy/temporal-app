@@ -9,18 +9,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useHistory } from "@/contexts/HistoryContext";
 import { useI18n } from "@/contexts/I18nContext";
+import { useTemporalData } from "@/contexts/TemporalDataContext";
 import { formatTemplate } from "@/i18n/dictionary";
 import { getCountdownTargetDate } from "@/lib/date-logic";
 import {
-  createSavedCountdownEvent,
   findDuplicateSavedCountdownEvent,
   fromDateKey,
-  loadSavedCountdownEvents,
-  persistSavedCountdownEvents,
-  sortSavedCountdownEvents,
-  subscribeToSavedCountdownEvents,
   type SavedCountdownEvent,
-  updateSavedCountdownEvent,
 } from "@/lib/saved-countdowns";
 
 interface EventCountdownProps {
@@ -36,13 +31,18 @@ interface FeedbackState {
 export function EventCountdown({ id, initialDate }: EventCountdownProps) {
   const { dateLocale, dictionary } = useI18n();
   const { addToHistory } = useHistory();
+  const {
+    savedCountdowns: savedEvents,
+    addSavedCountdown,
+    updateSavedCountdown,
+    deleteSavedCountdown,
+  } = useTemporalData();
   const [eventName, setEventName] = useState<string>("");
   const [targetDate, setTargetDate] = useState<Date | undefined>();
   const [countdown, setCountdown] = useState<string>("");
   const [isActive, setIsActive] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
   const [feedback, setFeedback] = useState<FeedbackState | null>(null);
-  const [savedEvents, setSavedEvents] = useState<SavedCountdownEvent[]>([]);
   const [editingEventId, setEditingEventId] = useState<string | null>(null);
   const [editingEventName, setEditingEventName] = useState<string>("");
   const [editingEventDate, setEditingEventDate] = useState<Date | undefined>();
@@ -50,14 +50,8 @@ export function EventCountdown({ id, initialDate }: EventCountdownProps) {
   const copy = dictionary.tools.eventCountdown;
   const toolMeta = dictionary.toolMeta["event-countdown"];
   const today = startOfToday();
-
-  useEffect(() => {
-    const loadEvents = () =>
-      setSavedEvents(loadSavedCountdownEvents(typeof window === "undefined" ? undefined : window.localStorage));
-
-    loadEvents();
-    return subscribeToSavedCountdownEvents(loadEvents);
-  }, []);
+  const getFeedbackMessage = (error: unknown, fallbackMessage: string) =>
+    error instanceof Error && error.message.trim() ? error.message : fallbackMessage;
 
   useEffect(() => {
     if (!initialDate) {
@@ -163,12 +157,6 @@ export function EventCountdown({ id, initialDate }: EventCountdownProps) {
     [copy, dateLocale, savedEvents, today]
   );
 
-  const persistEvents = (nextEvents: SavedCountdownEvent[]) => {
-    const sortedEvents = sortSavedCountdownEvents(nextEvents);
-    setSavedEvents(sortedEvents);
-    persistSavedCountdownEvents(sortedEvents, typeof window === "undefined" ? undefined : window.localStorage);
-  };
-
   const startCountdown = (nextDate: Date, nextName: string) => {
     if (isBefore(nextDate, today)) {
       setError(copy.errorPastDate);
@@ -218,9 +206,15 @@ export function EventCountdown({ id, initialDate }: EventCountdownProps) {
       return;
     }
 
-    persistEvents([...savedEvents, createSavedCountdownEvent(eventName, targetDate, copy.unnamedEvent)]);
-    setError("");
-    setFeedback({ message: copy.saveSuccess, variant: "success" });
+    void addSavedCountdown(eventName, targetDate, copy.unnamedEvent)
+      .then(() => {
+        setError("");
+        setFeedback({ message: copy.saveSuccess, variant: "success" });
+      })
+      .catch((error: unknown) => {
+        setError("");
+        setFeedback({ message: getFeedbackMessage(error, copy.saveDuplicate), variant: "info" });
+      });
   };
 
   const handleLoadSavedEvent = (savedEvent: SavedCountdownEvent) => {
@@ -246,14 +240,22 @@ export function EventCountdown({ id, initialDate }: EventCountdownProps) {
 
   const handleDeleteSavedEvent = (savedEventId: string) => {
     const deletedEvent = savedEvents.find((savedEvent) => savedEvent.id === savedEventId);
-    persistEvents(savedEvents.filter((savedEvent) => savedEvent.id !== savedEventId));
-    if (editingEventId === savedEventId) {
-      handleCancelEdit();
-    }
-    setFeedback({
-      message: formatTemplate(copy.deleteSavedTemplate, { name: deletedEvent?.name ?? copy.unnamedEvent }),
-      variant: "info",
-    });
+    void deleteSavedCountdown(savedEventId)
+      .then(() => {
+        if (editingEventId === savedEventId) {
+          handleCancelEdit();
+        }
+        setFeedback({
+          message: formatTemplate(copy.deleteSavedTemplate, { name: deletedEvent?.name ?? copy.unnamedEvent }),
+          variant: "info",
+        });
+      })
+      .catch((error: unknown) => {
+        setFeedback({
+          message: getFeedbackMessage(error, copy.deleteSaved),
+          variant: "info",
+        });
+      });
   };
   const handleBeginEdit = (savedEvent: SavedCountdownEvent) => {
     const savedDate = fromDateKey(savedEvent.dateKey);
@@ -298,22 +300,19 @@ export function EventCountdown({ id, initialDate }: EventCountdownProps) {
       return;
     }
 
-    const updatedEvents = updateSavedCountdownEvent(
-      savedEvents,
-      editingEventId,
-      editingEventName,
-      editingEventDate,
-      copy.unnamedEvent
-    );
-
-    persistEvents(updatedEvents);
-    setFeedback({
-      message: formatTemplate(copy.updatedSavedTemplate, {
-        name: editingEventName.trim() || copy.unnamedEvent,
-      }),
-      variant: "success",
-    });
-    handleCancelEdit();
+    void updateSavedCountdown(editingEventId, editingEventName, editingEventDate, copy.unnamedEvent)
+      .then(() => {
+        setFeedback({
+          message: formatTemplate(copy.updatedSavedTemplate, {
+            name: editingEventName.trim() || copy.unnamedEvent,
+          }),
+          variant: "success",
+        });
+        handleCancelEdit();
+      })
+      .catch((error: unknown) => {
+        setEditingError(getFeedbackMessage(error, copy.saveDuplicate));
+      });
   };
 
   const handleClear = () => {

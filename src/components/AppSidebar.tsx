@@ -3,37 +3,21 @@ import { Link, NavLink, useLocation } from "react-router-dom";
 import {
   CalendarDays,
   ChevronDown,
-  CloudOff,
-  History,
   Hourglass,
   Scroll,
   Star,
-  UserRound,
   Wrench,
 } from "lucide-react";
 import { differenceInCalendarDays, format, startOfToday } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/contexts/I18nContext";
+import { useTemporalData } from "@/contexts/TemporalDataContext";
 import { formatTemplate } from "@/i18n/dictionary";
 import { getToolDefinitions } from "@/lib/tool-registry";
 import { cn } from "@/lib/utils";
-import {
-  fromDateKey,
-  loadSavedCountdownEvents,
-  subscribeToSavedCountdownEvents,
-  type SavedCountdownEvent,
-} from "@/lib/saved-countdowns";
-import {
-  loadSavedDayNotes,
-  subscribeToSavedDayNotes,
-  type SavedDayNote,
-} from "@/lib/saved-day-notes";
-import {
-  loadSavedFavoriteDays,
-  subscribeToSavedFavoriteDays,
-  type SavedFavoriteDay,
-} from "@/lib/saved-favorite-days";
+import { fromDateKey } from "@/lib/saved-countdowns";
 import { MAX_SUPPORTED_LUNAR_YEAR, MIN_SUPPORTED_LUNAR_YEAR } from "@/lib/lunar-converter";
+import { AccountPanel } from "@/components/AccountPanel";
 
 interface AppSidebarProps {
   onHistoryToggle: () => void;
@@ -73,35 +57,11 @@ function SidebarSection({
 export function AppSidebar({ onHistoryToggle, onNavigate, className }: AppSidebarProps) {
   const location = useLocation();
   const { dictionary, dateLocale, locale } = useI18n();
-  const [savedEvents, setSavedEvents] = useState<SavedCountdownEvent[]>([]);
-  const [savedDayNotes, setSavedDayNotes] = useState<SavedDayNote[]>([]);
-  const [savedFavoriteDays, setSavedFavoriteDays] = useState<SavedFavoriteDay[]>([]);
+  const { savedCountdowns: savedEvents, savedDayNotes, savedFavoriteDays } = useTemporalData();
   const [isToolsListOpen, setIsToolsListOpen] = useState(location.pathname.startsWith("/tools"));
   const [quickView, setQuickView] = useState<"favorites" | "upcoming">("favorites");
   const toolDefinitions = useMemo(() => getToolDefinitions(locale), [locale]);
   const todayStart = startOfToday();
-
-  useEffect(() => {
-    const loadEvents = () =>
-      setSavedEvents(loadSavedCountdownEvents(typeof window === "undefined" ? undefined : window.localStorage));
-
-    loadEvents();
-    return subscribeToSavedCountdownEvents(loadEvents);
-  }, []);
-  useEffect(() => {
-    const loadNotes = () =>
-      setSavedDayNotes(loadSavedDayNotes(typeof window === "undefined" ? undefined : window.localStorage));
-
-    loadNotes();
-    return subscribeToSavedDayNotes(loadNotes);
-  }, []);
-  useEffect(() => {
-    const loadFavoriteDays = () =>
-      setSavedFavoriteDays(loadSavedFavoriteDays(typeof window === "undefined" ? undefined : window.localStorage));
-
-    loadFavoriteDays();
-    return subscribeToSavedFavoriteDays(loadFavoriteDays);
-  }, []);
   useEffect(() => {
     if (location.pathname.startsWith("/tools")) {
       setIsToolsListOpen(true);
@@ -348,31 +308,7 @@ export function AppSidebar({ onHistoryToggle, onNavigate, className }: AppSideba
 
       <section className="shrink-0 space-y-2">
         <p className="px-1 text-[10px] uppercase tracking-[0.24em] text-muted-foreground">{dictionary.sidebarSystemTitle}</p>
-        <div className="rounded-xl border border-primary/15 bg-background/95 p-2.5 shadow-sm">
-          <div className="flex items-center gap-2">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-primary/10 bg-primary/[0.04] text-primary/80">
-              <UserRound className="h-4 w-4" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">{dictionary.sidebarAccountLabel}</p>
-              <p className="truncate font-serif text-sm text-foreground">{dictionary.sidebarAccountSignedOut}</p>
-              <div className="mt-0.5 flex items-center gap-1.5 text-[11px] text-muted-foreground">
-                <CloudOff className="h-3.5 w-3.5" />
-                <span>{dictionary.sidebarSyncLocalOnly}</span>
-              </div>
-            </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleOpenHistory}
-              aria-label={dictionary.sidebarOpenHistory}
-              title={dictionary.sidebarOpenHistory}
-              className="h-8 w-8 shrink-0 rounded-lg text-muted-foreground hover:text-foreground"
-            >
-              <History className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
+        <AccountPanel onOpenHistory={handleOpenHistory} />
       </section>
     </div>
   );

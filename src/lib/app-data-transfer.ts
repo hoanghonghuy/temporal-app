@@ -41,16 +41,35 @@ export interface TemporalDataBundle {
   };
 }
 
+export interface TemporalDataSnapshot {
+  history: HistoryItem[];
+  savedCountdowns: SavedCountdownEvent[];
+  savedDayNotes: SavedDayNote[];
+  savedFavoriteDays: SavedFavoriteDay[];
+}
+
 export function createTemporalDataBundle(storage?: StorageLike, exportedAt = new Date()): TemporalDataBundle {
+  return createTemporalDataBundleFromSnapshot(
+    {
+      history: loadHistoryItems(storage),
+      savedCountdowns: loadSavedCountdownEvents(storage),
+      savedDayNotes: loadSavedDayNotes(storage),
+      savedFavoriteDays: loadSavedFavoriteDays(storage),
+    },
+    exportedAt
+  );
+}
+
+export function createTemporalDataBundleFromSnapshot(snapshot: TemporalDataSnapshot, exportedAt = new Date()): TemporalDataBundle {
   return {
     app: "temporal",
     version: 1,
     exportedAt: exportedAt.toISOString(),
     data: {
-      history: loadHistoryItems(storage),
-      savedCountdowns: loadSavedCountdownEvents(storage),
-      savedDayNotes: loadSavedDayNotes(storage),
-      savedFavoriteDays: loadSavedFavoriteDays(storage),
+      history: sanitizeHistoryItems(snapshot.history),
+      savedCountdowns: sanitizeSavedCountdownEvents(snapshot.savedCountdowns),
+      savedDayNotes: sanitizeSavedDayNotes(snapshot.savedDayNotes),
+      savedFavoriteDays: sanitizeSavedFavoriteDays(snapshot.savedFavoriteDays),
     },
   };
 }

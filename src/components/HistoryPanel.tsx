@@ -31,13 +31,14 @@ import { StatusPanel } from "@/components/ui/status-panel";
 import { useHistory } from "@/contexts/HistoryContext";
 import { useI18n } from "@/contexts/I18nContext";
 import {
-  applyTemporalDataBundle,
-  createTemporalDataBundle,
+  createTemporalDataBundleFromSnapshot,
   getTemporalDataBundleCounts,
   getTemporalDataFilename,
   parseTemporalDataBundle,
   type TemporalDataBundle,
 } from "@/lib/app-data-transfer";
+import { persistHistoryItems } from "@/lib/history-storage";
+import { useTemporalData } from "@/contexts/TemporalDataContext";
 
 interface HistoryPanelProps {
   isOpen: boolean;
@@ -46,6 +47,7 @@ interface HistoryPanelProps {
 
 export function HistoryPanel({ isOpen, onOpenChange }: HistoryPanelProps) {
   const { history, clearHistory } = useHistory();
+  const { savedCountdowns, savedDayNotes, savedFavoriteDays, replaceSavedData } = useTemporalData();
   const { dictionary } = useI18n();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [pendingImportBundle, setPendingImportBundle] = useState<TemporalDataBundle | null>(null);
@@ -75,11 +77,12 @@ export function HistoryPanel({ isOpen, onOpenChange }: HistoryPanelProps) {
     setShowDeleteConfirm(false);
   };
   const handleExport = () => {
-    if (typeof window === "undefined") {
-      return;
-    }
-
-    const bundle = createTemporalDataBundle(window.localStorage);
+    const bundle = createTemporalDataBundleFromSnapshot({
+      history,
+      savedCountdowns,
+      savedDayNotes,
+      savedFavoriteDays,
+    });
     const blob = new Blob([JSON.stringify(bundle, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -96,7 +99,12 @@ export function HistoryPanel({ isOpen, onOpenChange }: HistoryPanelProps) {
       return;
     }
 
-    const bundle = createTemporalDataBundle(window.localStorage);
+    const bundle = createTemporalDataBundleFromSnapshot({
+      history,
+      savedCountdowns,
+      savedDayNotes,
+      savedFavoriteDays,
+    });
     const file = new File([JSON.stringify(bundle, null, 2)], getTemporalDataFilename(bundle), {
       type: "application/json",
     });
@@ -141,14 +149,24 @@ export function HistoryPanel({ isOpen, onOpenChange }: HistoryPanelProps) {
     }
   };
 
-  const handleConfirmImport = () => {
+  const handleConfirmImport = async () => {
     if (typeof window === "undefined" || !pendingImportBundle) {
       return;
     }
 
-    applyTemporalDataBundle(pendingImportBundle, window.localStorage);
-    setPendingImportBundle(null);
-    setDataFeedback({ message: dataCopy.importSuccess, variant: "success" });
+    persistHistoryItems(pendingImportBundle.data.history, window.localStorage);
+
+    try {
+      await replaceSavedData({
+        savedCountdowns: pendingImportBundle.data.savedCountdowns,
+        savedDayNotes: pendingImportBundle.data.savedDayNotes,
+        savedFavoriteDays: pendingImportBundle.data.savedFavoriteDays,
+      });
+      setPendingImportBundle(null);
+      setDataFeedback({ message: dataCopy.importSuccess, variant: "success" });
+    } catch {
+      setDataFeedback({ message: dataCopy.importInvalid, variant: "error" });
+    }
   };
 
   const pendingImportCounts = pendingImportBundle ? getTemporalDataBundleCounts(pendingImportBundle) : null;
@@ -282,7 +300,7 @@ export function HistoryPanel({ isOpen, onOpenChange }: HistoryPanelProps) {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel className="font-serif">{dictionary.cancel}</AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmImport} className="font-serif">
+            <AlertDialogAction onClick={() => void handleConfirmImport()} className="font-serif">
               {dataCopy.importConfirm}
             </AlertDialogAction>
           </AlertDialogFooter>

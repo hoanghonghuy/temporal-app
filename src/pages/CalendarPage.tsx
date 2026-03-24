@@ -18,6 +18,7 @@ import {
 } from "date-fns";
 import { cn } from "@/lib/utils";
 import { CalendarHeader } from "@/components/CalendarHeader";
+import { useTemporalData } from "@/contexts/TemporalDataContext";
 import {
   convertSolar2Lunar,
   MAX_SUPPORTED_LUNAR_YEAR,
@@ -27,23 +28,7 @@ import { getVnHolidays } from "@/lib/vn-holidays";
 import { DayDetailModal } from "@/components/DayDetailModal";
 import { useI18n } from "@/contexts/I18nContext";
 import { formatTemplate } from "@/i18n/dictionary";
-import {
-  loadSavedCountdownEvents,
-  fromDateKey,
-  subscribeToSavedCountdownEvents,
-  toDateKey,
-  type SavedCountdownEvent,
-} from "@/lib/saved-countdowns";
-import {
-  loadSavedDayNotes,
-  subscribeToSavedDayNotes,
-  type SavedDayNote,
-} from "@/lib/saved-day-notes";
-import {
-  loadSavedFavoriteDays,
-  subscribeToSavedFavoriteDays,
-  type SavedFavoriteDay,
-} from "@/lib/saved-favorite-days";
+import { fromDateKey, toDateKey, type SavedCountdownEvent } from "@/lib/saved-countdowns";
 import { useSearchParams } from "react-router-dom";
 
 const MIN_CALENDAR_MONTH = new Date(MIN_SUPPORTED_LUNAR_YEAR, 0, 1);
@@ -52,37 +37,13 @@ const MAX_CALENDAR_DAY = new Date(MAX_SUPPORTED_LUNAR_YEAR, 11, 31);
 
 export function CalendarPage() {
   const { dictionary, dateLocale, locale } = useI18n();
+  const { savedCountdowns: savedEvents, savedDayNotes, savedFavoriteDays } = useTemporalData();
   const [searchParams, setSearchParams] = useSearchParams();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDay, setSelectedDay] = useState<Date | null>(null);
-  const [savedEvents, setSavedEvents] = useState<SavedCountdownEvent[]>([]);
-  const [savedDayNotes, setSavedDayNotes] = useState<SavedDayNote[]>([]);
-  const [savedFavoriteDays, setSavedFavoriteDays] = useState<SavedFavoriteDay[]>([]);
   const todayStart = startOfToday();
   const requestedDayKey = searchParams.get("date");
   const searchParamsString = searchParams.toString();
-
-  useEffect(() => {
-    const loadEvents = () =>
-      setSavedEvents(loadSavedCountdownEvents(typeof window === "undefined" ? undefined : window.localStorage));
-
-    loadEvents();
-    return subscribeToSavedCountdownEvents(loadEvents);
-  }, []);
-  useEffect(() => {
-    const loadNotes = () =>
-      setSavedDayNotes(loadSavedDayNotes(typeof window === "undefined" ? undefined : window.localStorage));
-
-    loadNotes();
-    return subscribeToSavedDayNotes(loadNotes);
-  }, []);
-  useEffect(() => {
-    const loadFavoriteDays = () =>
-      setSavedFavoriteDays(loadSavedFavoriteDays(typeof window === "undefined" ? undefined : window.localStorage));
-
-    loadFavoriteDays();
-    return subscribeToSavedFavoriteDays(loadFavoriteDays);
-  }, []);
   useEffect(() => {
     if (!requestedDayKey) {
       return;

@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import {
   applyTemporalDataBundle,
   createTemporalDataBundle,
+  createTemporalDataBundleFromSnapshot,
   getTemporalDataBundleCounts,
   getTemporalDataFilename,
   parseTemporalDataBundle,
@@ -59,6 +60,21 @@ describe("app data transfer", () => {
 
     expect(bundle).not.toBeNull();
     expect(bundle?.data.savedDayNotes[0]?.note).toBe("Quiet mind");
+  });
+
+  it("creates a bundle from an explicit snapshot", () => {
+    const bundle = createTemporalDataBundleFromSnapshot(
+      {
+        history: [{ id: "1", type: "Tool", result: "Done", timestamp: "23/03/2026" }],
+        savedCountdowns: [{ id: "a", name: "Tet", dateKey: "2026-02-17", createdAt: "2026-03-23T00:00:00.000Z" }],
+        savedDayNotes: [{ dateKey: "2026-03-23", note: "  Quiet mind  ", updatedAt: "2026-03-23T00:00:00.000Z" }],
+        savedFavoriteDays: [{ dateKey: "2026-03-24", updatedAt: "2026-03-23T00:00:00.000Z" }],
+      },
+      new Date("2026-03-23T01:02:03.000Z")
+    );
+
+    expect(bundle.data.savedDayNotes[0]?.note).toBe("Quiet mind");
+    expect(bundle.exportedAt).toBe("2026-03-23T01:02:03.000Z");
   });
 
   it("applies imported bundles back to storage", () => {
