@@ -49,8 +49,21 @@ function getAccountErrorMessage(error: unknown, dictionary: ReturnType<typeof us
 
 export function AccountPanel({ onOpenHistory }: AccountPanelProps) {
   const { dictionary } = useI18n();
-  const { apiConfigured, authStatus, dataMode, sessionUser, signIn, register, signOut, reloadCloudData, syncState, syncError } =
-    useTemporalData();
+  const {
+    apiConfigured,
+    authStatus,
+    dataMode,
+    sessionUser,
+    signIn,
+    register,
+    signOut,
+    reloadCloudData,
+    syncState,
+    syncError,
+    pendingFirstSyncChoice,
+    keepCloudData,
+    replaceCloudWithLocalData,
+  } = useTemporalData();
   const [isOpen, setIsOpen] = useState(false);
   const [mode, setMode] = useState<"signin" | "register">("signin");
   const [email, setEmail] = useState("");
@@ -60,10 +73,15 @@ export function AccountPanel({ onOpenHistory }: AccountPanelProps) {
 
   const isSignedIn = authStatus === "signed_in" && sessionUser !== null;
   const isBusy = authStatus === "authenticating" || syncState === "loading" || syncState === "syncing";
+  const hasPendingFirstSyncChoice = pendingFirstSyncChoice !== null;
   const accountTitle = sessionUser?.displayName || sessionUser?.email || dictionary.sidebarAccountSignedOut;
   const syncLabel = useMemo(() => {
     if (syncState === "loading" || syncState === "syncing") {
       return dictionary.sidebarSyncing;
+    }
+
+    if (hasPendingFirstSyncChoice) {
+      return dictionary.sidebarSyncPending;
     }
 
     if (dataMode === "cloud") {
@@ -71,20 +89,28 @@ export function AccountPanel({ onOpenHistory }: AccountPanelProps) {
     }
 
     return dictionary.sidebarSyncLocalOnly;
-  }, [dataMode, dictionary, syncError, syncState]);
+  }, [dataMode, dictionary, hasPendingFirstSyncChoice, syncError, syncState]);
+
+  const formatCounts = (counts: NonNullable<typeof pendingFirstSyncChoice>["localCounts"]) => [
+    `${dictionary.dataPortability.countdownsLabel}: ${counts.savedCountdowns}`,
+    `${dictionary.dataPortability.notesLabel}: ${counts.savedDayNotes}`,
+    `${dictionary.dataPortability.favoritesLabel}: ${counts.savedFavoriteDays}`,
+  ];
 
   const handleSubmit = async () => {
     setFormError(null);
 
     try {
-      if (mode === "signin") {
-        await signIn({ email, password });
-      } else {
-        await register({ email, password, displayName });
-      }
+      const needsFirstSyncChoice =
+        mode === "signin"
+          ? await signIn({ email, password })
+          : await register({ email, password, displayName });
 
+      setDisplayName("");
       setPassword("");
-      setIsOpen(false);
+      if (!needsFirstSyncChoice) {
+        setIsOpen(false);
+      }
     } catch (error) {
       setFormError(getAccountErrorMessage(error, dictionary));
     }
@@ -95,6 +121,23 @@ export function AccountPanel({ onOpenHistory }: AccountPanelProps) {
 
     try {
       await signOut();
+      setIsOpen(false);
+    } catch (error) {
+      setFormError(getAccountErrorMessage(error, dictionary));
+    }
+  };
+
+  const handleKeepCloudData = () => {
+    setFormError(null);
+    keepCloudData();
+    setIsOpen(false);
+  };
+
+  const handleReplaceCloudWithLocalData = async () => {
+    setFormError(null);
+
+    try {
+      await replaceCloudWithLocalData();
       setIsOpen(false);
     } catch (error) {
       setFormError(getAccountErrorMessage(error, dictionary));
@@ -166,6 +209,42 @@ export function AccountPanel({ onOpenHistory }: AccountPanelProps) {
               </div>
             ) : isSignedIn && sessionUser ? (
               <div className="space-y-4">
+                {pendingFirstSyncChoice && (
+                  <div className="rounded-xl border border-primary/15 bg-primary/[0.05] p-4">
+                    <p className="font-serif text-base text-foreground">{dictionary.accountFirstSyncTitle}</p>
+                    <p className="mt-1 text-sm leading-6 text-muted-foreground">{dictionary.accountFirstSyncDescription}</p>
+                    <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                      <div className="rounded-lg border border-primary/10 bg-background/75 p-3">
+                        <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                          {dictionary.accountFirstSyncLocalLabel}
+                        </p>
+                        <div className="mt-2 space-y-1 text-sm text-foreground">
+                          {formatCounts(pendingFirstSyncChoice.localCounts).map((line) => (
+                            <p key={line}>{line}</p>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="rounded-lg border border-primary/10 bg-background/75 p-3">
+                        <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                          {dictionary.accountFirstSyncCloudLabel}
+                        </p>
+                        <div className="mt-2 space-y-1 text-sm text-foreground">
+                          {formatCounts(pendingFirstSyncChoice.cloudCounts).map((line) => (
+                            <p key={line}>{line}</p>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+                      <Button onClick={() => void handleReplaceCloudWithLocalData()} disabled={isBusy} className="sm:flex-1">
+                        {dictionary.accountFirstSyncUseLocal}
+                      </Button>
+                      <Button variant="outline" onClick={handleKeepCloudData} disabled={isBusy} className="sm:flex-1">
+                        {dictionary.accountFirstSyncKeepCloud}
+                      </Button>
+                    </div>
+                  </div>
+                )}
                 <div className="rounded-xl border border-primary/10 bg-primary/[0.04] p-4">
                   <p className="font-serif text-base text-foreground">{sessionUser.displayName || sessionUser.email}</p>
                   <p className="mt-1 text-sm text-muted-foreground">{sessionUser.email}</p>
@@ -175,6 +254,9 @@ export function AccountPanel({ onOpenHistory }: AccountPanelProps) {
                   </div>
                   {syncError && (
                     <p className="mt-2 text-sm leading-6 text-destructive">{syncError}</p>
+                  )}
+                  {formError && (
+                    <p className="mt-2 text-sm leading-6 text-destructive">{formError}</p>
                   )}
                 </div>
                 <DialogFooter className="flex-row justify-between gap-2 sm:justify-between sm:space-x-0">

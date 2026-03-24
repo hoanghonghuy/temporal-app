@@ -48,6 +48,21 @@ interface SyncedDataSnapshot {
   savedFavoriteDays: SavedFavoriteDay[];
 }
 
+interface SyncedDataCounts {
+  savedCountdowns: number;
+  savedDayNotes: number;
+  savedFavoriteDays: number;
+}
+
+interface PendingFirstSyncChoice {
+  userId: string;
+  localSnapshot: SyncedDataSnapshot;
+  localCounts: SyncedDataCounts;
+  cloudCounts: SyncedDataCounts;
+  localSignature: string;
+  cloudSignature: string;
+}
+
 interface TemporalDataContextType extends SyncedDataSnapshot {
   apiConfigured: boolean;
   authStatus: AuthStatus;
@@ -55,8 +70,12 @@ interface TemporalDataContextType extends SyncedDataSnapshot {
   syncState: SyncState;
   sessionUser: TemporalApiUser | null;
   syncError: string | null;
-  signIn: (input: { email: string; password: string }) => Promise<void>;
-  register: (input: { email: string; password: string; displayName?: string }) => Promise<void>;
+  pendingFirstSyncChoice: {
+    localCounts: SyncedDataCounts;
+    cloudCounts: SyncedDataCounts;
+  } | null;
+  signIn: (input: { email: string; password: string }) => Promise<boolean>;
+  register: (input: { email: string; password: string; displayName?: string }) => Promise<boolean>;
   signOut: () => Promise<void>;
   reloadCloudData: () => Promise<void>;
   addSavedCountdown: (name: string, date: Date, fallbackName: string) => Promise<SavedCountdownEvent>;
@@ -65,10 +84,17 @@ interface TemporalDataContextType extends SyncedDataSnapshot {
   saveDayNote: (date: Date, note: string) => Promise<SavedDayNote | null>;
   clearDayNote: (date: Date) => Promise<void>;
   toggleFavoriteDay: (date: Date) => Promise<boolean>;
+  keepCloudData: () => void;
+  replaceCloudWithLocalData: () => Promise<void>;
   replaceSavedData: (snapshot: SyncedDataSnapshot) => Promise<void>;
 }
 
 interface StoredSession extends TemporalApiSession {}
+interface StoredFirstSyncAcknowledgement {
+  userId: string;
+  localSignature: string;
+  cloudSignature: string;
+}
 
 interface StorageLike {
   getItem: (key: string) => string | null;
@@ -77,6 +103,7 @@ interface StorageLike {
 }
 
 const SESSION_STORAGE_KEY = "temporal-auth-session";
+const FIRST_SYNC_ACK_STORAGE_KEY = "temporal-first-sync-acknowledged";
 
 const TemporalDataContext = createContext<TemporalDataContextType | undefined>(undefined);
 
@@ -92,6 +119,43 @@ function persistLocalSnapshot(snapshot: SyncedDataSnapshot, storage?: StorageLik
   persistSavedCountdownEvents(snapshot.savedCountdowns, storage);
   persistSavedDayNotes(snapshot.savedDayNotes, storage);
   persistSavedFavoriteDays(snapshot.savedFavoriteDays, storage);
+}
+
+function normalizeSnapshot(snapshot: SyncedDataSnapshot): SyncedDataSnapshot {
+  return {
+    savedCountdowns: sanitizeSavedCountdownEvents(snapshot.savedCountdowns),
+    savedDayNotes: sanitizeSavedDayNotes(snapshot.savedDayNotes),
+    savedFavoriteDays: sanitizeSavedFavoriteDays(snapshot.savedFavoriteDays),
+  };
+}
+
+function getSnapshotCounts(snapshot: SyncedDataSnapshot): SyncedDataCounts {
+  return {
+    savedCountdowns: snapshot.savedCountdowns.length,
+    savedDayNotes: snapshot.savedDayNotes.length,
+    savedFavoriteDays: snapshot.savedFavoriteDays.length,
+  };
+}
+
+function hasSnapshotData(snapshot: SyncedDataSnapshot) {
+  const counts = getSnapshotCounts(snapshot);
+  return counts.savedCountdowns + counts.savedDayNotes + counts.savedFavoriteDays > 0;
+}
+
+function createSnapshotSignature(snapshot: SyncedDataSnapshot) {
+  const normalizedSnapshot = normalizeSnapshot(snapshot);
+
+  return JSON.stringify({
+    savedCountdowns: normalizedSnapshot.savedCountdowns.map((event) => ({
+      name: event.name,
+      dateKey: event.dateKey,
+    })),
+    savedDayNotes: normalizedSnapshot.savedDayNotes.map((note) => ({
+      dateKey: note.dateKey,
+      note: note.note,
+    })),
+    savedFavoriteDays: normalizedSnapshot.savedFavoriteDays.map((day) => day.dateKey),
+  });
 }
 
 function parseStoredSession(storage?: StorageLike): StoredSession | null {
@@ -155,6 +219,54 @@ function persistStoredSession(session: StoredSession | null, storage?: StorageLi
   storage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session));
 }
 
+function parseStoredFirstSyncAcknowledgement(storage?: StorageLike): StoredFirstSyncAcknowledgement | null {
+  if (!storage) {
+    return null;
+  }
+
+  try {
+    const rawValue = storage.getItem(FIRST_SYNC_ACK_STORAGE_KEY);
+    if (!rawValue) {
+      return null;
+    }
+
+    const parsed = JSON.parse(rawValue) as Partial<StoredFirstSyncAcknowledgement>;
+    if (
+      !parsed ||
+      typeof parsed !== "object" ||
+      typeof parsed.userId !== "string" ||
+      typeof parsed.localSignature !== "string" ||
+      typeof parsed.cloudSignature !== "string"
+    ) {
+      return null;
+    }
+
+    return {
+      userId: parsed.userId,
+      localSignature: parsed.localSignature,
+      cloudSignature: parsed.cloudSignature,
+    };
+  } catch {
+    return null;
+  }
+}
+
+function persistStoredFirstSyncAcknowledgement(
+  acknowledgement: StoredFirstSyncAcknowledgement | null,
+  storage?: StorageLike
+) {
+  if (!storage) {
+    return;
+  }
+
+  if (!acknowledgement) {
+    storage.removeItem(FIRST_SYNC_ACK_STORAGE_KEY);
+    return;
+  }
+
+  storage.setItem(FIRST_SYNC_ACK_STORAGE_KEY, JSON.stringify(acknowledgement));
+}
+
 function normalizeRemoteCountdownItem(item: TemporalApiCountdownItem): SavedCountdownEvent {
   return {
     id: item.id,
@@ -198,6 +310,7 @@ export function TemporalDataProvider({ children }: { children: React.ReactNode }
   const [syncState, setSyncState] = useState<SyncState>("loading");
   const [session, setSession] = useState<StoredSession | null>(null);
   const [syncError, setSyncError] = useState<string | null>(null);
+  const [pendingFirstSyncChoice, setPendingFirstSyncChoice] = useState<PendingFirstSyncChoice | null>(null);
 
   const applySnapshotToState = (snapshot: SyncedDataSnapshot) => {
     setSavedCountdowns(sortSavedCountdownEvents(snapshot.savedCountdowns));
@@ -230,11 +343,56 @@ export function TemporalDataProvider({ children }: { children: React.ReactNode }
     }
   };
 
+  const clearPendingFirstSyncChoice = () => {
+    setPendingFirstSyncChoice(null);
+  };
+
+  const maybePrepareFirstSyncChoice = (userId: string, localSnapshot: SyncedDataSnapshot, remoteSnapshot: SyncedDataSnapshot) => {
+    const storage = typeof window === "undefined" ? undefined : window.localStorage;
+    const normalizedLocalSnapshot = normalizeSnapshot(localSnapshot);
+    const normalizedRemoteSnapshot = normalizeSnapshot(remoteSnapshot);
+
+    if (!hasSnapshotData(normalizedLocalSnapshot)) {
+      clearPendingFirstSyncChoice();
+      return false;
+    }
+
+    const localSignature = createSnapshotSignature(normalizedLocalSnapshot);
+    const cloudSignature = createSnapshotSignature(normalizedRemoteSnapshot);
+
+    if (localSignature === cloudSignature) {
+      clearPendingFirstSyncChoice();
+      return false;
+    }
+
+    const acknowledgedChoice = parseStoredFirstSyncAcknowledgement(storage);
+    if (
+      acknowledgedChoice &&
+      acknowledgedChoice.userId === userId &&
+      acknowledgedChoice.localSignature === localSignature &&
+      acknowledgedChoice.cloudSignature === cloudSignature
+    ) {
+      clearPendingFirstSyncChoice();
+      return false;
+    }
+
+    setPendingFirstSyncChoice({
+      userId,
+      localSnapshot: normalizedLocalSnapshot,
+      localCounts: getSnapshotCounts(normalizedLocalSnapshot),
+      cloudCounts: getSnapshotCounts(normalizedRemoteSnapshot),
+      localSignature,
+      cloudSignature,
+    });
+    return true;
+  };
+
   const restoreLocalState = () => {
     const localSnapshot = loadLocalSnapshot(typeof window === "undefined" ? undefined : window.localStorage);
     applySnapshotToState(localSnapshot);
     setDataMode("local");
     setAuthStatus("signed_out");
+    clearPendingFirstSyncChoice();
   };
 
   const refreshAccessSession = async (currentSession: StoredSession) => {
@@ -321,6 +479,7 @@ export function TemporalDataProvider({ children }: { children: React.ReactNode }
         setAuthStatus("signed_in");
         setDataMode("cloud");
         setSyncState("idle");
+        clearPendingFirstSyncChoice();
       } catch (error) {
         if (isCancelled) {
           return;
@@ -369,6 +528,8 @@ export function TemporalDataProvider({ children }: { children: React.ReactNode }
       throw new Error("API client is not configured.");
     }
 
+    const storage = typeof window === "undefined" ? undefined : window.localStorage;
+    const localSnapshot = loadLocalSnapshot(storage);
     setAuthStatus("authenticating");
     setSyncState("loading");
     setSyncError(null);
@@ -377,11 +538,13 @@ export function TemporalDataProvider({ children }: { children: React.ReactNode }
       const nextSession = await apiClient.login(input);
       syncSessionState(nextSession);
       const remoteSnapshot = await loadRemoteSnapshot(nextSession.accessToken);
+      const needsFirstSyncChoice = maybePrepareFirstSyncChoice(nextSession.user.id, localSnapshot, remoteSnapshot);
       setSession(nextSession);
       applySnapshotToState(remoteSnapshot);
       setDataMode("cloud");
       setAuthStatus("signed_in");
       setSyncState("idle");
+      return needsFirstSyncChoice;
     } catch (error) {
       restoreLocalState();
       setSyncError(getErrorMessage(error));
@@ -395,6 +558,8 @@ export function TemporalDataProvider({ children }: { children: React.ReactNode }
       throw new Error("API client is not configured.");
     }
 
+    const storage = typeof window === "undefined" ? undefined : window.localStorage;
+    const localSnapshot = loadLocalSnapshot(storage);
     setAuthStatus("authenticating");
     setSyncState("loading");
     setSyncError(null);
@@ -403,11 +568,13 @@ export function TemporalDataProvider({ children }: { children: React.ReactNode }
       const nextSession = await apiClient.register(input);
       syncSessionState(nextSession);
       const remoteSnapshot = await loadRemoteSnapshot(nextSession.accessToken);
+      const needsFirstSyncChoice = maybePrepareFirstSyncChoice(nextSession.user.id, localSnapshot, remoteSnapshot);
       setSession(nextSession);
       applySnapshotToState(remoteSnapshot);
       setDataMode("cloud");
       setAuthStatus("signed_in");
       setSyncState("idle");
+      return needsFirstSyncChoice;
     } catch (error) {
       restoreLocalState();
       setSyncError(getErrorMessage(error));
@@ -672,12 +839,35 @@ export function TemporalDataProvider({ children }: { children: React.ReactNode }
     }
   };
 
+  const keepCloudData = () => {
+    const storage = typeof window === "undefined" ? undefined : window.localStorage;
+
+    if (pendingFirstSyncChoice) {
+      persistStoredFirstSyncAcknowledgement(
+        {
+          userId: pendingFirstSyncChoice.userId,
+          localSignature: pendingFirstSyncChoice.localSignature,
+          cloudSignature: pendingFirstSyncChoice.cloudSignature,
+        },
+        storage
+      );
+    }
+
+    clearPendingFirstSyncChoice();
+  };
+
+  const replaceCloudWithLocalData = async () => {
+    if (!pendingFirstSyncChoice) {
+      return;
+    }
+
+    const localSnapshot = pendingFirstSyncChoice.localSnapshot;
+    await replaceSavedData(localSnapshot);
+    clearPendingFirstSyncChoice();
+  };
+
   const replaceSavedData = async (snapshot: SyncedDataSnapshot) => {
-    const normalizedSnapshot = {
-      savedCountdowns: sanitizeSavedCountdownEvents(snapshot.savedCountdowns),
-      savedDayNotes: sanitizeSavedDayNotes(snapshot.savedDayNotes),
-      savedFavoriteDays: sanitizeSavedFavoriteDays(snapshot.savedFavoriteDays),
-    };
+    const normalizedSnapshot = normalizeSnapshot(snapshot);
 
     if (dataMode === "local") {
       persistLocalSnapshot(normalizedSnapshot, typeof window === "undefined" ? undefined : window.localStorage);
@@ -719,6 +909,7 @@ export function TemporalDataProvider({ children }: { children: React.ReactNode }
       const remoteSnapshot = await withCloudSession((activeSession) => loadRemoteSnapshot(activeSession.accessToken));
       applySnapshotToState(remoteSnapshot);
       setSyncState("idle");
+      clearPendingFirstSyncChoice();
     } catch (error) {
       setSyncError(getErrorMessage(error));
       setSyncState("error");
@@ -734,6 +925,12 @@ export function TemporalDataProvider({ children }: { children: React.ReactNode }
       syncState,
       sessionUser: session?.user ?? null,
       syncError,
+      pendingFirstSyncChoice: pendingFirstSyncChoice
+        ? {
+            localCounts: pendingFirstSyncChoice.localCounts,
+            cloudCounts: pendingFirstSyncChoice.cloudCounts,
+          }
+        : null,
       savedCountdowns,
       savedDayNotes,
       savedFavoriteDays,
@@ -747,12 +944,15 @@ export function TemporalDataProvider({ children }: { children: React.ReactNode }
       saveDayNote,
       clearDayNote,
       toggleFavoriteDay,
+      keepCloudData,
+      replaceCloudWithLocalData,
       replaceSavedData,
     }),
     [
       apiClient,
       authStatus,
       dataMode,
+      pendingFirstSyncChoice,
       savedCountdowns,
       savedDayNotes,
       savedFavoriteDays,
